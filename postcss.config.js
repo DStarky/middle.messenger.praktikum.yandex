@@ -4,12 +4,12 @@ import cssnano from 'cssnano';
 import postCssNested from 'postcss-nested';
 
 export default {
-	plugins: [
-		postcssPresetEnv(),
-		autoprefixer(),
-		postCssNested(),
-		cssnano({
-			preset: 'default',
-		}),
-	],
+  plugins: [
+    postcssPresetEnv(),
+    autoprefixer(),
+    postCssNested(),
+    cssnano({
+      preset: 'default',
+    }),
+  ],
 };
