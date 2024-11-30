@@ -1,7 +1,6 @@
-import './style.pcss';
+import { App } from './app/App';
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div class="parent">
-    <div class="child"></div>
-  </div>
-`;
+document.addEventListener('DOMContentLoaded', () => {
+  const app = new App();
+  app.render();
+});
