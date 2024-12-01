@@ -7,6 +7,11 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --primary-color: #3369f3;
+  --base-font-weight: 500;
+  --base-font-size: 13px;
+  --base-line-height: 100%;
 }
 
 * {
@@ -26,13 +31,13 @@
   border: none;
   border-bottom: 2px solid #ccc;
   outline: none;
-  font-size: 13px;
-  line-height: 100%;
-  font-weight: 500;
+  font-weight: var(--base-font-weight);
+  font-size: var(--base-font-size);
+  line-height: var(--base-line-height);
   color: #1e1e1e;
   background-color: transparent;
   transition: border-color 0.3s;
-  border-bottom-color: #3369f3;
+  border-bottom-color: var(--primary-color);
 }
 
 .floating-label {
@@ -40,9 +45,9 @@
   top: 50%;
   left: 0;
   transform: translateY(-50%);
-  font-size: 13px;
-  line-height: 100%;
-  font-weight: 500;
+  font-weight: var(--base-font-weight);
+  font-size: var(--base-font-size);
+  line-height: var(--base-line-height);
   color: #999;
   pointer-events: none;
   transition: all 0.3s;
@@ -66,10 +71,13 @@
 }
 
 .button {
-  padding: 10px 20px;
+  padding: 12px;
   border: none;
-  border-radius: 4px;
-  background-color: #007bff;
+  border-radius: 8px;
+  font-weight: var(--base-font-weight);
+  font-size: var(--base-font-size);
+  line-height: var(--base-line-height);
+  background-color: var(--primary-color);
   color: white;
   cursor: pointer;
   transition: background-color 0.3s;
