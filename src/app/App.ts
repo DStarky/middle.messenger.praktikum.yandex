@@ -1,25 +1,27 @@
 import Handlebars from 'handlebars';
 import { ChatsPage } from '../pages/ChatsPage';
 import { ErrorPage } from '../pages/ErrorPage';
-import { LoginPage } from '../pages/LoginPage';
+import { LoginPage } from '../pages/LoginPage/LoginPage.ts';
 import { ProfilePage } from '../pages/ProfilePage';
 import { RegistrationPage } from '../pages/RegistrationPage';
 import { Router } from './Router';
 
-import { Link } from '../components/common/Link.ts';
-import { Avatar } from '../components/common/Avatar.ts';
-import { Button } from '../components/common/Button.ts';
-import { FixedSidebar } from '../components/common/FixedSidebar.ts';
-import { FloatingLabelInput } from '../components/common/FloatingLabelInput.ts';
-import { SimpleInput } from '../components/common/SimpleInput.ts';
+import { Link } from '../components/common/Link/Link.ts';
+import { Avatar } from '../components/common/Avatar/Avatar.ts';
+import { Button } from '../components/common/Button/Button.ts';
+import { Sidebar } from '../components/common/Sidebar/Sidebar.ts';
+import { FloatingLabelInput } from '../components/common/FloatingLabelInput/FloatingLabelInput.ts';
+import { SimpleInput } from '../components/common/SimpleInput/SimpleInput.ts';
+import { CardTitle } from '../components/common/CardTitle/CardTitle.ts';
 import '../helpers/handlebarsHelpers.ts';
 
 Handlebars.registerPartial('Link', Link);
 Handlebars.registerPartial('FloatingLabelInput', FloatingLabelInput);
 Handlebars.registerPartial('SimpleInput', SimpleInput);
 Handlebars.registerPartial('Button', Button);
-Handlebars.registerPartial('FixedSidebar', FixedSidebar);
+Handlebars.registerPartial('Sidebar', Sidebar);
 Handlebars.registerPartial('Avatar', Avatar);
+Handlebars.registerPartial('CardTitle', CardTitle);
 
 export class App {
   private router: Router;

@@ -1,4 +1,4 @@
-export const FixedSidebar = `
+export const Sidebar = `
 <div class="sidebar">
   <ul class="chat-list">
     {{#each chats}}
