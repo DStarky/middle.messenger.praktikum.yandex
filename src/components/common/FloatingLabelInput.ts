@@ -1,5 +1,5 @@
 export const FloatingLabelInput = `
-<div class="input-container">
+<div class="floating-input-container">
   <input 
     type="{{type}}" 
     id="{{id}}" 

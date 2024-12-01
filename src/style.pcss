@@ -3,10 +3,6 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -19,33 +15,43 @@
   box-sizing: border-box;
 }
 
-.input-container {
+.floating-input-container {
   position: relative;
   margin: 10px 0;
 }
 
 .floating-input {
   width: 100%;
-  padding: 10px 5px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 10px 0;
+  border: none;
+  border-bottom: 2px solid #ccc;
+  outline: none;
+  font-size: 13px;
+  line-height: 100%;
+  font-weight: 500;
+  color: #1e1e1e;
+  background-color: transparent;
+  transition: border-color 0.3s;
+  border-bottom-color: #3369f3;
 }
 
 .floating-label {
   position: absolute;
-  top: 10px;
-  left: 5px;
-  font-size: 14px;
-  color: #888;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  font-size: 13px;
+  line-height: 100%;
+  font-weight: 500;
+  color: #999;
+  pointer-events: none;
   transition: all 0.3s;
 }
 
 .floating-input:focus + .floating-label,
 .floating-input:not(:placeholder-shown) + .floating-label {
-  top: -10px;
-  left: 5px;
-  font-size: 12px;
-  color: #555;
+  top: -4px;
+  font-size: 9px;
 }
 
 .simple-input-container {
@@ -138,4 +144,15 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.login-form-container {
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 400px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
