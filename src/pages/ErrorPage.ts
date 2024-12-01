@@ -4,10 +4,10 @@ const template = `
   <div class="error-page">
     <h1>404 - Страница не найдена</h1>
     <nav>
-      <a href="/login" class="nav-link">Login</a>
-      <a href="/registration" class="nav-link">Registration</a>
-      <a href="/chats" class="nav-link">Chats</a>
-      <a href="/profile" class="nav-link">Profile</a>
+      <li>{{> Link href="/login" text="Login"}}</li>
+      <li>{{> Link href="/registration" text="Registration"}}</li>
+      <li>{{> Link href="/chats" text="Chats"}}</li>
+      <li>{{> Link href="/profile" text="Profile"}}</li>
     </nav>
   </div>
 `;

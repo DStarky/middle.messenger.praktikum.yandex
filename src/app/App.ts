@@ -1,9 +1,14 @@
+import Handlebars from 'handlebars';
 import { ChatsPage } from '../pages/ChatsPage';
+import { ErrorPage } from '../pages/ErrorPage';
 import { LoginPage } from '../pages/LoginPage';
 import { ProfilePage } from '../pages/ProfilePage';
 import { RegistrationPage } from '../pages/RegistrationPage';
-import { ErrorPage } from '../pages/ErrorPage';
 import { Router } from './Router';
+
+import Link from '../components/common/Link.ts';
+
+Handlebars.registerPartial('Link', Link);
 
 export class App {
   private router: Router;

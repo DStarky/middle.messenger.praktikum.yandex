@@ -3,9 +3,9 @@ import { BasePage } from './basePage';
 const template = `
   <h1>Я страница Profile</h1>
   <nav>
-    <a href="/login" class="nav-link">Login</a>
-    <a href="/registration" class="nav-link">Registration</a>
-    <a href="/chats" class="nav-link">Chats</a>
+    <li>{{> Link href="/login" text="Login"}}</li>
+    <li>{{> Link href="/registration" text="Registration"}}</li>
+    <li>{{> Link href="/chats" text="Chats"}}</li>
   </nav>
 `;
 
