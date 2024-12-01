@@ -18,6 +18,7 @@ const template = `
   </nav>
   <div>
     {{> FloatingLabelInput type="text" id="username" name="username" label="Username" value="" className="input-primary"}}
+    {{> SimpleInput  placeholder="Password" value=""}}
     {{> Button type="submit" text="Login" className="btn-primary"}}
     {{> Avatar src="/avatar.jpg" alt=""}}
     {{> Avatar alt="Default User"}}
