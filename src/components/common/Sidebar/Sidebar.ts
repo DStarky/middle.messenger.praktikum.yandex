@@ -1,16 +1,22 @@
+import { ROUTES } from '../../../app/routes';
+
 export const Sidebar = `
-<div class="sidebar">
-  <ul class="chat-list">
+<aside class="sidebar">
+  <!-- Profile link -->
+  <div class="sidebar__profile-link">
+    {{> Link href="${ROUTES.PROFILE}" text="Профиль >" className="sidebar-link"}}
+  </div>
+  <!-- Search input -->
+  <div class="sidebar__search">
+    {{> SimpleInput type="text" id="search" name="search" placeholder="Поиск"}}
+  </div>
+  <!-- Chat list -->
+  <ul class="sidebar__chat-list">
     {{#each chats}}
-      <li class="chat-item">
-        <div class="chat-avatar">
-          <img src="{{this.avatar}}" alt="{{this.name}}" />
-        </div>
-        <div class="chat-details">
-          <p class="chat-name">{{this.name}}</p>
-          <p class="chat-message">{{this.lastMessage}}</p>
-        </div>
+      <li class="chat-item" data-chat-id="{{id}}">
+        {{> ChatItem chat=this}}
       </li>
     {{/each}}
   </ul>
-</div>`;
+</aside>
+`;
