@@ -57,7 +57,6 @@ export default tseslint.config(
 
       'prefer-template': 'error',
       'default-case': 'error',
-      'no-duplicate-imports': 'error',
       'padding-line-between-statements': [
         'error',
         { blankLine: 'always', prev: 'block-like', next: '*' },
