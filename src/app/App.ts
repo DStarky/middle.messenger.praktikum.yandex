@@ -1,18 +1,18 @@
 import Handlebars from 'handlebars';
 import { ChatsPage } from '../pages/ChatsPage';
-import { ErrorPage } from '../pages/ErrorPage';
 import { LoginPage } from '../pages/LoginPage/LoginPage.ts';
+import { Page404 } from '../pages/404/Page404.ts';
 import { ProfilePage } from '../pages/ProfilePage';
 import { RegistrationPage } from '../pages/RegistrationPage/RegistrationPage.ts';
 import { Router } from './Router';
 
-import { Link } from '../components/common/Link/Link.ts';
 import { Avatar } from '../components/common/Avatar/Avatar.ts';
 import { Button } from '../components/common/Button/Button.ts';
-import { Sidebar } from '../components/common/Sidebar/Sidebar.ts';
-import { FloatingLabelInput } from '../components/common/FloatingLabelInput/FloatingLabelInput.ts';
-import { SimpleInput } from '../components/common/SimpleInput/SimpleInput.ts';
 import { CardTitle } from '../components/common/CardTitle/CardTitle.ts';
+import { FloatingLabelInput } from '../components/common/FloatingLabelInput/FloatingLabelInput.ts';
+import { Link } from '../components/common/Link/Link.ts';
+import { Sidebar } from '../components/common/Sidebar/Sidebar.ts';
+import { SimpleInput } from '../components/common/SimpleInput/SimpleInput.ts';
 import '../helpers/handlebarsHelpers.ts';
 
 Handlebars.registerPartial('Link', Link);
@@ -42,7 +42,7 @@ export class App {
       this.router.render(new ProfilePage().render()),
     );
     this.router.addRoute('/404', () =>
-      this.router.render(new ErrorPage().render()),
+      this.router.render(new Page404().render()),
     );
 
     this.router.init();
