@@ -1,3 +1,6 @@
+import type { Route } from './routes.ts';
+import { ROUTES, isValidRoute } from './routes.ts';
+
 import Handlebars from 'handlebars';
 import { ChatsPage } from '../pages/ChatsPage';
 import { LoginPage } from '../pages/LoginPage/LoginPage.ts';
@@ -29,19 +32,19 @@ export class App {
   constructor() {
     this.router = new Router('#app');
 
-    this.router.addRoute('/login', () =>
+    this.router.addRoute(ROUTES.LOGIN, () =>
       this.router.render(new LoginPage().render()),
     );
-    this.router.addRoute('/registration', () =>
+    this.router.addRoute(ROUTES.REGISTRATION, () =>
       this.router.render(new RegistrationPage().render()),
     );
-    this.router.addRoute('/chats', () =>
+    this.router.addRoute(ROUTES.CHATS, () =>
       this.router.render(new ChatsPage().render()),
     );
-    this.router.addRoute('/profile', () =>
+    this.router.addRoute(ROUTES.PROFILE, () =>
       this.router.render(new ProfilePage().render()),
     );
-    this.router.addRoute('/404', () =>
+    this.router.addRoute(ROUTES.NOT_FOUND, () =>
       this.router.render(new Page404().render()),
     );
 
@@ -49,7 +52,11 @@ export class App {
   }
 
   render(): void {
-    const path = window.location.pathname;
-    this.router.navigate(path);
+    const path = window.location.pathname as Route;
+    if (isValidRoute(path)) {
+      this.router.navigate(path);
+    } else {
+      this.router.navigate(ROUTES.NOT_FOUND);
+    }
   }
 }

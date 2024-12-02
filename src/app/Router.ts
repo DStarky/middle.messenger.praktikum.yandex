@@ -1,5 +1,8 @@
+import type { Route } from './routes';
+import { isValidRoute, ROUTES } from './routes';
+
 export class Router {
-  private routes: Record<string, () => void> = {};
+  private routes: Record<Route, () => void> = {} as Record<Route, () => void>;
   private rootElement: HTMLElement;
 
   constructor(rootSelector: string) {
@@ -14,22 +17,18 @@ export class Router {
     this.rootElement = root;
   }
 
-  addRoute(path: string, renderFunction: () => void): void {
+  addRoute(path: Route, renderFunction: () => void): void {
     this.routes[path] = renderFunction;
   }
 
-  navigate(path: string): void {
-    if (this.routes[path]) {
-      window.history.pushState({}, '', path);
-      this.routes[path]();
-    } else {
-      this.handle404();
-    }
+  navigate(path: Route): void {
+    window.history.pushState({}, '', path);
+    this.routes[path]();
   }
 
   public init(): void {
     window.addEventListener('popstate', () => {
-      const path = window.location.pathname;
+      const path = window.location.pathname as Route;
       if (this.routes[path]) {
         this.routes[path]();
       } else {
@@ -37,7 +36,7 @@ export class Router {
       }
     });
 
-    const path = window.location.pathname;
+    const path = window.location.pathname as Route;
     if (this.routes[path]) {
       this.routes[path]();
     } else {
@@ -50,23 +49,18 @@ export class Router {
         const href = target.getAttribute('href')!;
         if (href.startsWith('/')) {
           event.preventDefault();
-          this.navigate(href);
+          if (isValidRoute(href)) {
+            this.navigate(href as Route);
+          } else {
+            this.handle404();
+          }
         }
       }
     });
   }
 
   private handle404(): void {
-    if (window.location.pathname !== '/404') {
-      window.history.replaceState({}, '', '/404');
-      if (this.routes['/404']) {
-        this.routes['/404']();
-      } else {
-        this.render(`<h1>404 - Страница не найдена</h1>`);
-      }
-    } else {
-      this.render(`<h1>404 - Страница не найдена</h1>`);
-    }
+    this.navigate(ROUTES.NOT_FOUND);
   }
 
   render(content: string): void {

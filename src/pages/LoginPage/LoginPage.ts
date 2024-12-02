@@ -1,3 +1,4 @@
+import { ROUTES } from '../../app/routes';
 import { BasePage } from '../basePage';
 
 const template = `
@@ -10,7 +11,7 @@ const template = `
         </div>
         <div class="form-container__links">
           {{> Button type="submit" text="Авторизоваться" className="w-full"}}
-          {{> Link href="/registration" text="Нет аккаунта?"}}
+          {{> Link href="${ROUTES.REGISTRATION}" text="Нет аккаунта?"}}
          </div>
       </form>
     </main>
