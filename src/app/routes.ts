@@ -4,6 +4,7 @@ export const ROUTES = {
   CHATS: '/chats',
   PROFILE: '/profile',
   NOT_FOUND: '/404',
+  ERROR_500: '/500',
 } as const;
 
 export type Route = (typeof ROUTES)[keyof typeof ROUTES];

@@ -1,13 +1,14 @@
 import type { Route } from './routes.ts';
 import { ROUTES, isValidRoute } from './routes.ts';
+import { Router } from './Router';
 
 import Handlebars from 'handlebars';
-import { ChatsPage } from '../pages/ChatsPage';
 import { LoginPage } from '../pages/LoginPage/LoginPage.ts';
-import { Page404 } from '../pages/404/Page404.ts';
-import { ProfilePage } from '../pages/ProfilePage';
 import { RegistrationPage } from '../pages/RegistrationPage/RegistrationPage.ts';
-import { Router } from './Router';
+import { Page404 } from '../pages/404/Page404.ts';
+import { Page500 } from '../pages/500/Page500.ts';
+import { ChatsPage } from '../pages/ChatsPage';
+import { ProfilePage } from '../pages/ProfilePage';
 
 import { Avatar } from '../components/common/Avatar/Avatar.ts';
 import { Button } from '../components/common/Button/Button.ts';
@@ -46,6 +47,9 @@ export class App {
     );
     this.router.addRoute(ROUTES.NOT_FOUND, () =>
       this.router.render(new Page404().render()),
+    );
+    this.router.addRoute(ROUTES.ERROR_500, () =>
+      this.router.render(new Page500().render()),
     );
 
     this.router.init();
