@@ -37,6 +37,10 @@ export class App {
   constructor() {
     this.router = new Router('#app');
 
+    this.router.addRoute(ROUTES.MAIN, () => {
+      // Сюда потом можно будет воткнуть логику проверку на авторизацию, мол, если авторизован то идти на чаты, иначе на логин
+      this.router.navigate(ROUTES.LOGIN);
+    });
     this.router.addRoute(ROUTES.LOGIN, () =>
       this.router.render(new LoginPage().render()),
     );

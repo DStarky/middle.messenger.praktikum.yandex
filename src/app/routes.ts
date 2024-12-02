@@ -1,4 +1,5 @@
 export const ROUTES = {
+  MAIN: '/',
   LOGIN: '/login',
   REGISTRATION: '/registration',
   CHATS: '/chats',
