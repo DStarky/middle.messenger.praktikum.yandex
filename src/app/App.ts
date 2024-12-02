@@ -3,7 +3,7 @@ import { ChatsPage } from '../pages/ChatsPage';
 import { ErrorPage } from '../pages/ErrorPage';
 import { LoginPage } from '../pages/LoginPage/LoginPage.ts';
 import { ProfilePage } from '../pages/ProfilePage';
-import { RegistrationPage } from '../pages/RegistrationPage';
+import { RegistrationPage } from '../pages/RegistrationPage/RegistrationPage.ts';
 import { Router } from './Router';
 
 import { Link } from '../components/common/Link/Link.ts';
