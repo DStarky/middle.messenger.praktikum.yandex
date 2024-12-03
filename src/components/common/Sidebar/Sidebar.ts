@@ -2,17 +2,18 @@ import { ROUTES } from '../../../app/routes';
 import ArrowLeftIcon from '../../../assets/icons/arrow-left.svg';
 
 export const Sidebar = `
-<aside class="sidebar {{#if compact}}sidebar_small{{/if}}">
-  {{#if compact}}
-    <a href="${ROUTES.CHATS}" class="sidebar__center-button">
-      {{> Button 
-        type="button" 
-        className="button_round" 
-        icon="${ArrowLeftIcon}" 
-        alt="Open Chats"
-      }}
-    </a>
+{{#if compact}}
+  <aside class="sidebar sidebar_small">
+    {{> Button 
+      type="button" 
+      className="button_round" 
+      icon="${ArrowLeftIcon}" 
+      alt="Open Chats"
+    }}
+    {{> Link href="${ROUTES.CHATS}"}}
+  </aside>
   {{else}}
+  <aside class="sidebar">
     <div class="sidebar__profile-link">
       {{> Link href="${ROUTES.PROFILE}" text="Профиль >" className="sidebar-link"}}
     </div>
@@ -26,6 +27,6 @@ export const Sidebar = `
         </li>
       {{/each}}
     </ul>
-  {{/if}}
-</aside>
+  </aside>
+{{/if}}
 `;

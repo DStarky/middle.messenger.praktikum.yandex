@@ -25,6 +25,7 @@
 }
 
 .sidebar_small {
+  position: relative;
   width: 64px;
   max-width: 64px;
   border-right: 1px solid var(--gray-border);
@@ -34,11 +35,18 @@
   background-color: var(--sidebar-background);
 }
 
+.sidebar_small a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
 .sidebar__center-button {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  height: 100%;
   text-decoration: none;
 }

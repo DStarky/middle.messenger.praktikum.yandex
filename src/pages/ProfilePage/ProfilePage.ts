@@ -16,18 +16,5 @@ const template = `
 export class ProfilePage extends BasePage {
   constructor() {
     super(template);
-    this.renderPage();
-  }
-
-  private renderPage(): void {
-    const context = {
-      compact: true,
-    };
-
-    document.body.innerHTML = this.render(context);
-  }
-
-  render(context: Record<string, unknown> = {}): string {
-    return super.render(context);
   }
 }
