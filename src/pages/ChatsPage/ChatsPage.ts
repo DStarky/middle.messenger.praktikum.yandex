@@ -30,8 +30,88 @@ const template = `
 `;
 
 export class ChatsPage extends BasePage {
+  private selectedChatId: number | null = null;
   constructor() {
     super(template);
+    this.addEventListeners();
+  }
+
+  private addEventListeners(): void {
+    document.addEventListener('click', event => {
+      const chatItem = (event.target as HTMLElement).closest('.chat-item');
+
+      if (chatItem) {
+        const chatId = Number(chatItem.getAttribute('data-chat-id'));
+        this.handleChatSelect(chatId);
+      }
+    });
+  }
+
+  private handleChatSelect(chatId: number): void {
+    if (this.selectedChatId === chatId) {
+      this.selectedChatId = null;
+    } else {
+      this.selectedChatId = chatId;
+    }
+
+    this.updatePage();
+  }
+
+  private updatePage(): void {
+    const selectedChat = this.selectedChatId
+      ? this.getChatById(this.selectedChatId)
+      : null;
+
+    const context = {
+      chats: this.getChats(),
+      selectedChat,
+      messages: selectedChat ? this.getMessages(selectedChat.id) : [],
+    };
+
+    document.body.innerHTML = this.render(context);
+  }
+
+  private getChats(): Chat[] {
+    return [
+      {
+        id: 1,
+        avatar: '',
+        name: 'Иван Иванов',
+        lastMessage: 'Как дела?',
+        time: '12:34',
+        unreadCount: 2,
+      },
+      {
+        id: 2,
+        avatar: '',
+        name: 'Петр Петров',
+        lastMessage: 'Не хочу с тобой разговаривать',
+        time: '21:34',
+        unreadCount: 99,
+      },
+    ];
+  }
+
+  private getChatById(chatId: number): Chat | null {
+    return this.getChats().find(chat => chat.id === chatId) || null;
+  }
+
+  private getMessages(chatId: number): Record<string, unknown>[] {
+    // потом сюда нужно будет добавить получение сообщений с бека
+
+    if (chatId === 1) {
+      return [
+        { text: 'Привет!', time: '12:35', isOwn: false },
+        { text: 'Как дела?', time: '12:36', isOwn: true },
+      ];
+    } else if (chatId === 2) {
+      return [
+        { text: 'Здарова!', time: '18:12', isOwn: true },
+        { text: 'Не хочу с тобой разговаривать', time: '19:55', isOwn: false },
+      ];
+    } else {
+      return [];
+    }
   }
 
   render(context: Record<string, unknown> = {}): string {
@@ -63,4 +143,13 @@ export class ChatsPage extends BasePage {
     };
     return super.render(data);
   }
+}
+
+interface Chat {
+  id: number;
+  avatar: string;
+  name: string;
+  lastMessage: string;
+  time: string;
+  unreadCount: number;
 }
