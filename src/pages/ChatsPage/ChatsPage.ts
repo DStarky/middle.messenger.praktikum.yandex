@@ -1,4 +1,5 @@
 import { BasePage } from '../basePage';
+import MenuIcon from '../../assets/icons/menu.svg';
 
 const template = `
 <main class="chats-page">
@@ -6,9 +7,11 @@ const template = `
   <section class="chat-content">
     {{#if selectedChat}}
       <div class="chat-header">
-        {{> Avatar src=selectedChat.avatar alt=selectedChat.name}}
+        {{> Avatar src=selectedChat.avatar alt=selectedChat.name className="avatar_size-small"}}
         <div class="chat-header__name">{{selectedChat.name}}</div>
-        <button class="chat-header__settings">⚙️</button>
+        <button class="chat-header__settings">
+          <img src="${MenuIcon}" alt="menu" />
+        </button>
       </div>
       <div class="chat-messages">
         {{#each messages}}

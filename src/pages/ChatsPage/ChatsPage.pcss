@@ -25,20 +25,24 @@
 .chat-header {
   display: flex;
   align-items: center;
-  padding: 10px;
-  border-bottom: 1px solid #ccc;
+  padding: 10px 0;
+  margin-inline: 10px;
+  border-bottom: 1px solid var(--gray-border);
 }
 
 .chat-header__name {
   flex-grow: 1;
   margin-left: 10px;
-  font-weight: bold;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: var(--base-line-height);
 }
 
 .chat-header__settings {
   background: none;
   border: none;
   cursor: pointer;
+  padding-inline: 20px;
 }
 
 .chat-messages {
