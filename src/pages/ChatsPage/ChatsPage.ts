@@ -3,6 +3,7 @@ import MenuIcon from '../../assets/icons/menu.svg';
 import AttachmentIcon from '../../assets/icons/attachment.svg';
 import ArrowRightIcon from '../../assets/icons/arrow-right.svg';
 import type { Chat } from '../../types/Chat';
+import { DEFAULT_CHATS, MESSAGES_BY_CHAT_ID } from '../../consts/data';
 
 const template = `
 <main class="chats-page">
@@ -48,6 +49,7 @@ const template = `
 
 export class ChatsPage extends BasePage {
   private selectedChatId: number | null = null;
+
   constructor() {
     super(template);
     this.addEventListeners();
@@ -89,24 +91,7 @@ export class ChatsPage extends BasePage {
   }
 
   private getChats(): Chat[] {
-    return [
-      {
-        id: 1,
-        avatar: '',
-        name: 'Иван Иванов',
-        lastMessage: 'Как дела?',
-        time: '12:34',
-        unreadCount: 2,
-      },
-      {
-        id: 2,
-        avatar: '',
-        name: 'Петр Петров',
-        lastMessage: 'Не хочу с тобой разговаривать',
-        time: '21:34',
-        unreadCount: 99,
-      },
-    ];
+    return DEFAULT_CHATS;
   }
 
   private getChatById(chatId: number): Chat | null {
@@ -114,54 +99,14 @@ export class ChatsPage extends BasePage {
   }
 
   private getMessages(chatId: number): Record<string, unknown>[] {
-    // потом сюда нужно будет добавить получение сообщений с бека
-
-    if (chatId === 1) {
-      return [
-        {
-          text: `Привет! Смотри, тут всплыл интересный кусок лунной космической истории — НАСА в какой-то момент попросила Хассельблад адаптировать модель SWC для полетов на Луну. Сейчас мы все знаем что астронавты летали с моделью 500 EL — и к слову говоря, все тушки этих камер все еще находятся на поверхности Луны, так как астронавты с собой забрали только кассеты с пленкой.
-
-          Хассельблад в итоге адаптировал SWC для космоса, но что-то пошло не так и на ракету они так никогда и не попали. Всего их было произведено 25 штук, одну из них недавно продали на аукционе за 45000 евро.`,
-          time: '12:35',
-          isOwn: false,
-        },
-        { text: 'Круто!', time: '12:36', isOwn: true },
-      ];
-    } else if (chatId === 2) {
-      return [
-        { text: 'Здарова!', time: '18:12', isOwn: true },
-        { text: 'Не хочу с тобой разговаривать', time: '19:55', isOwn: false },
-      ];
-    } else {
-      return [];
-    }
+    return MESSAGES_BY_CHAT_ID[chatId] || [];
   }
 
   render(context: Record<string, unknown> = {}): string {
     const data = {
-      chats: [
-        {
-          id: 1,
-          avatar: '',
-          name: 'Иван Иванов',
-          lastMessage: 'Как дела?',
-          time: '12:34',
-          unreadCount: 2,
-        },
-        {
-          id: 2,
-          avatar: '',
-          name: 'Петр Петров',
-          lastMessage: 'Не хочу с тобой разговаривать',
-          time: '21:34',
-          unreadCount: 99,
-        },
-      ],
+      chats: DEFAULT_CHATS,
       selectedChat: null,
-      messages: [
-        { text: 'Привет!', time: '12:35', isOwn: false },
-        { text: 'Как дела?', time: '12:36', isOwn: true },
-      ],
+      messages: [],
       ...context,
     };
     return super.render(data);

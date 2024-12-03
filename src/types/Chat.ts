@@ -5,4 +5,5 @@ export interface Chat {
   lastMessage: string;
   time: string;
   unreadCount: number;
+  isOwn: boolean;
 }
