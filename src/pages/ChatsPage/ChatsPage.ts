@@ -1,5 +1,6 @@
 import { BasePage } from '../basePage';
 import MenuIcon from '../../assets/icons/menu.svg';
+import type { Chat } from '../../types/Chat';
 
 const template = `
 <main class="chats-page">
@@ -146,13 +147,4 @@ export class ChatsPage extends BasePage {
     };
     return super.render(data);
   }
-}
-
-interface Chat {
-  id: number;
-  avatar: string;
-  name: string;
-  lastMessage: string;
-  time: string;
-  unreadCount: number;
 }
