@@ -28,7 +28,7 @@ const template = `
           <img src="${AttachmentIcon}" alt="attach" />
         </button>
         <div class="chat-input__message">
-          {{> SimpleInput type="text" id="message" name="message" placeholder="Сообщение"}}
+          {{> SimpleInput type="text" id="message" name="message" placeholder="Сообщение" className="simple-input_message"}}
          </div>
         {{> Button 
           type="button" 

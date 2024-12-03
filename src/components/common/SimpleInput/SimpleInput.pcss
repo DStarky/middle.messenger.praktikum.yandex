@@ -47,3 +47,18 @@
 .simple-input:not(:placeholder-shown) + .simple-input_icon {
   left: 10px;
 }
+
+.simple-input_message {
+  border-radius: 9999px;
+  padding: 10px 20px;
+  font-size: 12px;
+  line-height: var(--base-line-height);
+  font-weight: var(--base-font-weight);
+  color: var(--gray-color);
+}
+
+.simple-input_message::placeholder {
+  font-size: 12px;
+  line-height: var(--base-line-height);
+  font-weight: var(--base-font-weight);
+}
