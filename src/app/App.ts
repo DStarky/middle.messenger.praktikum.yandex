@@ -20,6 +20,7 @@ import { SimpleInput } from '../components/common/SimpleInput/SimpleInput.ts';
 import '../helpers/handlebarsHelpers.ts';
 import { ChatItem } from '../components/common/ChatItem/ChatItem.ts';
 import { Message } from '../components/common/Message/Message.ts';
+import { InnerChat } from '../pages/ChatsPage/partials/InnerChat.ts';
 
 Handlebars.registerPartial('Link', Link);
 Handlebars.registerPartial('FloatingLabelInput', FloatingLabelInput);
@@ -30,6 +31,7 @@ Handlebars.registerPartial('Avatar', Avatar);
 Handlebars.registerPartial('CardTitle', CardTitle);
 Handlebars.registerPartial('ChatItem', ChatItem);
 Handlebars.registerPartial('Message', Message);
+Handlebars.registerPartial('InnerChat', InnerChat);
 
 export class App {
   private router: Router;
