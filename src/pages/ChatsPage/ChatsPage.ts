@@ -4,7 +4,9 @@ import type { Chat } from '../../types/Chat';
 
 const template = `
 <main class="chats-page">
-  {{> Sidebar chats=chats}}
+  <div class="chats-page__sidebar">
+    {{> Sidebar chats=chats}}
+   </div>
   <section class="chat-content">
     {{#if selectedChat}}
       <div class="chat-header">
