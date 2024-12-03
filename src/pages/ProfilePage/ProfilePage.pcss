@@ -1,0 +1,24 @@
+.profile-page {
+  display: flex;
+  height: 100vh;
+}
+
+.profile-page__sidebar {
+  flex-shrink: 0;
+  height: 100%;
+  width: var(--sidebar-collapsed-width);
+}
+
+.profile-content {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.profile-placeholder {
+  font-size: var(--base-font-size);
+  line-height: var(--base-line-height);
+  font-weight: var(--base-font-weight);
+  color: var(--gray-text);
+}

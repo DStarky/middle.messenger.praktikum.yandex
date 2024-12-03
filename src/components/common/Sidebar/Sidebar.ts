@@ -1,5 +1,5 @@
 import { ROUTES } from '../../../app/routes';
-import ArrowLeftIcon from '../../assets/icons/arrow-left.svg';
+import ArrowLeftIcon from '../../../assets/icons/arrow-left.svg';
 
 export const Sidebar = `
 <aside class="sidebar {{#if compact}}sidebar_small{{/if}}">

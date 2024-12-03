@@ -8,7 +8,7 @@ import { RegistrationPage } from '../pages/RegistrationPage/RegistrationPage.ts'
 import { ChatsPage } from '../pages/ChatsPage/ChatsPage.ts';
 import { Page404 } from '../pages/404/Page404.ts';
 import { Page500 } from '../pages/500/Page500.ts';
-import { ProfilePage } from '../pages/ProfilePage';
+import { ProfilePage } from '../pages/ProfilePage/ProfilePage.ts';
 
 import { Avatar } from '../components/common/Avatar/Avatar.ts';
 import { Button } from '../components/common/Button/Button.ts';
