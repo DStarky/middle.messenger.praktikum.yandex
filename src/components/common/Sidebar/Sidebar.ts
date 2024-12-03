@@ -8,7 +8,7 @@ export const Sidebar = `
   </div>
   <!-- Search input -->
   <div class="sidebar__search">
-    {{> SimpleInput type="text" id="search" name="search" placeholder="Поиск"}}
+    {{> SimpleInput type="text" id="search" name="search" placeholder="Поиск" className="simple-input_placeholder-center" search=true}}
   </div>
   <!-- Chat list -->
   <ul class="sidebar__chat-list">
