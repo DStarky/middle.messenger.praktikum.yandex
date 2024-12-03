@@ -5,7 +5,12 @@ export const ChatItem = `
   </div>
   <div class="chat-item__content">
     <div class="chat-item__name">{{chat.name}}</div>
-    <div class="chat-item__last-message">{{chat.lastMessage}}</div>
+     <div class="chat-item__last-message">
+      {{#if chat.isOwn}}
+        <span class="chat-item__is-own">Вы: </span>
+      {{/if}}
+      {{chat.lastMessage}}
+    </div>
   </div>
   <div class="chat-item__meta">
     <div class="chat-item__time">{{chat.time}}</div>
