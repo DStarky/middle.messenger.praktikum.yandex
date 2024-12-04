@@ -47,7 +47,7 @@ export class App {
       this.router.render(new LoginPage(this.router).render()),
     );
     this.router.addRoute(ROUTES.REGISTRATION, () =>
-      this.router.render(new RegistrationPage().render()),
+      this.router.render(new RegistrationPage(this.router).render()),
     );
     this.router.addRoute(ROUTES.CHATS, () =>
       this.router.render(new ChatsPage().render()),

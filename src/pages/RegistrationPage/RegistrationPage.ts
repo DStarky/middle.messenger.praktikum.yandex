@@ -1,9 +1,10 @@
+import type { Router } from '../../app/Router';
 import { ROUTES } from '../../app/routes';
 import { BasePage } from '../basePage';
 
 const template = `
     <main class="screen-center login-page">
-      <form class="form-container">
+      <form class="form-container" id="registration-form">
         <div class="form-container__title">{{> CardTitle text="Регистрация"}}</div>
         <div class="form-container__inputs">
           {{> FloatingLabelInput type="text" id="email" name="email" label="Почта" value=""}}
@@ -23,7 +24,30 @@ const template = `
 `;
 
 export class RegistrationPage extends BasePage {
-  constructor() {
+  private router: Router;
+  constructor(router: Router) {
     super(template);
+    this.router = router;
+    this.addEventListeners();
+  }
+
+  addEventListeners() {
+    document.addEventListener('submit', event => {
+      const form = event.target as HTMLFormElement;
+      if (form.id === 'registration-form') {
+        event.preventDefault();
+        // потом сюда надо будет добавить валидацию формы
+
+        // const formData = new FormData(form);
+        // const email = formData.get('email') as string;
+        // const username = formData.get('username') as string;
+        // const firstname = formData.get('firstname') as string;
+        // const lastname = formData.get('lastname') as string;
+        // const phone = formData.get('phone') as string;
+        // const password = formData.get('password') as string;
+
+        this.router.navigate(ROUTES.CHATS);
+      }
+    });
   }
 }
