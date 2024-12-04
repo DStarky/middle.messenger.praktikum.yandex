@@ -47,10 +47,10 @@ const template = `
 
       <div class="profile-page__block">
         <div class="profile-page__item">
-          {{> Link href="#" text="Изменить данные" className="profile-page__edit-link"}}
+          <p class="profile-page__edit-link">Изменить данные</p>
         </div>
         <div class="profile-page__item">
-          {{> Link href="#" text="Изменить пароль" className="profile-page__edit-link"}}
+          <p class="profile-page__edit-link">Изменить пароль</p>
         </div>
         <div class="profile-page__item">
           {{> Link href="${ROUTES.LOGIN}" text="Выйти" className="profile-page__logout-link"}}
