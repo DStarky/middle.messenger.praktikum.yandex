@@ -6,12 +6,16 @@ import { ProfileSaveButton } from './partials/ProfileSaveButton';
 import { ProfilePersonalData } from './partials/ProfilePersonalData';
 import { ProfileAvatar } from './partials/ProfileAvatar';
 import { ProfilePasswordData } from './partials/ProfilePasswordData';
+import { PersonalDataEditable } from './partials/PersonalDataEditable';
+import { PasswordDataEditable } from './partials/PasswordDataEditable';
 
 Handlebars.registerPartial('ActionsList', ActionsList);
 Handlebars.registerPartial('ProfileSaveButton', ProfileSaveButton);
 Handlebars.registerPartial('ProfilePersonalData', ProfilePersonalData);
+Handlebars.registerPartial('PersonalDataEditable', PersonalDataEditable);
 Handlebars.registerPartial('ProfileAvatar', ProfileAvatar);
 Handlebars.registerPartial('ProfilePasswordData', ProfilePasswordData);
+Handlebars.registerPartial('PasswordDataEditable', PasswordDataEditable);
 
 const template = `
 <main class="profile-page">
@@ -64,7 +68,7 @@ export class ProfilePage extends BasePage {
       } else if (editPasswordButton) {
         this.toggleEditPasswordMode();
       } else if (saveButton) {
-        this.resetToDefaultMode();
+        this.handleSave();
       }
     });
   }
@@ -76,6 +80,7 @@ export class ProfilePage extends BasePage {
     if (actionsContainer && personalDataContainer) {
       if (this.currentState === 'default') {
         actionsContainer.innerHTML = this.renderSaveButton({});
+        personalDataContainer.innerHTML = this.renderPersonalDataEditable({});
         this.currentState = 'editing-personal';
       } else {
         this.resetToDefaultMode();
@@ -90,7 +95,7 @@ export class ProfilePage extends BasePage {
     if (actionsContainer && personalDataContainer) {
       if (this.currentState === 'default') {
         actionsContainer.innerHTML = this.renderSaveButton({});
-        personalDataContainer.innerHTML = this.renderPasswordData({});
+        personalDataContainer.innerHTML = this.renderPasswordDataEditable({});
         this.currentState = 'editing-password';
       } else {
         this.resetToDefaultMode();
@@ -107,6 +112,50 @@ export class ProfilePage extends BasePage {
       personalDataContainer.innerHTML = this.renderPersonalData({});
       this.currentState = 'default';
     }
+  }
+
+  private handleSave(): void {
+    const personalDataContainer = document.getElementById('profile-data');
+
+    if (personalDataContainer) {
+      if (this.currentState === 'editing-personal') {
+        const inputs = personalDataContainer.querySelectorAll(
+          'input.profile-page__right',
+        );
+        const formData: Record<string, string> = {};
+
+        inputs.forEach(input => {
+          const name = (input as HTMLInputElement).name;
+          const value = (input as HTMLInputElement).value;
+          formData[name] = value;
+        });
+      } else if (this.currentState === 'editing-password') {
+        const inputs = personalDataContainer.querySelectorAll(
+          'input.profile-page__right',
+        );
+        const passwordData: Record<string, string> = {};
+
+        inputs.forEach(input => {
+          const name = (input as HTMLInputElement).name;
+          const value = (input as HTMLInputElement).value;
+          passwordData[name] = value;
+        });
+      }
+
+      this.resetToDefaultMode();
+    }
+  }
+
+  private renderPersonalDataEditable(context: Record<string, unknown>): string {
+    return Handlebars.compile(`
+      {{> PersonalDataEditable}}
+    `)(context);
+  }
+
+  private renderPasswordDataEditable(context: Record<string, unknown>): string {
+    return Handlebars.compile(`
+    {{> PasswordDataEditable}}
+  `)(context);
   }
 
   private renderSaveButton(context: Record<string, unknown>): string {
