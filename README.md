@@ -19,13 +19,13 @@
 
 Приложение содержит следующие маршруты:
 
-- Главная страница (корневая) - [**/**](http://localhost:5173/)
-- Авторизация - [**/login**](http://localhost:5173/login)
-- Регистрация - [**/registration**](http://localhost:5173/registration)
-- Список чатов - [**/chats**](http://localhost:5173/chats)
-- Профиль пользователя - [**/profile**](http://localhost:5173/profile)
-- Страница 404 (страница не найдена) - [**/404**](http://localhost:5173/404)
-- Страница 500 (ошибка сервера) - [**/500**](http://localhost:5173/500)
+- Главная страница (корневая, перекинет на /login по-умолчанию) - [**/**](https://dstarky-messanger.netlify.app/)
+- Авторизация - [**/login**](https://dstarky-messanger.netlify.app/login)
+- Регистрация - [**/registration**](https://dstarky-messanger.netlify.app/registration)
+- Список чатов - [**/chats**](https://dstarky-messanger.netlify.app/chats)
+- Профиль пользователя - [**/profile**](https://dstarky-messanger.netlify.app/profile)
+- Страница 404 (страница не найдена) - [**/404**](https://dstarky-messanger.netlify.app/404)
+- Страница 500 (ошибка сервера) - [**/500**](https://dstarky-messanger.netlify.app/500)
 
 ---
 
