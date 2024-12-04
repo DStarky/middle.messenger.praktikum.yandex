@@ -176,12 +176,6 @@ export class ProfilePage extends BasePage {
     `)(context);
   }
 
-  private renderPasswordData(context: Record<string, unknown>): string {
-    return Handlebars.compile(`
-      {{> ProfilePasswordData}}
-    `)(context);
-  }
-
   render(context: Record<string, unknown> = {}): string {
     return super.render(context);
   }
