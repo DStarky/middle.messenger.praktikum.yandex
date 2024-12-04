@@ -10,10 +10,14 @@ const template = `
     <div class="profile-page__data">
       <div class="profile-page__block">
         <div class="profile-page__avatar">
-          {{> Avatar src='' alt='' class="avatar_size-large"}}
+          <div class="avatar-wrapper">
+            {{> Avatar src='' alt='' class="avatar_size-large"}}
+            <span class="avatar-text">Поменять аватар</span>
+          </div>
         </div>
         <h4 class="profile-page__name">Иван</h4>
       </div>
+
       <div class="profile-page__block">
         <div class="profile-page__item">
           <p class="profile-page__left">Почта</p>
