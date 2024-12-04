@@ -1,7 +1,11 @@
 import Handlebars from 'handlebars';
 
-import { ROUTES } from '../../app/routes';
 import { BasePage } from '../basePage';
+import { ActionsList } from './partials/ActionsList';
+import { ProfileSaveButton } from './partials/ProfileSaveButton';
+
+Handlebars.registerPartial('ActionsList', ActionsList);
+Handlebars.registerPartial('ProfileSaveButton', ProfileSaveButton);
 
 const template = `
 <main class="profile-page">
@@ -48,15 +52,7 @@ const template = `
       </div>
 
       <div id="profile-actions" class="profile-page__block">
-        <div class="profile-page__item">
-          <p id="edit-data" class="profile-page__edit-link">Изменить данные</p>
-        </div>
-        <div class="profile-page__item">
-          <p class="profile-page__edit-link">Изменить пароль</p>
-        </div>
-        <div class="profile-page__item">
-          {{> Link href="${ROUTES.LOGIN}" text="Выйти" className="profile-page__logout-link"}}
-        </div>
+        {{> ActionsList}}
       </div>
   
     </div>
@@ -103,23 +99,13 @@ export class ProfilePage extends BasePage {
 
   private renderSaveButton(context: Record<string, unknown>): string {
     return Handlebars.compile(`
-          <div class="profile-page__button">
-            {{> Button type="submit" className="w-full" text="Сохранить"}}
-          </div>
+          {{> ProfileSaveButton}}
         `)(context);
   }
 
   private renderActions(context: Record<string, unknown>): string {
     return Handlebars.compile(`
-          <div class="profile-page__item">
-            <p id="edit-data" class="profile-page__edit-link">Изменить данные</p>
-          </div>
-          <div class="profile-page__item">
-            <p class="profile-page__edit-link">Изменить пароль</p>
-          </div>
-          <div class="profile-page__item">
-            {{> Link href="${ROUTES.LOGIN}" text="Выйти" className="profile-page__logout-link"}}
-          </div>
+          {{> ActionsList}}
         `)(context);
   }
 
