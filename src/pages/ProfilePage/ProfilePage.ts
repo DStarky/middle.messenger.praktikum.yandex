@@ -1,3 +1,5 @@
+import Handlebars from 'handlebars';
+
 import { ROUTES } from '../../app/routes';
 import { BasePage } from '../basePage';
 
@@ -45,9 +47,9 @@ const template = `
         </div>
       </div>
 
-      <div class="profile-page__block">
+      <div id="profile-actions" class="profile-page__block">
         <div class="profile-page__item">
-          <p class="profile-page__edit-link">Изменить данные</p>
+          <p id="edit-data" class="profile-page__edit-link">Изменить данные</p>
         </div>
         <div class="profile-page__item">
           <p class="profile-page__edit-link">Изменить пароль</p>
@@ -63,7 +65,65 @@ const template = `
 `;
 
 export class ProfilePage extends BasePage {
+  private currentState: 'default' | 'editing' = 'default';
+
   constructor() {
     super(template);
+    this.addEventListeners();
+  }
+
+  private addEventListeners(): void {
+    document.addEventListener('click', event => {
+      const editButton = (event.target as HTMLElement).closest('#edit-data');
+      const saveButton = (event.target as HTMLElement).closest(
+        '.profile-page__button button',
+      );
+
+      if (editButton) {
+        this.toggleEditMode();
+      } else if (saveButton) {
+        this.toggleEditMode();
+      }
+    });
+  }
+
+  private toggleEditMode(): void {
+    const actionsContainer = document.getElementById('profile-actions');
+
+    if (actionsContainer) {
+      if (this.currentState === 'default') {
+        actionsContainer.innerHTML = this.renderSaveButton({});
+        this.currentState = 'editing';
+      } else {
+        actionsContainer.innerHTML = this.renderActions({});
+        this.currentState = 'default';
+      }
+    }
+  }
+
+  private renderSaveButton(context: Record<string, unknown>): string {
+    return Handlebars.compile(`
+          <div class="profile-page__button">
+            {{> Button type="submit" className="w-full" text="Сохранить"}}
+          </div>
+        `)(context);
+  }
+
+  private renderActions(context: Record<string, unknown>): string {
+    return Handlebars.compile(`
+          <div class="profile-page__item">
+            <p id="edit-data" class="profile-page__edit-link">Изменить данные</p>
+          </div>
+          <div class="profile-page__item">
+            <p class="profile-page__edit-link">Изменить пароль</p>
+          </div>
+          <div class="profile-page__item">
+            {{> Link href="${ROUTES.LOGIN}" text="Выйти" className="profile-page__logout-link"}}
+          </div>
+        `)(context);
+  }
+
+  render(context: Record<string, unknown> = {}): string {
+    return super.render(context);
   }
 }
