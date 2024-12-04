@@ -44,7 +44,7 @@ export class App {
       this.router.navigate(ROUTES.LOGIN);
     });
     this.router.addRoute(ROUTES.LOGIN, () =>
-      this.router.render(new LoginPage().render()),
+      this.router.render(new LoginPage(this.router).render()),
     );
     this.router.addRoute(ROUTES.REGISTRATION, () =>
       this.router.render(new RegistrationPage().render()),
