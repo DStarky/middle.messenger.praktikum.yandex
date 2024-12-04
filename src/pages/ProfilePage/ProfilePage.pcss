@@ -9,16 +9,74 @@
   width: var(--sidebar-collapsed-width);
 }
 
-.profile-content {
+.profile-page__content {
   flex-grow: 1;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.profile-placeholder {
+.profile-page__data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 60px;
+  max-width: 510px;
+  width: 100%;
+}
+
+.profile-page__avatar {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.profile-page__name {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: var(--base-line-height);
+  color: var(--gray-color);
+  text-align: center;
+}
+
+.profile-page__block {
+  width: 100%;
+}
+
+.profile-page__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--gray-border);
+}
+
+.profile-page__item:last-child {
+  border-bottom: none;
+}
+
+.profile-page__left,
+.profile-page__right,
+.profile-page__edit-link,
+.profile-page__logout-link {
   font-size: var(--base-font-size);
   line-height: var(--base-line-height);
   font-weight: var(--base-font-weight);
-  color: var(--gray-text);
+}
+
+.profile-page__left {
+  color: var(--gray-color);
+}
+
+.profile-page__right {
+  color: var(--chat-item-message);
+}
+
+.profile-page__edit-link {
+  color: var(--primary-color);
+}
+
+.profile-page__logout-link {
+  color: var(--red-color);
 }
