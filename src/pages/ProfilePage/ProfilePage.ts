@@ -3,9 +3,15 @@ import Handlebars from 'handlebars';
 import { BasePage } from '../basePage';
 import { ActionsList } from './partials/ActionsList';
 import { ProfileSaveButton } from './partials/ProfileSaveButton';
+import { ProfilePersonalData } from './partials/ProfilePersonalData';
+import { ProfileAvatar } from './partials/ProfileAvatar';
+import { ProfilePasswordData } from './partials/ProfilePasswordData';
 
 Handlebars.registerPartial('ActionsList', ActionsList);
 Handlebars.registerPartial('ProfileSaveButton', ProfileSaveButton);
+Handlebars.registerPartial('ProfilePersonalData', ProfilePersonalData);
+Handlebars.registerPartial('ProfileAvatar', ProfileAvatar);
+Handlebars.registerPartial('ProfilePasswordData', ProfilePasswordData);
 
 const template = `
 <main class="profile-page">
@@ -15,40 +21,12 @@ const template = `
   <section class="profile-page__content">
     <div class="profile-page__data">
       <div class="profile-page__block">
-        <div class="profile-page__avatar">
-          <div class="avatar-wrapper">
-            {{> Avatar src='' alt='' class="avatar_size-large"}}
-            <span class="avatar-text">Поменять аватар</span>
-          </div>
-        </div>
+        {{> ProfileAvatar}}
         <h4 class="profile-page__name">Иван</h4>
       </div>
 
-      <div class="profile-page__block">
-        <div class="profile-page__item">
-          <p class="profile-page__left">Почта</p>
-          <p class="profile-page__right">pochta@yandex.ru</p>
-        </div>
-        <div class="profile-page__item">
-          <p class="profile-page__left">Логин</p>
-          <p class="profile-page__right">ivanivanov</p>
-        </div>
-        <div class="profile-page__item">
-          <p class="profile-page__left">Имя</p>
-          <p class="profile-page__right">Иван</p>
-        </div>
-        <div class="profile-page__item">
-          <p class="profile-page__left">Фамилия</p>
-          <p class="profile-page__right">Иванов</p>
-        </div>
-        <div class="profile-page__item">
-          <p class="profile-page__left">Имя в чате</p>
-          <p class="profile-page__right">Иван</p>
-        </div>
-        <div class="profile-page__item">
-          <p class="profile-page__left">Телефон</p>
-          <p class="profile-page__right">+7 (909) 967 30 30</p>
-        </div>
+      <div class="profile-page__block" id="profile-data">
+        {{> ProfilePersonalData}}
       </div>
 
       <div id="profile-actions" class="profile-page__block">
@@ -61,7 +39,8 @@ const template = `
 `;
 
 export class ProfilePage extends BasePage {
-  private currentState: 'default' | 'editing' = 'default';
+  private currentState: 'default' | 'editing-personal' | 'editing-password' =
+    'default';
 
   constructor() {
     super(template);
@@ -70,43 +49,88 @@ export class ProfilePage extends BasePage {
 
   private addEventListeners(): void {
     document.addEventListener('click', event => {
-      const editButton = (event.target as HTMLElement).closest('#edit-data');
+      const editPersonalButton = (event.target as HTMLElement).closest(
+        '#edit-personal-data',
+      );
+      const editPasswordButton = (event.target as HTMLElement).closest(
+        '#edit-password-data',
+      );
       const saveButton = (event.target as HTMLElement).closest(
         '.profile-page__button button',
       );
 
-      if (editButton) {
-        this.toggleEditMode();
+      if (editPersonalButton) {
+        this.toggleEditPersonalMode();
+      } else if (editPasswordButton) {
+        this.toggleEditPasswordMode();
       } else if (saveButton) {
-        this.toggleEditMode();
+        this.resetToDefaultMode();
       }
     });
   }
 
-  private toggleEditMode(): void {
+  private toggleEditPersonalMode(): void {
     const actionsContainer = document.getElementById('profile-actions');
+    const personalDataContainer = document.getElementById('profile-data');
 
-    if (actionsContainer) {
+    if (actionsContainer && personalDataContainer) {
       if (this.currentState === 'default') {
         actionsContainer.innerHTML = this.renderSaveButton({});
-        this.currentState = 'editing';
+        this.currentState = 'editing-personal';
       } else {
-        actionsContainer.innerHTML = this.renderActions({});
-        this.currentState = 'default';
+        this.resetToDefaultMode();
       }
+    }
+  }
+
+  private toggleEditPasswordMode(): void {
+    const actionsContainer = document.getElementById('profile-actions');
+    const personalDataContainer = document.getElementById('profile-data');
+
+    if (actionsContainer && personalDataContainer) {
+      if (this.currentState === 'default') {
+        actionsContainer.innerHTML = this.renderSaveButton({});
+        personalDataContainer.innerHTML = this.renderPasswordData({});
+        this.currentState = 'editing-password';
+      } else {
+        this.resetToDefaultMode();
+      }
+    }
+  }
+
+  private resetToDefaultMode(): void {
+    const actionsContainer = document.getElementById('profile-actions');
+    const personalDataContainer = document.getElementById('profile-data');
+
+    if (actionsContainer && personalDataContainer) {
+      actionsContainer.innerHTML = this.renderActions({});
+      personalDataContainer.innerHTML = this.renderPersonalData({});
+      this.currentState = 'default';
     }
   }
 
   private renderSaveButton(context: Record<string, unknown>): string {
     return Handlebars.compile(`
-          {{> ProfileSaveButton}}
-        `)(context);
+      {{> ProfileSaveButton}}
+    `)(context);
   }
 
   private renderActions(context: Record<string, unknown>): string {
     return Handlebars.compile(`
-          {{> ActionsList}}
-        `)(context);
+      {{> ActionsList}}
+    `)(context);
+  }
+
+  private renderPersonalData(context: Record<string, unknown>): string {
+    return Handlebars.compile(`
+      {{> ProfilePersonalData}}
+    `)(context);
+  }
+
+  private renderPasswordData(context: Record<string, unknown>): string {
+    return Handlebars.compile(`
+      {{> ProfilePasswordData}}
+    `)(context);
   }
 
   render(context: Record<string, unknown> = {}): string {
