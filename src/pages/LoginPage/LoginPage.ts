@@ -7,11 +7,11 @@ const template = `
       <form class="form-container" id="login-form">
         <div class="form-container__title">{{> CardTitle text="Вход"}}</div>
         <div class="form-container__inputs">
-          {{> FloatingLabelInput type="text" id="username" name="username" label="Логин" value=""}}
+          {{> FloatingLabelInput type="text" id="login" name="login" label="Логин" value=""}}
           {{> FloatingLabelInput type="password" id="password" name="password" label="Пароль" value=""}}
         </div>
         <div class="form-container__links">
-          {{> Button type="submit" text="Авторизоваться" className="w-full"}}
+          {{> Button type="submit" text="Войти" className="w-full"}}
           {{> Link href="${ROUTES.REGISTRATION}" text="Нет аккаунта?"}}
          </div>
       </form>
@@ -35,7 +35,7 @@ export class LoginPage extends BasePage {
         // потом сюда надо будет добавить валидацию формы
 
         // const formData = new FormData(form);
-        // const username = formData.get('username') as string;
+        // const username = formData.get('login') as string;
         // const password = formData.get('password') as string;
 
         this.router.navigate(ROUTES.CHATS);

@@ -8,9 +8,9 @@ const template = `
         <div class="form-container__title">{{> CardTitle text="Регистрация"}}</div>
         <div class="form-container__inputs">
           {{> FloatingLabelInput type="text" id="email" name="email" label="Почта" value=""}}
-          {{> FloatingLabelInput type="text" id="username" name="username" label="Логин" value=""}}
-          {{> FloatingLabelInput type="text" id="firstname" name="firstname" label="Имя" value=""}}
-          {{> FloatingLabelInput type="text" id="lastname" name="lastname" label="Фамилия" value=""}}
+          {{> FloatingLabelInput type="text" id="login" name="login" label="Логин" value=""}}
+          {{> FloatingLabelInput type="text" id="first_name" name="first_name" label="Имя" value=""}}
+          {{> FloatingLabelInput type="text" id="second_name" name="second_name" label="Фамилия" value=""}}
           {{> FloatingLabelInput type="text" id="phone" name="phone" label="Телефон" value=""}}
           {{> FloatingLabelInput type="password" id="password" name="password" label="Пароль" value=""}}
           {{> FloatingLabelInput type="password" id="repeatPassword" name="repeatPassword" label="Пароль (ещё раз)" value=""}}
@@ -40,9 +40,9 @@ export class RegistrationPage extends BasePage {
 
         // const formData = new FormData(form);
         // const email = formData.get('email') as string;
-        // const username = formData.get('username') as string;
-        // const firstname = formData.get('firstname') as string;
-        // const lastname = formData.get('lastname') as string;
+        // const login = formData.get('login') as string;
+        // const first_name = formData.get('first_name') as string;
+        // const second_name = formData.get('second_name') as string;
         // const phone = formData.get('phone') as string;
         // const password = formData.get('password') as string;
 
