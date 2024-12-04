@@ -44,7 +44,6 @@
    https://github.com/DStarky/middle.messenger.praktikum.yandex
    cd middle.messenger.praktikum.yandex
    ```
-  
 
 2. Установите зависимости:
 
