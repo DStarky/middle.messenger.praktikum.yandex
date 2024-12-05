@@ -1,0 +1,145 @@
+.profile-page {
+  display: flex;
+  height: 100vh;
+}
+
+.profile-page__sidebar {
+  flex-shrink: 0;
+  height: 100%;
+  width: var(--sidebar-collapsed-width);
+}
+
+.profile-page__content {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.profile-page__data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 60px;
+  max-width: 510px;
+  width: 100%;
+}
+
+.profile-page__avatar {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.avatar-wrapper {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  height: 130px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.avatar-wrapper img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.avatar-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 10px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.avatar-wrapper:hover::after {
+  opacity: 1;
+}
+
+.avatar-wrapper:hover .avatar-text {
+  opacity: 1;
+}
+
+.profile-page__name {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: var(--base-line-height);
+  color: var(--gray-color);
+  text-align: center;
+}
+
+.profile-page__block {
+  width: 100%;
+}
+
+.profile-page__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--gray-border);
+}
+
+.profile-page__item:last-child {
+  border-bottom: none;
+}
+
+.profile-page__left,
+.profile-page__right,
+.profile-page__edit-link,
+.profile-page__logout-link {
+  font-size: var(--base-font-size);
+  line-height: var(--base-line-height);
+  font-weight: var(--base-font-weight);
+}
+
+.profile-page__left {
+  color: var(--gray-color);
+}
+
+.profile-page__right {
+  color: var(--chat-item-message);
+}
+
+input.profile-page__right {
+  color: var(--chat-item-message);
+  border: none;
+  outline: none;
+  text-align: right;
+}
+
+.profile-page__edit-link {
+  color: var(--primary-color);
+  cursor: pointer;
+}
+
+.profile-page__logout-link {
+  color: var(--red-color);
+}
+
+.profile-page__button {
+  max-width: 210px;
+  margin: 0 auto;
+}

@@ -1,0 +1,36 @@
+.floating-input-container {
+  position: relative;
+}
+
+.floating-input {
+  width: 100%;
+  padding: 6px 0;
+  border: none;
+  border-bottom: 1px solid var(--primary-color);
+  outline: none;
+  font-weight: var(--base-font-weight);
+  font-size: var(--base-font-size);
+  line-height: var(--base-line-height);
+  color: var(--gray-color);
+  background-color: transparent;
+  transition: border-color 0.3s;
+}
+
+.floating-label {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  font-weight: var(--base-font-weight);
+  font-size: var(--base-font-size);
+  line-height: var(--base-line-height);
+  color: #999;
+  pointer-events: none;
+  transition: all 0.3s;
+}
+
+.floating-input:focus + .floating-label,
+.floating-input:not(:placeholder-shown) + .floating-label {
+  top: -4px;
+  font-size: 9px;
+}
