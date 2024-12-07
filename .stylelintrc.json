@@ -1,0 +1,91 @@
+{
+  "extends": [
+    "stylelint-config-standard",
+    "stylelint-order"
+  ],
+  "plugins": [
+    "stylelint-order"
+  ],
+  "rules": {
+    "selector-class-pattern": null,
+    "declaration-no-important": true,
+    "block-no-empty": null,
+    "order/properties-order": [
+      {
+        "groupName": "Positioning",
+        "properties": [
+          "position",
+          "top",
+          "right",
+          "bottom",
+          "left",
+          "z-index"
+        ]
+      },
+      {
+        "groupName": "Box Model",
+        "properties": [
+          "display",
+          "flex",
+          "flex-grow",
+          "flex-shrink",
+          "flex-basis",
+          "align-items",
+          "justify-content",
+          "gap",
+          "width",
+          "height",
+          "margin",
+          "padding",
+          "border",
+          "border-width",
+          "border-style",
+          "border-color",
+          "border-radius",
+          "box-shadow",
+          "outline"
+        ]
+      },
+      {
+        "groupName": "Typography",
+        "properties": [
+          "font",
+          "font-family",
+          "font-size",
+          "font-weight",
+          "line-height",
+          "letter-spacing",
+          "color",
+          "text-align",
+          "text-transform",
+          "text-decoration",
+          "white-space"
+        ]
+      },
+      {
+        "groupName": "Visual Appearance",
+        "properties": [
+          "background",
+          "background-color",
+          "background-image",
+          "background-position",
+          "background-size",
+          "background-repeat",
+          "opacity",
+          "transition",
+          "animation"
+        ]
+      },
+      {
+        "groupName": "Other",
+        "properties": [
+          "cursor",
+          "visibility",
+          "content"
+        ]
+      }
+    ],
+    "order/properties-alphabetical-order": null
+  },
+  "defaultSeverity": "warning"
+}
