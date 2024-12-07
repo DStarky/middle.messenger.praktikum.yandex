@@ -1,0 +1,26 @@
+root = true
+
+# Общие настройки для всех файлов
+[*]
+charset = utf-8                 # Кодировка файла
+end_of_line = lf                # Перенос строки
+insert_final_newline = true     # Вставлять пустую строку в конце файла
+trim_trailing_whitespace = true # Удалять пробелы в конце строк
+
+indent_style = space            # Использовать пробелы для отступов
+indent_size = 2                 # Размер отступа в пробелах
+tab_width = 2                   # Ширина табуляции
+
+# Настройки для JavaScript и TypeScript
+[*.{js,ts,jsx,tsx}]
+max_line_length = 80            # Максимальная длина строки
+quote_type = single             # Использовать одинарные кавычки
+
+# Настройки для JSON
+[*.json]
+indent_size = 2
+quote_type = double             # Использовать двойные кавычки
+
+# Настройки для HTML и CSS
+[*.{html,css,scss}]
+indent_size = 2
