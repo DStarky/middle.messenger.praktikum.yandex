@@ -63,7 +63,8 @@ export class Router {
     this.navigate(ROUTES.NOT_FOUND);
   }
 
-  render(content: string): void {
-    this.rootElement.innerHTML = content;
+  render(content: HTMLElement): void {
+    this.rootElement.innerHTML = '';
+    this.rootElement.appendChild(content);
   }
 }

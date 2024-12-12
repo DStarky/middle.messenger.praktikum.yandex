@@ -38,7 +38,7 @@ export default tseslint.config(
       ...prettierPlugin.configs.recommended.rules,
       ...eslintConfigPrettier.rules,
       'no-unused-vars': 'warn',
-      'no-console': 'error',
+      'no-console': 'warn',
       eqeqeq: 'error',
       curly: 'error',
       'no-mixed-spaces-and-tabs': 'error',
@@ -54,6 +54,7 @@ export default tseslint.config(
       '@typescript-eslint/no-var-requires': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/no-shadow': 'error',
+      '@typescript-eslint/no-this-alias': 'off',
 
       'prefer-template': 'error',
       'default-case': 'error',
