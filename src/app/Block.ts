@@ -245,27 +245,25 @@ export class Block {
       this._setUpdate = false;
     }
   };
-  private _makePropsProxy<T extends Record<string, unknown>>(props: T): T {
-    const eventBus = this.eventBus();
+
+  _makePropsProxy(props: BlockPropsType | BlockListType | BlockChildrenType) {
+    const self = this;
 
     return new Proxy(props, {
-      get(target: T, prop: PropertyKey): unknown {
-        const value = target[prop as keyof T];
-        if (typeof value === 'function') {
-          const fn = value as (...args: unknown[]) => unknown;
-          return fn.bind(target);
+      get(target, prop: string) {
+        const value = target[prop];
+        return typeof value === 'function' ? value.bind(target) : value;
+      },
+      set(target, prop: string, value) {
+        if (target[prop] !== value) {
+          target[prop] = value;
+          self._setUpdate = true;
         }
 
-        return value;
-      },
-      set(target: T, prop: PropertyKey, value: unknown): boolean {
-        const oldTarget: Record<string, unknown> = { ...target };
-        target[prop as keyof T] = value as T[keyof T];
-        eventBus.emit(Block.EVENTS.FLOW_CDU, oldTarget, target);
         return true;
       },
       deleteProperty() {
-        throw new Error('No access');
+        throw new Error('Нет доступа');
       },
     });
   }
