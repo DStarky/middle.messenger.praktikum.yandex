@@ -23,7 +23,7 @@ type BlockMetaType = {
   propsAndChildren: BlockPropsType;
 };
 
-export class Block {
+export abstract class Block {
   static EVENTS = {
     INIT: 'init',
     FLOW_CDM: 'flow:component-did-mount',
@@ -212,7 +212,7 @@ export class Block {
     this._addEvents();
   }
 
-  render() {}
+  protected abstract render(): DocumentFragment;
 
   getContent() {
     return this.element;
