@@ -37,7 +37,7 @@ export abstract class Block {
 
   _id: Nullable<string> = null;
 
-  eventBus: () => EventBus;
+  private eventBus: EventBus;
 
   props: BlockPropsType;
 
@@ -48,7 +48,8 @@ export abstract class Block {
   _setUpdate = false;
 
   constructor(tagName = 'div', propsAndChildren: BlockPropsType = {}) {
-    const eventBus = new EventBus();
+    this.eventBus = new EventBus();
+
     this._meta = {
       tagName,
       propsAndChildren,
@@ -62,10 +63,8 @@ export abstract class Block {
     this.props = this._makePropsProxy({ ...props, __id: this._id });
     this.list = this._makePropsProxy(list) as BlockListType;
 
-    this.eventBus = () => eventBus;
-
-    this._registerEvents(eventBus);
-    eventBus.emit(Block.EVENTS.INIT);
+    this._registerEvents(this.eventBus);
+    this.eventBus.emit(Block.EVENTS.INIT);
   }
 
   _registerEvents(eventBus: EventBus) {
@@ -87,7 +86,7 @@ export abstract class Block {
   init() {
     this._createResources();
 
-    this.eventBus().emit(Block.EVENTS.FLOW_RENDER);
+    this.eventBus.emit(Block.EVENTS.FLOW_RENDER);
   }
 
   _componentDidMount() {
@@ -100,7 +99,7 @@ export abstract class Block {
   componentDidMount() {}
 
   dispatchComponentDidMount() {
-    this.eventBus().emit(Block.EVENTS.FLOW_CDM);
+    this.eventBus.emit(Block.EVENTS.FLOW_CDM);
   }
 
   _componentDidUpdate(...args: unknown[]) {
@@ -110,7 +109,7 @@ export abstract class Block {
     ];
     const isReRender = this.componentDidUpdate(oldProps, newProps);
     if (isReRender) {
-      this.eventBus().emit(Block.EVENTS.FLOW_RENDER);
+      this.eventBus.emit(Block.EVENTS.FLOW_RENDER);
     }
   }
 
@@ -241,7 +240,7 @@ export abstract class Block {
     }
 
     if (this._setUpdate) {
-      this.eventBus().emit(Block.EVENTS.FLOW_CDU, oldValue, this.props);
+      this.eventBus.emit(Block.EVENTS.FLOW_CDU, oldValue, this.props);
       this._setUpdate = false;
     }
   };
