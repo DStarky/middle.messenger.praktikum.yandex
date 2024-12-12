@@ -54,6 +54,7 @@ export default tseslint.config(
       '@typescript-eslint/no-var-requires': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/no-shadow': 'error',
+      '@typescript-eslint/no-this-alias': 'off',
 
       'prefer-template': 'error',
       'default-case': 'error',
