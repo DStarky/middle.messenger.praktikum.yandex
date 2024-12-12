@@ -1,12 +1,13 @@
 import { Block } from '../../../app/Block';
+type LinkProps = {
+  href: string;
+  text: string;
+  className?: string;
+  events?: Record<string, (e: Event) => void>;
+};
 
 export class Link extends Block {
-  constructor(props: {
-    href: string;
-    text: string;
-    className?: string;
-    events?: Record<string, (e: Event) => void>;
-  }) {
+  constructor(props: LinkProps) {
     super('a', props);
   }
 
