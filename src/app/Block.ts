@@ -296,4 +296,10 @@ export abstract class Block {
 
     return element;
   }
+
+  destroy() {
+    this._removeEvents();
+    Object.values(this.children).forEach(child => child.destroy());
+    this._element?.remove();
+  }
 }
