@@ -1,29 +1,28 @@
-import { Block } from '../../../app/Block';
-import Handlebars from 'handlebars';
+import type { Props } from '../../../app/Block';
+import Block from '../../../app/Block';
 
-Handlebars.registerHelper('defaultSrc', function (src: string) {
-  return src || 'https://default-avatar.com/default.jpg';
-});
-
-const AvatarTemplate = `
+const template = `
   <div class="avatar">
-    <img src="{{defaultSrc src}}" alt="{{alt}}" class="avatar-img {{className}}" />
+    <img src="{{src}}" alt="{{alt}}" class="avatar-img {{className}}" />
   </div>
 `;
 
-type AvatarProps = {
-  src: string;
+interface AvatarProps extends Props {
+  src?: string;
   alt: string;
   className?: string;
   events?: Record<string, (e: Event) => void>;
-};
+}
 
-export class Avatar extends Block {
+export class Avatar extends Block<AvatarProps> {
   constructor(props: AvatarProps) {
-    super('div', props);
+    super({
+      src: props.src || 'https://default-avatar.com/default.jpg',
+      ...props,
+    });
   }
 
-  override render(): DocumentFragment {
-    return this.compile(AvatarTemplate, this.props);
+  override render(): string {
+    return template;
   }
 }

@@ -1,19 +1,24 @@
-import { Block } from '../../../app/Block';
+import type { Props } from '../../../app/Block';
+import Block from '../../../app/Block';
 
-export const template = `
-<div class="floating-input-container">
-  <input 
-    type="{{type}}" 
-    id="{{id}}" 
-    name="{{name}}" 
-    class="floating-input {{className}}" 
-    placeholder=" " 
-    value="{{value}}" 
-  />
-  <label for="{{id}}" class="floating-label">{{label}}</label>
-</div>`;
+const template = `
+  <div class="floating-input-container {{className}}">
+    <input 
+      type="{{type}}" 
+      id="{{id}}" 
+      name="{{name}}" 
+      class="floating-input" 
+      placeholder=" " 
+      value="{{value}}" 
+      {{#if events}} 
+        {{events}} 
+      {{/if}} 
+    />
+    <label for="{{id}}" class="floating-label">{{label}}</label>
+  </div>
+`;
 
-type FloatingLabelInputProps = {
+interface FloatingLabelInputProps extends Props {
   type: string;
   id: string;
   name: string;
@@ -21,14 +26,14 @@ type FloatingLabelInputProps = {
   className?: string;
   value?: string;
   events?: Record<string, (e: Event) => void>;
-};
+}
 
-export class FloatingLabelInput extends Block {
+export class FloatingLabelInput extends Block<FloatingLabelInputProps> {
   constructor(props: FloatingLabelInputProps) {
-    super('div', props);
+    super(props);
   }
 
-  override render(): DocumentFragment {
-    return this.compile(template, this.props);
+  override render(): string {
+    return template;
   }
 }

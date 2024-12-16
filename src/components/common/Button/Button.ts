@@ -1,32 +1,35 @@
-import { Block } from '../../../app/Block';
+import type { Props } from '../../../app/Block';
+import Block from '../../../app/Block';
 
-const ButtonTemplate = `
+const template = `
   <button 
     type="{{type}}" 
-    class="button {{className}}">
-    {{#if icon}}
-      <img src="{{icon}}" alt="{{alt}}" class="button__icon" />
-    {{else}}
+    class="button {{className}}" 
+    {{#if icon}} 
+      style="background-image: url('{{icon}}');" 
+      aria-label="{{alt}}"
+    {{/if}}>
+    {{#unless icon}}
       {{text}}
-    {{/if}}
+    {{/unless}}
   </button>
 `;
 
-type ButtonProps = {
+interface ButtonProps extends Props {
   type: string;
   className?: string;
   icon?: string;
   alt?: string;
   text?: string;
   events?: Record<string, (e: Event) => void>;
-};
+}
 
-export class Button extends Block {
+export class Button extends Block<ButtonProps> {
   constructor(props: ButtonProps) {
-    super('button', props);
+    super(props);
   }
 
-  override render(): DocumentFragment {
-    return this.compile(ButtonTemplate, this.props);
+  override render(): string {
+    return template;
   }
 }

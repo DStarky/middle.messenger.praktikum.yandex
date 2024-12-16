@@ -1,38 +1,71 @@
-import { Block } from '../../../app/Block';
+import type { Props } from '../../../app/Block';
+import Block from '../../../app/Block';
 import { ROUTES } from '../../../app/routes';
 import ArrowLeftIcon from '../../../assets/icons/arrow-left.svg';
 
-export const template = `
-{{#if compact}}
-  <aside class="sidebar sidebar_small">
-    {{> Button 
-      type="button" 
-      className="button_round" 
-      icon="${ArrowLeftIcon}" 
-      alt="Open Chats"
-    }}
-    {{> Link href="${ROUTES.CHATS}"}}
-  </aside>
+const template = `
+  {{#if compact}}
+    <aside class="sidebar sidebar_small {{className}}">
+      <button 
+        type="button" 
+        class="button_round" 
+        style="background-image: url('${ArrowLeftIcon}');" 
+        aria-label="Open Chats"
+        {{#if events.buttonClick}}
+          onclick="{{events.buttonClick}}"
+        {{/if}}
+      ></button>
+      <a href="${ROUTES.CHATS}" class="default-link">{{linkText}}</a>
+    </aside>
   {{else}}
-  <aside class="sidebar">
-    <div class="sidebar__profile-link">
-      {{> Link href="${ROUTES.PROFILE}" text="Профиль >" className="sidebar-link"}}
-    </div>
-    <div class="sidebar__search">
-      {{> SimpleInput type="text" id="search" name="search" placeholder="Поиск" className="simple-input_placeholder-center" search=true}}
-    </div>
-    <ul class="sidebar__chat-list">
-      {{#each chats}}
-        <li class="chat-item {{#if (eq ../selectedChat.id id)}}active{{/if}}" data-chat-id="{{id}}">
-          {{> ChatItem chat=this}}
-        </li>
-      {{/each}}
-    </ul>
-  </aside>
-{{/if}}
+    <aside class="sidebar {{className}}">
+      <div class="sidebar__profile-link">
+        <a href="${ROUTES.PROFILE}" class="default-link sidebar-link">Профиль ></a>
+      </div>
+      <div class="sidebar__search">
+        <input 
+          type="text" 
+          id="search" 
+          name="search" 
+          class="simple-input simple-input_placeholder-center" 
+          placeholder="Поиск" 
+          value="{{searchValue}}" 
+          {{#if events.searchInput}}
+            oninput="{{events.searchInput}}"
+          {{/if}}
+        />
+      </div>
+      <ul class="sidebar__chat-list">
+        {{#each chats}}
+          <li class="chat-item {{#if (eq ../selectedChat.id id)}}active{{/if}}" data-chat-id="{{id}}">
+            <div class="chat-item-container">
+              <div class="chat-item__avatar">
+                <img src="{{avatar}}" alt="{{name}}" class="avatar-img" />
+              </div>
+              <div class="chat-item__content">
+                <div class="chat-item__name">{{name}}</div>
+                <div class="chat-item__last-message">
+                  {{#if isOwn}}
+                    <span class="chat-item__is-own">Вы: </span>
+                  {{/if}}
+                  {{lastMessage}}
+                </div>
+              </div>
+              <div class="chat-item__meta">
+                <div class="chat-item__time">{{time}}</div>
+                {{#if unreadCount}}
+                  <div class="chat-item__unread-count">{{unreadCount}}</div>
+                {{/if}}
+              </div>
+            </div>
+          </li>
+        {{/each}}
+      </ul>
+    </aside>
+  {{/if}}
 `;
 
-type Chat = {
+interface Chat {
   id: string;
   name: string;
   avatar: string;
@@ -40,22 +73,23 @@ type Chat = {
   time: string;
   unreadCount?: number;
   isOwn?: boolean;
-};
+}
 
-type SidebarProps = {
+interface SidebarProps extends Props {
   compact: boolean;
   chats: Chat[];
   selectedChat: { id: string };
+  searchValue?: string;
   className?: string;
   events?: Record<string, (e: Event) => void>;
-};
+}
 
-export class Sidebar extends Block {
+export class Sidebar extends Block<SidebarProps> {
   constructor(props: SidebarProps) {
-    super('div', props);
+    super(props);
   }
 
-  override render(): DocumentFragment {
-    return this.compile(template, this.props);
+  override render(): string {
+    return template;
   }
 }
