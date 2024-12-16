@@ -24,41 +24,32 @@ type BlockMetaType = {
 };
 
 export abstract class Block {
-  static EVENTS = {
+  private static readonly EVENTS = {
     INIT: 'init',
     FLOW_CDM: 'flow:component-did-mount',
     FLOW_CDU: 'flow:component-did-update',
     FLOW_RENDER: 'flow:render',
   };
 
-  _element: Nullable<HTMLElement> = null;
-
-  _meta: Nullable<BlockMetaType> = null;
-
-  _id: Nullable<string> = null;
-
+  private _element: Nullable<HTMLElement> = null;
+  private _meta: Nullable<BlockMetaType> = null;
+  private _id: string;
   private eventBus: EventBus;
+  private _setUpdate: boolean = false;
 
-  props: BlockPropsType;
-
-  children: BlockChildrenType = {};
-
-  list: BlockListType = {};
-
-  _setUpdate = false;
+  public props: BlockPropsType;
+  public children: BlockChildrenType = {};
+  public list: BlockListType = {};
 
   constructor(tagName = 'div', propsAndChildren: BlockPropsType = {}) {
     this.eventBus = new EventBus();
-
     this._meta = {
       tagName,
       propsAndChildren,
     };
-
     this._id = makeUUID();
 
     const { children, props, list } = Block._getChildren(propsAndChildren);
-
     this.children = this._makePropsProxy(children) as BlockChildrenType;
     this.props = this._makePropsProxy({ ...props, __id: this._id });
     this.list = this._makePropsProxy(list) as BlockListType;
