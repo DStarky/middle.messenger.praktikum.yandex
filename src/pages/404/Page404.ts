@@ -1,4 +1,5 @@
-import { Block } from '../../app/Block';
+import type { Props } from '../../app/Block';
+import Block from '../../app/Block';
 import { ROUTES } from '../../app/routes';
 import { Link } from '../../components/common/Link/Link';
 
@@ -14,18 +15,27 @@ const template = `
 </main>
 `;
 
-export class Page404 extends Block {
+interface Page404Props extends Props {
+  link: Link;
+}
+
+export class Page404 extends Block<Page404Props> {
   constructor() {
     const link = new Link({
       href: ROUTES.CHATS,
       text: 'Назад к чатам',
       className: 'error-page__back-link',
+      events: {
+        click: (event: Event) => {
+          event.preventDefault();
+        },
+      },
     });
 
-    super('div', { link });
+    super({ link });
   }
 
-  override render() {
-    return this.compile(template, this.props);
+  protected render(): string {
+    return template;
   }
 }
