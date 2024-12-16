@@ -1,4 +1,6 @@
-export const ChatItem = `
+import { Block } from '../../../app/Block';
+
+export const template = `
 <div class="chat-item-container">
   <div class="chat-item__avatar">
     {{> Avatar src=chat.avatar alt=chat.name}}
@@ -20,3 +22,29 @@ export const ChatItem = `
   </div>
 </div>
 `;
+
+type Chat = {
+  id: string;
+  name: string;
+  avatar: string;
+  lastMessage: string;
+  time: string;
+  unreadCount?: number;
+  isOwn?: boolean;
+};
+
+type ChatItemProps = {
+  chat: Chat;
+  className?: string;
+  events?: Record<string, (e: Event) => void>;
+};
+
+export class ChatItem extends Block {
+  constructor(props: ChatItemProps) {
+    super('div', props);
+  }
+
+  override render(): DocumentFragment {
+    return this.compile(template, this.props);
+  }
+}
