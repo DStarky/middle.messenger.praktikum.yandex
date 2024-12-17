@@ -4,6 +4,8 @@ import { Router } from './Router';
 import { Page404 } from '../pages/404/Page404';
 import { Page500 } from '../pages/500/Page500';
 import { LoginPage } from '../pages/LoginPage/LoginPage';
+import { RegistrationPage } from '../pages/RegistrationPage/RegistrationPage';
+import { ChatsPage } from '../pages/ChatsPage/ChatsPage';
 
 export class App {
   private router: Router;
@@ -23,6 +25,16 @@ export class App {
 
     this.router.addRoute(ROUTES.LOGIN, () => {
       const page = new LoginPage(this.router);
+      this.router.render(page.getContent()!);
+    });
+
+    this.router.addRoute(ROUTES.REGISTRATION, () => {
+      const page = new RegistrationPage(this.router);
+      this.router.render(page.getContent()!);
+    });
+
+    this.router.addRoute(ROUTES.CHATS, () => {
+      const page = new ChatsPage(this.router);
       this.router.render(page.getContent()!);
     });
 

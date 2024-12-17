@@ -1,39 +1,70 @@
-import Handlebars from 'handlebars';
-import { BasePage } from '../basePage';
-import type { Chat } from '../../types/Chat';
+import type { Props } from '../../app/Block';
+import Block from '../../app/Block';
+import type { Router } from '../../app/Router';
+import type { MessageData } from '../../components/common/Message/Message';
+import { Sidebar } from '../../components/common/Sidebar/Sidebar';
 import { DEFAULT_CHATS, MESSAGES_BY_CHAT_ID } from '../../consts/data';
+import type { Chat } from '../../types/Chat';
+import { InnerChat } from './partials/InnerChat';
 
 const template = `
-<main class="chats-page">
-  <div class="chats-page__sidebar">
-    {{> Sidebar chats=chats}}
-   </div>
-  <section class="chat-content">
-    {{> InnerChat selectedChat=selectedChat messages=messages}}
-  </section>
-</main>
+  <main class="chats-page">
+    <div class="chats-page__sidebar">
+      {{{ sidebar }}}
+    </div>
+    <section class="chat-content">
+      {{{ innerChat }}}
+    </section>
+  </main>
 `;
 
-export class ChatsPage extends BasePage {
-  private selectedChatId: number | null = null;
+interface ChatsPageProps extends Props {
+  sidebar: Sidebar;
+  innerChat: InnerChat;
+}
 
-  constructor() {
-    super(template);
-    this.addEventListeners();
-  }
+export class ChatsPage extends Block<ChatsPageProps> {
+  private selectedChatId: string | null = null;
+  private router: Router;
 
-  private addEventListeners(): void {
-    document.addEventListener('click', event => {
-      const chatItem = (event.target as HTMLElement).closest('.chat-item');
-
-      if (chatItem) {
-        const chatId = Number(chatItem.getAttribute('data-chat-id'));
-        this.handleChatSelect(chatId);
-      }
+  constructor(router: Router) {
+    const sidebar = new Sidebar({
+      compact: false,
+      chats: DEFAULT_CHATS,
+      selectedChat: { id: null },
+      events: {
+        click: (e: Event) => this.handleChatClick(e),
+      },
     });
+
+    const innerChat = new InnerChat({
+      selectedChat: null,
+      messages: [],
+    });
+
+    super({
+      sidebar,
+      innerChat,
+    });
+
+    this.router = router;
   }
 
-  private handleChatSelect(chatId: number): void {
+  override render(): string {
+    return template;
+  }
+
+  private handleChatClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    const chatItem = target.closest('.chat-item') as HTMLElement;
+
+    if (chatItem) {
+      const chatId = String(chatItem.getAttribute('data-chat-id'));
+      this.handleChatSelect(chatId);
+    }
+  }
+
+  private handleChatSelect(chatId: string): void {
     if (this.selectedChatId === chatId) {
       this.selectedChatId = null;
     } else {
@@ -48,52 +79,30 @@ export class ChatsPage extends BasePage {
       ? this.getChatById(this.selectedChatId)
       : null;
 
-    const context = {
+    const messages = selectedChat ? this.getMessages(selectedChat.id) : [];
+
+    const sidebar = this.children.sidebar as Sidebar;
+    sidebar.setProps({
+      selectedChat: selectedChat ? { id: selectedChat.id } : { id: null },
       chats: this.getChats(),
+    });
+
+    const innerChat = this.children.innerChat as InnerChat;
+    innerChat.setProps({
       selectedChat,
-      messages: selectedChat ? this.getMessages(selectedChat.id) : [],
-    };
-
-    const sidebarElement = document.querySelector('.chats-page__sidebar');
-    const chatContentElement = document.querySelector('.chat-content');
-
-    if (sidebarElement && chatContentElement) {
-      sidebarElement.innerHTML = this.renderSidebar(context);
-      chatContentElement.innerHTML = this.renderChatContent(context);
-    }
-  }
-
-  private renderSidebar(context: Record<string, unknown>): string {
-    return Handlebars.compile(`
-    {{> Sidebar chats=chats}}
-  `)(context);
-  }
-
-  private renderChatContent(context: Record<string, unknown>): string {
-    return Handlebars.compile(`
-   {{> InnerChat selectedChat=selectedChat messages=messages}}
-  `)(context);
+      messages,
+    });
   }
 
   private getChats(): Chat[] {
     return DEFAULT_CHATS;
   }
 
-  private getChatById(chatId: number): Chat | null {
+  private getChatById(chatId: string): Chat | null {
     return this.getChats().find(chat => chat.id === chatId) || null;
   }
 
-  private getMessages(chatId: number): Record<string, unknown>[] {
+  private getMessages(chatId: string): MessageData[] {
     return MESSAGES_BY_CHAT_ID[chatId] || [];
-  }
-
-  render(context: Record<string, unknown> = {}): string {
-    const data = {
-      chats: DEFAULT_CHATS,
-      selectedChat: null,
-      messages: [],
-      ...context,
-    };
-    return super.render(data);
   }
 }

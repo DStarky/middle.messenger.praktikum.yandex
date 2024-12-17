@@ -2,6 +2,7 @@ import type { Props } from '../../../app/Block';
 import Block from '../../../app/Block';
 import { ROUTES } from '../../../app/routes';
 import ArrowLeftIcon from '../../../assets/icons/arrow-left.svg';
+import type { Chat } from '../../../types/Chat';
 
 const template = `
   {{#if compact}}
@@ -37,7 +38,7 @@ const template = `
       </div>
       <ul class="sidebar__chat-list">
         {{#each chats}}
-          <li class="chat-item {{#if (eq ../selectedChat.id id)}}active{{/if}}" data-chat-id="{{id}}">
+          <li class="chat-item {{#if isActive}}active{{/if}}" data-chat-id="{{id}}">
             <div class="chat-item-container">
               <div class="chat-item__avatar">
                 <img src="{{avatar}}" alt="{{name}}" class="avatar-img" />
@@ -65,20 +66,10 @@ const template = `
   {{/if}}
 `;
 
-interface Chat {
-  id: string;
-  name: string;
-  avatar: string;
-  lastMessage: string;
-  time: string;
-  unreadCount?: number;
-  isOwn?: boolean;
-}
-
 interface SidebarProps extends Props {
   compact: boolean;
   chats: Chat[];
-  selectedChat: { id: string };
+  selectedChat: { id: string | null };
   searchValue?: string;
   className?: string;
   events?: Record<string, (e: Event) => void>;
@@ -86,7 +77,15 @@ interface SidebarProps extends Props {
 
 export class Sidebar extends Block<SidebarProps> {
   constructor(props: SidebarProps) {
-    super(props);
+    const processedChats = props.chats.map(chat => ({
+      ...chat,
+      isActive: chat.id === props.selectedChat.id,
+    }));
+
+    super({
+      ...props,
+      chats: processedChats,
+    });
   }
 
   override render(): string {

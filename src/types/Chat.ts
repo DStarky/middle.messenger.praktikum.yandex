@@ -1,9 +1,10 @@
 export interface Chat {
-  id: number;
+  id: string;
   avatar: string;
   name: string;
   lastMessage: string;
   time: string;
   unreadCount: number;
   isOwn: boolean;
+  isActive?: boolean;
 }
