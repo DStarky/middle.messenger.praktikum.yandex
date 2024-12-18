@@ -4,44 +4,41 @@ import { ROUTES } from '../../../app/routes';
 import ArrowLeftIcon from '../../../assets/icons/arrow-left.svg';
 import type { Chat } from '../../../types/Chat';
 import type { Events } from '../../../types/Events';
+import { ChatItem } from '../ChatItem/ChatItem';
 
-const template = `
-  {{#if compact}}
-    <aside class="sidebar sidebar_small {{className}}">
-      <button 
-        type="button" 
-        class="button_round" 
-        style="background-image: url('${ArrowLeftIcon}');" 
-        aria-label="Open Chats"
-        {{#if events.buttonClick}}
-          onclick="{{events.buttonClick}}"
-        {{/if}}
-      ></button>
-      <a href="${ROUTES.CHATS}" class="default-link">{{linkText}}</a>
-    </aside>
-  {{else}}
-    <aside class="sidebar {{className}}">
-      <div class="sidebar__profile-link">
-        <a href="${ROUTES.PROFILE}" class="default-link sidebar-link">Профиль ></a>
-      </div>
-      <div class="sidebar__search">
-        <input 
-          type="text" 
-          id="search" 
-          name="search" 
-          class="simple-input simple-input_placeholder-center" 
-          placeholder="Поиск" 
-          value="{{searchValue}}" 
-          {{#if events.searchInput}}
-            oninput="{{events.searchInput}}
-          {{/if}}
-        />
-      </div>
-      <ul class="sidebar__chat-list">
-        {{{chatsHtml}}}
-      </ul>
-    </aside>
-  {{/if}}
+const sidebarCompactTemplate = `
+  <aside class="sidebar sidebar_small {{className}}">
+    <button 
+      type="button" 
+      class="button_round" 
+      style="background-image: url('{{arrowIcon}}');" 
+      aria-label="Open Chats"
+      data-id="button"
+    ></button>
+    <a href="{{routes.CHATS}}" class="default-link">{{linkText}}</a>
+  </aside>
+`;
+
+const sidebarTemplate = `
+  <aside class="sidebar {{className}}">
+    <div class="sidebar__profile-link">
+      <a href="{{routes.PROFILE}}" class="default-link sidebar-link">Профиль ></a>
+    </div>
+    <div class="sidebar__search">
+      <input 
+        type="text" 
+        id="search" 
+        name="search" 
+        class="simple-input simple-input_placeholder-center" 
+        placeholder="Поиск" 
+        value="{{searchValue}}" 
+        data-id="searchInput"
+      />
+    </div>
+    <ul class="sidebar__chat-list" data-id="chatList">
+      {{{chatList}}}
+    </ul>
+  </aside>
 `;
 
 interface SidebarEvents extends Events {
@@ -51,7 +48,7 @@ interface SidebarEvents extends Events {
 
 interface SidebarProps extends Props {
   compact: boolean;
-  chats: (Chat & { isActive?: boolean })[];
+  chats: Chat[];
   selectedChat: { id: string | null };
   searchValue?: string;
   className?: string;
@@ -60,43 +57,51 @@ interface SidebarProps extends Props {
 
 export class Sidebar extends Block<SidebarProps> {
   constructor(props: SidebarProps) {
-    const processedChats = props.chats.map(chat => ({
-      ...chat,
-      isActive: chat.id === props.selectedChat.id,
-    }));
-
-    const chatsHtml = processedChats
-      .map(
-        chat => `
-      <li class="chat-item ${chat.isActive ? 'active' : ''}" data-chat-id="${chat.id}">
-        <div class="chat-item-container">
-          <div class="chat-item__avatar">
-            <img src="${chat.avatar}" alt="${chat.name}" class="avatar-img" />
-          </div>
-          <div class="chat-item__content">
-            <div class="chat-item__name">${chat.name}</div>
-            <div class="chat-item__last-message">
-              ${chat.isOwn ? '<span class="chat-item__is-own">Вы: </span>' : ''}
-              ${chat.lastMessage}
-            </div>
-          </div>
-          <div class="chat-item__meta">
-            <div class="chat-item__time">${chat.time}</div>
-            ${chat.unreadCount ? `<div class="chat-item__unread-count">${chat.unreadCount}</div>` : ''}
-          </div>
-        </div>
-      </li>
-    `,
-      )
-      .join('');
-
     super({
       ...props,
-      chatsHtml,
+      arrowIcon: ArrowLeftIcon,
+      routes: ROUTES,
     });
   }
 
+  protected init(): void {
+    this.updateChatList();
+  }
+
+  protected componentDidUpdate(
+    oldProps: SidebarProps,
+    newProps: SidebarProps,
+  ): boolean {
+    if (
+      oldProps.selectedChat?.id !== newProps.selectedChat?.id ||
+      oldProps.chats !== newProps.chats
+    ) {
+      this.updateChatList();
+    }
+
+    return true;
+  }
+
+  private updateChatList(): void {
+    const chatData = (this.lists.chats as Chat[]) || [];
+    const chatItems = chatData.map(
+      chat =>
+        new ChatItem({
+          ...chat,
+          className: chat.id === this.props.selectedChat?.id ? 'active' : '',
+        }),
+    );
+
+    this.children.chatList = chatItems;
+
+    this.setProps({});
+  }
+
   protected override render(): string {
-    return template;
+    if (this.props.compact) {
+      return sidebarCompactTemplate;
+    }
+
+    return sidebarTemplate;
   }
 }
