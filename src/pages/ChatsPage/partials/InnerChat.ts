@@ -24,24 +24,26 @@ interface InnerChatProps extends Props {
 
 const template = `
   {{#if selectedChat}}
-    <div class="chat-header">
-      {{{avatar}}}
-      <div class="chat-header__name">{{selectedChat.name}}</div>
-      <button class="chat-header__settings">
-        <img src="${MenuIcon}" alt="menu" />
-      </button>
-    </div>
-    <div class="chat-messages">
-      {{{messages}}}
-    </div>
-    <div class="chat-input">
-      <button class="chat-input__attach">
-        <img src="${AttachmentIcon}" alt="attach" />
-      </button>
-      <div class="chat-input__message">
-        {{{input}}}
+    <div class="fragment">
+      <div class="chat-header">
+        {{{avatar}}}
+        <div class="chat-header__name">{{selectedChat.name}}</div>
+        <button class="chat-header__settings">
+          <img src="${MenuIcon}" alt="menu" />
+        </button>
       </div>
-      {{{sendButton}}}
+      <div class="chat-messages">
+        {{{messageList}}}
+      </div>
+      <div class="chat-input">
+        <button class="chat-input__attach">
+          <img src="${AttachmentIcon}" alt="attach" />
+        </button>
+        <div class="chat-input__message">
+          {{{input}}}
+        </div>
+        {{{sendButton}}}
+      </div>
     </div>
   {{else}}
     <div class="no-chat-selected">
@@ -108,7 +110,7 @@ export class InnerChat extends Block<InnerChatProps> {
       });
 
       this.children.avatar = avatar;
-      this.children.messages = messageBlocks;
+      this.children.messageList = messageBlocks;
       this.children.input = input;
       this.children.sendButton = sendButton;
     }
