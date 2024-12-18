@@ -33,7 +33,7 @@ const template = `
         </button>
       </div>
       <div class="chat-messages">
-        {{{messageList}}}
+        {{{messages}}}
       </div>
       <div class="chat-input">
         <button class="chat-input__attach">
@@ -110,7 +110,7 @@ export class InnerChat extends Block<InnerChatProps> {
       });
 
       this.children.avatar = avatar;
-      this.children.messageList = messageBlocks;
+      this.children.messages = messageBlocks;
       this.children.input = input;
       this.children.sendButton = sendButton;
     }

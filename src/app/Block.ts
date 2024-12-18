@@ -214,6 +214,7 @@ export default abstract class Block<T extends Props = Props> {
         const stub = fragment.content.querySelector(`[data-id="__c_${key}"]`);
         if (stub) {
           const container = document.createElement('div');
+          container.classList.add('fragment');
           child.forEach((component: Block<Props>) => {
             const content = component.getContent();
             if (content) {
@@ -239,6 +240,7 @@ export default abstract class Block<T extends Props = Props> {
       );
       if (stub) {
         const container = document.createElement('div');
+        container.classList.add('fragment');
         list.forEach(item => {
           if (item instanceof Block) {
             const node = item.getContent();
