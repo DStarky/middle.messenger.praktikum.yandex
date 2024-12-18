@@ -1,9 +1,11 @@
 import { EventBus } from './EventBus';
 import Handlebars from 'handlebars';
 import { v4 as makeUUID } from 'uuid';
+import type { Events } from '../types/Events';
 
 export interface Props {
-  events?: Record<string, EventListener>;
+  events?: Events;
+  attr?: Record<string, string>;
   [key: string]: unknown;
 }
 
@@ -23,8 +25,9 @@ export default abstract class Block<T extends Props = Props> {
 
   private _element: HTMLElement | null = null;
   private _id: string = makeUUID();
-  props: T;
-  children: Children;
+  protected props: T;
+  protected children: Children;
+  protected lists: Record<string, unknown[]>;
   name: string;
   private eventBusInstance: EventBus;
 
@@ -32,49 +35,20 @@ export default abstract class Block<T extends Props = Props> {
     propsWithChildren: PropsWithChildren<T> = {} as PropsWithChildren<T>,
   ) {
     this.eventBusInstance = new EventBus();
-    const { props, children } = this._getChildrenAndProps(propsWithChildren);
+
+    const { props, children, lists } =
+      this._getChildrenPropsAndProps(propsWithChildren);
     this.props = this._makePropsProxy({ ...props }) as T;
     this.children = children;
+    this.lists = this._makePropsProxy({ ...lists }) as Record<
+      string,
+      unknown[]
+    >;
     this.name = '';
 
     this._registerEvents(this.eventBusInstance);
 
     this.eventBusInstance.emit(Block.EVENTS.INIT);
-  }
-
-  private _addEvents(): void {
-    const { events = {} } = this.props;
-
-    Object.keys(events).forEach((eventName: string) => {
-      if (this._element) {
-        this._element.addEventListener(eventName, events[eventName]);
-      }
-    });
-  }
-
-  private _removeEvents(): void {
-    const { events = {} } = this.props;
-
-    Object.keys(events).forEach((eventName: string) => {
-      if (this._element) {
-        this._element.removeEventListener(eventName, events[eventName]);
-      }
-    });
-  }
-
-  setPropsForChildren(
-    children: Block<Props> | Block<Props>[],
-    newProps: Partial<T>,
-  ): void {
-    if (Array.isArray(children)) {
-      children.forEach(child => {
-        if (child instanceof Block) {
-          child.setProps(newProps);
-        }
-      });
-    } else if (children instanceof Block) {
-      children.setProps(newProps);
-    }
   }
 
   private _registerEvents(eventBus: EventBus): void {
@@ -93,6 +67,13 @@ export default abstract class Block<T extends Props = Props> {
 
   private _componentDidMount(): void {
     this.componentDidMount();
+    Object.values(this.children).forEach(child => {
+      if (Array.isArray(child)) {
+        child.forEach(c => c.dispatchComponentDidMount());
+      } else {
+        child.dispatchComponentDidMount();
+      }
+    });
   }
 
   protected componentDidMount(): void {}
@@ -119,32 +100,31 @@ export default abstract class Block<T extends Props = Props> {
     return oldProps !== newProps;
   }
 
-  private _getChildrenAndProps(propsAndChildren: PropsWithChildren<T>): {
+  private _getChildrenPropsAndProps(propsAndChildren: PropsWithChildren<T>): {
     props: T;
     children: Children;
+    lists: Record<string, unknown[]>;
   } {
     const children: Children = {};
     const props: Partial<T> = {};
+    const lists: Record<string, unknown[]> = {};
 
-    const processValue = (value: unknown, key: string) => {
-      if (Array.isArray(value)) {
-        if (value.every(item => item instanceof Block)) {
+    Object.entries(propsAndChildren).forEach(([key, value]) => {
+      if (value instanceof Block) {
+        children[key] = value;
+      } else if (Array.isArray(value)) {
+        const allBlocks = value.every(item => item instanceof Block);
+        if (allBlocks) {
           children[key] = value as Block<Props>[];
         } else {
-          props[key as keyof T] = value as T[keyof T];
+          lists[key] = value;
         }
-      } else if (value instanceof Block) {
-        children[key] = value;
       } else {
         props[key as keyof T] = value as T[keyof T];
       }
-    };
-
-    Object.entries(propsAndChildren).forEach(([key, value]) => {
-      processValue(value, key);
     });
 
-    return { props: props as T, children };
+    return { props: props as T, children, lists };
   }
 
   setProps(nextProps: Partial<T>): void {
@@ -155,28 +135,70 @@ export default abstract class Block<T extends Props = Props> {
     Object.assign(this.props, nextProps);
   }
 
+  setLists(nextLists: Record<string, unknown[]>): void {
+    if (!nextLists) {
+      return;
+    }
+
+    Object.assign(this.lists, nextLists);
+  }
+
   get element(): HTMLElement | null {
     return this._element;
   }
 
-  private _compile(): HTMLElement {
-    const propsAndStubs: Record<string, string | string[]> = {};
+  private _addEvents(): void {
+    const { events = {} } = this.props;
 
-    for (const key in this.props) {
-      const value = this.props[key];
-      if (typeof value === 'string' || Array.isArray(value)) {
-        propsAndStubs[key] = value as string | string[];
+    Object.entries(events).forEach(([eventName, listener]) => {
+      if (this._element && typeof listener === 'function') {
+        this._element.addEventListener(eventName, listener);
       }
-    }
+    });
+  }
+
+  private _removeEvents(): void {
+    const { events = {} } = this.props;
+
+    Object.entries(events).forEach(([eventName, listener]) => {
+      if (this._element && typeof listener === 'function') {
+        this._element.removeEventListener(eventName, listener);
+      }
+    });
+  }
+
+  protected addAttributes(): void {
+    const { attr = {} } = this.props;
+
+    Object.entries(attr).forEach(([key, value]) => {
+      if (this._element) {
+        this._element.setAttribute(key, value as string);
+      }
+    });
+  }
+
+  protected setAttributes(attr: Record<string, string>): void {
+    Object.entries(attr).forEach(([key, value]) => {
+      if (this._element) {
+        this._element.setAttribute(key, value);
+      }
+    });
+  }
+
+  private _compile(): HTMLElement {
+    const propsAndStubs: Record<string, unknown> = { ...this.props };
+    const tmpId = Math.floor(100000 + Math.random() * 900000);
 
     Object.entries(this.children).forEach(([key, child]) => {
       if (Array.isArray(child)) {
-        propsAndStubs[key] = child
-          .map(component => `<div data-id="${component.getId()}"></div>`)
-          .join('');
+        propsAndStubs[key] = `<div data-id="__c_${key}"></div>`;
       } else {
         propsAndStubs[key] = `<div data-id="${child.getId()}"></div>`;
       }
+    });
+
+    Object.entries(this.lists).forEach(([key]) => {
+      propsAndStubs[key] = `<div data-id="__l_${tmpId}_${key}"></div>`;
     });
 
     const template = Handlebars.compile(this.render());
@@ -186,40 +208,54 @@ export default abstract class Block<T extends Props = Props> {
       'template',
     ) as HTMLTemplateElement;
     fragment.innerHTML = htmlString;
-    const newElement = fragment.content.firstElementChild as HTMLElement;
 
-    Object.values(this.children).forEach(child => {
+    Object.entries(this.children).forEach(([key, child]) => {
       if (Array.isArray(child)) {
-        child.forEach((component: Block<Props>) => {
-          const stub = fragment.content.querySelector(
-            `[data-id="${component.getId()}"]`,
-          );
-          if (stub) {
+        const stub = fragment.content.querySelector(`[data-id="__c_${key}"]`);
+        if (stub) {
+          const container = document.createElement('div');
+          child.forEach((component: Block<Props>) => {
             const content = component.getContent();
             if (content) {
-              stub.replaceWith(content);
-            } else {
-              stub.replaceWith(document.createTextNode(''));
+              container.appendChild(content);
             }
-          }
-        });
+          });
+          stub.replaceWith(container);
+        }
       } else {
-        if (typeof child.getContent === 'function') {
-          const stub = fragment.content.querySelector(
-            `[data-id="${child.getId()}"]`,
-          );
+        const stub = fragment.content.querySelector(
+          `[data-id="${child.getId()}"]`,
+        );
+        if (stub) {
           const childContent = child.getContent();
-
-          if (stub) {
-            stub.replaceWith(childContent || document.createTextNode(''));
-          }
-        } else {
-          console.error(`Для ${child} метод getContent() не является функцией`);
+          stub.replaceWith(childContent || document.createTextNode(''));
         }
       }
     });
 
-    return newElement;
+    Object.entries(this.lists).forEach(([key, list]) => {
+      const stub = fragment.content.querySelector(
+        `[data-id="__l_${tmpId}_${key}"]`,
+      );
+      if (stub) {
+        const container = document.createElement('div');
+        list.forEach(item => {
+          if (item instanceof Block) {
+            const node = item.getContent();
+            if (node) {
+              container.appendChild(node);
+            } else {
+              container.appendChild(document.createTextNode(''));
+            }
+          } else {
+            container.appendChild(document.createTextNode(String(item)));
+          }
+        });
+        stub.replaceWith(container);
+      }
+    });
+
+    return fragment.content.firstElementChild as HTMLElement;
   }
 
   private _render(): void {
@@ -233,6 +269,7 @@ export default abstract class Block<T extends Props = Props> {
     this._element = newElement;
 
     this._addEvents();
+    this.addAttributes();
   }
 
   protected abstract render(): string;
@@ -251,7 +288,7 @@ export default abstract class Block<T extends Props = Props> {
     return this._element;
   }
 
-  private _makePropsProxy(props: Record<keyof T, unknown>): T {
+  private _makePropsProxy<U extends object>(props: U): U {
     const self = this;
 
     return new Proxy(props, {
@@ -260,9 +297,11 @@ export default abstract class Block<T extends Props = Props> {
           return Reflect.get(target, prop, receiver);
         }
 
-        if (typeof prop === 'string' && prop in target) {
-          const value = target[prop as keyof T];
-          return typeof value === 'function' ? value.bind(target) : value;
+        if (prop in target) {
+          const value = target[prop as keyof U];
+          return typeof value === 'function'
+            ? (value as (...args: unknown[]) => unknown).bind(target)
+            : value;
         }
 
         return undefined;
@@ -277,20 +316,16 @@ export default abstract class Block<T extends Props = Props> {
           return Reflect.set(target, prop, value, receiver);
         }
 
-        if (typeof prop === 'string' && prop in target) {
-          const oldTarget = { ...target };
-          target[prop as keyof T] = value;
+        const oldTarget = { ...target };
+        (target as Record<string, unknown>)[prop as string] = value;
+        self.eventBusInstance.emit(Block.EVENTS.FLOW_CDU, oldTarget, target);
 
-          self.eventBusInstance.emit(Block.EVENTS.FLOW_CDU, oldTarget, target);
-          return true;
-        }
-
-        return false;
+        return true;
       },
       deleteProperty(): boolean {
         throw new Error('Нет доступа');
       },
-    }) as T;
+    });
   }
 
   private _createDocumentElement(tagName: string): HTMLElement {
