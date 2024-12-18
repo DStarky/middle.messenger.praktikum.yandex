@@ -3,6 +3,7 @@ import Block from '../../../app/Block';
 import { ROUTES } from '../../../app/routes';
 import ArrowLeftIcon from '../../../assets/icons/arrow-left.svg';
 import type { Chat } from '../../../types/Chat';
+import type { Events } from '../../../types/Events';
 
 const template = `
   {{#if compact}}
@@ -32,47 +33,29 @@ const template = `
           placeholder="Поиск" 
           value="{{searchValue}}" 
           {{#if events.searchInput}}
-            oninput="{{events.searchInput}}"
+            oninput="{{events.searchInput}}
           {{/if}}
         />
       </div>
       <ul class="sidebar__chat-list">
-        {{#each chats}}
-          <li class="chat-item {{#if isActive}}active{{/if}}" data-chat-id="{{id}}">
-            <div class="chat-item-container">
-              <div class="chat-item__avatar">
-                <img src="{{avatar}}" alt="{{name}}" class="avatar-img" />
-              </div>
-              <div class="chat-item__content">
-                <div class="chat-item__name">{{name}}</div>
-                <div class="chat-item__last-message">
-                  {{#if isOwn}}
-                    <span class="chat-item__is-own">Вы: </span>
-                  {{/if}}
-                  {{lastMessage}}
-                </div>
-              </div>
-              <div class="chat-item__meta">
-                <div class="chat-item__time">{{time}}</div>
-                {{#if unreadCount}}
-                  <div class="chat-item__unread-count">{{unreadCount}}</div>
-                {{/if}}
-              </div>
-            </div>
-          </li>
-        {{/each}}
+        {{{chatsHtml}}}
       </ul>
     </aside>
   {{/if}}
 `;
 
+interface SidebarEvents extends Events {
+  buttonClick?: (e: Event) => void;
+  searchInput?: (e: Event) => void;
+}
+
 interface SidebarProps extends Props {
   compact: boolean;
-  chats: Chat[];
+  chats: (Chat & { isActive?: boolean })[];
   selectedChat: { id: string | null };
   searchValue?: string;
   className?: string;
-  events?: Record<string, (e: Event) => void>;
+  events?: SidebarEvents;
 }
 
 export class Sidebar extends Block<SidebarProps> {
@@ -82,13 +65,38 @@ export class Sidebar extends Block<SidebarProps> {
       isActive: chat.id === props.selectedChat.id,
     }));
 
+    const chatsHtml = processedChats
+      .map(
+        chat => `
+      <li class="chat-item ${chat.isActive ? 'active' : ''}" data-chat-id="${chat.id}">
+        <div class="chat-item-container">
+          <div class="chat-item__avatar">
+            <img src="${chat.avatar}" alt="${chat.name}" class="avatar-img" />
+          </div>
+          <div class="chat-item__content">
+            <div class="chat-item__name">${chat.name}</div>
+            <div class="chat-item__last-message">
+              ${chat.isOwn ? '<span class="chat-item__is-own">Вы: </span>' : ''}
+              ${chat.lastMessage}
+            </div>
+          </div>
+          <div class="chat-item__meta">
+            <div class="chat-item__time">${chat.time}</div>
+            ${chat.unreadCount ? `<div class="chat-item__unread-count">${chat.unreadCount}</div>` : ''}
+          </div>
+        </div>
+      </li>
+    `,
+      )
+      .join('');
+
     super({
       ...props,
-      chats: processedChats,
+      chatsHtml,
     });
   }
 
-  override render(): string {
+  protected override render(): string {
     return template;
   }
 }

@@ -50,13 +50,13 @@ export class ChatsPage extends Block<ChatsPageProps> {
     this.router = router;
   }
 
-  override render(): string {
+  protected override render(): string {
     return template;
   }
 
   private handleChatClick(event: Event): void {
     const target = event.target as HTMLElement;
-    const chatItem = target.closest('.chat-item') as HTMLElement;
+    const chatItem = target.closest('.chat-item') as HTMLElement | null;
 
     if (chatItem) {
       const chatId = String(chatItem.getAttribute('data-chat-id'));
