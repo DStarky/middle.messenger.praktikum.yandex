@@ -24,7 +24,7 @@ const template = `
           <h4 class="profile-page__name">Иван</h4>
         </div>
 
-        <div class="profile-page__block" id="profile-data">
+        <div class="profile-page__block">
           {{#if isEditingPersonal}}
             {{{personalDataEditable}}}
           {{else if isEditingPassword}}
@@ -260,10 +260,15 @@ export class ProfilePage extends Block<ProfilePageProps> {
   }
 
   private handleSavePersonalData(): void {
-    console.log('handleSavePersonalData called');
+    const form = document.getElementById('profile-data') as HTMLFormElement;
+    const formData = new FormData(form);
+
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
+    }
+
     this.resetToDefaultMode();
   }
-
   private handleSavePasswordData(): void {
     console.log('handleSavePasswordData called');
     this.resetToDefaultMode();
