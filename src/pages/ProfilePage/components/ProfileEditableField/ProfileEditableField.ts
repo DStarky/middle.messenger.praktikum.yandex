@@ -5,7 +5,7 @@ import { SimpleInput } from '../../../../components/common/SimpleInput/SimpleInp
 const profileEditableFieldTemplate = `
   <div class="profile-page__item">
     <p class="profile-page__left">{{label}}</p>
-    {{{input}}}
+    <input class="profile-page__right" type="text" name="{{name}}" value="{{value}}" />
   </div>
 `;
 

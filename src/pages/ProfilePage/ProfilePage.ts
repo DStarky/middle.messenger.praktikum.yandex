@@ -10,7 +10,6 @@ import { ProfileEditableField } from './components/ProfileEditableField/ProfileE
 import { ProfilePasswordData } from './components/ProfilePasswordData/ProfilePasswordData';
 import { ProfilePersonalData } from './components/ProfilePersonalData/ProfilePersonalData';
 import { ProfileSaveButton } from './components/ProfileSaveButton/ProfileSaveButton';
-import { ProfileStaticField } from './components/ProfileStaticField/ProfileStaticField';
 
 const template = `
   <main class="profile-page">
@@ -71,100 +70,8 @@ export class ProfilePage extends Block<ProfilePageProps> {
         alt: 'User Avatar',
         onClick: () => this.handleChangeAvatar(),
       }),
-      personalDataEditable: new PersonalDataEditable({
-        email: new ProfileEditableField({
-          label: 'Почта',
-          name: 'email',
-          value: 'pochta@yandex.ru',
-          id: 'email-input',
-          placeholder: 'Введите почту',
-          type: 'email',
-          events: {
-            change: (e: Event) => this.handlePersonalDataChange(e),
-          },
-        }),
-        login: new ProfileEditableField({
-          label: 'Логин',
-          name: 'login',
-          value: 'ivanivanov',
-          id: 'login-input',
-          placeholder: 'Введите логин',
-          type: 'text',
-          events: {
-            change: (e: Event) => this.handlePersonalDataChange(e),
-          },
-        }),
-        firstName: new ProfileEditableField({
-          label: 'Имя',
-          name: 'first_name',
-          value: 'Иван',
-          id: 'first-name-input',
-          placeholder: 'Введите имя',
-          type: 'text',
-          events: {
-            change: (e: Event) => this.handlePersonalDataChange(e),
-          },
-        }),
-        secondName: new ProfileEditableField({
-          label: 'Фамилия',
-          name: 'second_name',
-          value: 'Иванов',
-          id: 'second-name-input',
-          placeholder: 'Введите фамилию',
-          type: 'text',
-          events: {
-            change: (e: Event) => this.handlePersonalDataChange(e),
-          },
-        }),
-        displayName: new ProfileEditableField({
-          label: 'Имя в чате',
-          name: 'display_name',
-          value: 'Иван',
-          id: 'display-name-input',
-          placeholder: 'Введите имя в чате',
-          type: 'text',
-          events: {
-            change: (e: Event) => this.handlePersonalDataChange(e),
-          },
-        }),
-        phone: new ProfileEditableField({
-          label: 'Телефон',
-          name: 'phone',
-          value: '+7 (909) 967 30 30',
-          id: 'phone-input',
-          placeholder: 'Введите телефон',
-          type: 'tel',
-          events: {
-            change: (e: Event) => this.handlePersonalDataChange(e),
-          },
-        }),
-      }),
-      profilePersonalData: new ProfilePersonalData({
-        email: new ProfileStaticField({
-          label: 'Почта',
-          value: 'pochta@yandex.ru',
-        }),
-        login: new ProfileStaticField({
-          label: 'Логин',
-          value: 'ivanivanov',
-        }),
-        firstName: new ProfileStaticField({
-          label: 'Имя',
-          value: 'Иван',
-        }),
-        secondName: new ProfileStaticField({
-          label: 'Фамилия',
-          value: 'Иванов',
-        }),
-        displayName: new ProfileStaticField({
-          label: 'Имя в чате',
-          value: 'Иван',
-        }),
-        phone: new ProfileStaticField({
-          label: 'Телефон',
-          value: '+7 (909) 967 30 30',
-        }),
-      }),
+      personalDataEditable: new PersonalDataEditable({}),
+      profilePersonalData: new ProfilePersonalData({}),
       passwordDataEditable: new PasswordDataEditable({
         oldPassword: new ProfileEditableField({
           label: 'Старый пароль',

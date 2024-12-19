@@ -3,43 +3,26 @@ import Block from '../../../../app/Block';
 import { ProfileEditableField } from '../ProfileEditableField/ProfileEditableField';
 
 const personalDataEditableTemplate = `
-  <div class="fragment">
+  <form id="profile-data">
     {{{email}}}
     {{{login}}}
     {{{firstName}}}
     {{{secondName}}}
     {{{displayName}}}
     {{{phone}}}
-  </div>
+  </form>
 `;
 
-interface PersonalDataEditableProps extends Props {
-  email: ProfileEditableField;
-  login: ProfileEditableField;
-  firstName: ProfileEditableField;
-  secondName: ProfileEditableField;
-  displayName: ProfileEditableField;
-  phone: ProfileEditableField;
-  events?: {
-    emailChange?: (e: Event) => void;
-    loginChange?: (e: Event) => void;
-    firstNameChange?: (e: Event) => void;
-    secondNameChange?: (e: Event) => void;
-    displayNameChange?: (e: Event) => void;
-    phoneChange?: (e: Event) => void;
-  };
-}
-
-export class PersonalDataEditable extends Block<PersonalDataEditableProps> {
-  constructor(props: PersonalDataEditableProps) {
+export class PersonalDataEditable extends Block<Props> {
+  constructor(props: Props) {
     super({
       ...props,
       email: new ProfileEditableField({
         label: 'Почта',
         name: 'email',
-        value: '',
-        id: '',
-        placeholder: '',
+        value: 'pochta@yandex.ru',
+        id: 'email-input',
+        placeholder: 'Введите почту',
         type: 'email',
         events: props.events?.emailChange
           ? { change: props.events.emailChange }
@@ -48,9 +31,9 @@ export class PersonalDataEditable extends Block<PersonalDataEditableProps> {
       login: new ProfileEditableField({
         label: 'Логин',
         name: 'login',
-        value: '',
-        id: '',
-        placeholder: '',
+        value: 'ivanivanov',
+        id: 'login-input',
+        placeholder: 'Введите логин',
         type: 'text',
         events: props.events?.loginChange
           ? { change: props.events.loginChange }
@@ -59,9 +42,9 @@ export class PersonalDataEditable extends Block<PersonalDataEditableProps> {
       firstName: new ProfileEditableField({
         label: 'Имя',
         name: 'first_name',
-        value: '',
-        id: '',
-        placeholder: '',
+        value: 'Иван',
+        id: 'first-name-input',
+        placeholder: 'Введите имя',
         type: 'text',
         events: props.events?.firstNameChange
           ? { change: props.events.firstNameChange }
@@ -70,9 +53,9 @@ export class PersonalDataEditable extends Block<PersonalDataEditableProps> {
       secondName: new ProfileEditableField({
         label: 'Фамилия',
         name: 'second_name',
-        value: '',
-        id: '',
-        placeholder: '',
+        value: 'Иванов',
+        id: 'second-name-input',
+        placeholder: 'Введите фамилию',
         type: 'text',
         events: props.events?.secondNameChange
           ? { change: props.events.secondNameChange }
@@ -81,9 +64,9 @@ export class PersonalDataEditable extends Block<PersonalDataEditableProps> {
       displayName: new ProfileEditableField({
         label: 'Имя в чате',
         name: 'display_name',
-        value: '',
-        id: '',
-        placeholder: '',
+        value: 'Иван',
+        id: 'display-name-input',
+        placeholder: 'Введите имя в чате',
         type: 'text',
         events: props.events?.displayNameChange
           ? { change: props.events.displayNameChange }
@@ -92,9 +75,9 @@ export class PersonalDataEditable extends Block<PersonalDataEditableProps> {
       phone: new ProfileEditableField({
         label: 'Телефон',
         name: 'phone',
-        value: '',
-        id: '',
-        placeholder: '',
+        value: '+7 (909) 967 30 30',
+        id: 'phone-input',
+        placeholder: 'Введите телефон',
         type: 'tel',
         events: props.events?.phoneChange
           ? { change: props.events.phoneChange }

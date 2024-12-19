@@ -13,42 +13,33 @@ const profilePersonalDataTemplate = `
   </div>
 `;
 
-interface ProfilePersonalDataProps extends Props {
-  email: ProfileStaticField;
-  login: ProfileStaticField;
-  firstName: ProfileStaticField;
-  secondName: ProfileStaticField;
-  displayName: ProfileStaticField;
-  phone: ProfileStaticField;
-}
-
-export class ProfilePersonalData extends Block<ProfilePersonalDataProps> {
-  constructor(props: ProfilePersonalDataProps) {
+export class ProfilePersonalData extends Block<Props> {
+  constructor(props: Props) {
     super({
       ...props,
       email: new ProfileStaticField({
         label: 'Почта',
-        value: '',
+        value: 'pochta@yandex.ru',
       }),
       login: new ProfileStaticField({
         label: 'Логин',
-        value: '',
+        value: 'ivanivanov',
       }),
       firstName: new ProfileStaticField({
         label: 'Имя',
-        value: '',
+        value: 'Иван',
       }),
       secondName: new ProfileStaticField({
         label: 'Фамилия',
-        value: '',
+        value: 'Иванов',
       }),
       displayName: new ProfileStaticField({
         label: 'Имя в чате',
-        value: '',
+        value: 'Иван',
       }),
       phone: new ProfileStaticField({
         label: 'Телефон',
-        value: '',
+        value: '+7 (909) 967 30 30',
       }),
     });
   }
