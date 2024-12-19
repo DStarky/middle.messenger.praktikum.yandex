@@ -5,30 +5,25 @@ import ArrowLeftIcon from '../../../assets/icons/arrow-left.svg';
 import type { Chat } from '../../../types/Chat';
 import type { Events } from '../../../types/Events';
 import { Avatar } from '../Avatar/Avatar';
+import { Button } from '../Button/Button';
 import { ChatItem } from '../ChatItem/ChatItem';
 import { Link } from '../Link/Link';
 import { SimpleInput } from '../SimpleInput/SimpleInput';
 
 const sidebarCompactTemplate = `
   <aside class="sidebar sidebar_small {{className}}">
-    <button 
-      type="button" 
-      class="button_round" 
-      style="background-image: url('{{arrowIcon}}');" 
-      aria-label="Open Chats"
-      data-id="button"
-    ></button>
-    <a href="{{routes.CHATS}}" class="default-link">{{linkText}}</a>
+    {{{button}}}
+    {{{link}}}
   </aside>
 `;
 
 const sidebarTemplate = `
   <aside class="sidebar {{className}}">
     <div class="sidebar__profile-link">
-      {{{Link}}}
+      {{{profileLink}}}
     </div>
     <div class="sidebar__search">
-      {{{SimpleInput}}}
+      {{{searchInput}}}
     </div>
     <ul class="sidebar__chat-list" data-id="chatList">
       {{{chatList}}}
@@ -56,17 +51,26 @@ export class Sidebar extends Block<SidebarProps> {
       ...props,
       arrowIcon: ArrowLeftIcon,
       routes: ROUTES,
-      SimpleInput: new SimpleInput({
+      searchInput: new SimpleInput({
         type: 'text',
         id: 'search',
         name: 'search',
         placeholder: 'Поиск',
         search: true,
       }),
-      Link: new Link({
+      profileLink: new Link({
         href: ROUTES.PROFILE,
         text: 'Профиль >',
         className: 'sidebar-link',
+      }),
+      button: new Button({
+        type: 'button',
+        className: 'button_round',
+        icon: ArrowLeftIcon,
+        alt: 'Open Chats',
+      }),
+      link: new Link({
+        href: ROUTES.CHATS,
       }),
     });
   }

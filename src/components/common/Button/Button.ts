@@ -2,18 +2,15 @@ import type { Props } from '../../../app/Block';
 import Block from '../../../app/Block';
 
 const template = `
-  <button 
-    type="{{type}}" 
-    class="button {{className}}" 
-    {{#if icon}} 
-      style="background-image: url('{{icon}}');" 
-      aria-label="{{alt}}"
-    {{/if}}>
-    {{#unless icon}}
-      {{text}}
-    {{/unless}}
-  </button>
-`;
+<button 
+  type="{{type}}" 
+  class="button {{className}}">
+  {{#if icon}}
+    <img src="{{icon}}" alt="{{alt}}" class="button__icon" />
+  {{else}}
+    {{text}}
+  {{/if}}
+</button>`;
 
 interface ButtonProps extends Props {
   type: string;

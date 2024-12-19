@@ -5,7 +5,7 @@ const template = `<a href="{{href}}" class="default-link {{className}}">{{text}}
 
 interface LinkProps extends Props {
   href: string;
-  text: string;
+  text?: string;
   className?: string;
   events?: Record<string, (e: Event) => void>;
 }
