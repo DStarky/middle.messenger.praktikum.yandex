@@ -8,7 +8,7 @@ import { Avatar } from '../Avatar/Avatar';
 import { Button } from '../Button/Button';
 import { ChatItem } from '../ChatItem/ChatItem';
 import { Link } from '../Link/Link';
-import { SimpleInput } from '../SimpleInput/SimpleInput';
+import { SearchInput } from '../SearchInput/SearchInput';
 
 const sidebarCompactTemplate = `
   <aside class="sidebar sidebar_small {{className}}">
@@ -51,12 +51,12 @@ export class Sidebar extends Block<SidebarProps> {
       ...props,
       arrowIcon: ArrowLeftIcon,
       routes: ROUTES,
-      searchInput: new SimpleInput({
+      searchInput: new SearchInput({
         type: 'text',
         id: 'search',
         name: 'search',
         placeholder: 'Поиск',
-        search: true,
+        value: props.searchValue || '',
         className: 'simple-input',
       }),
       profileLink: new Link({
