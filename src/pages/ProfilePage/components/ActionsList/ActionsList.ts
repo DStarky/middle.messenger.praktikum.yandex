@@ -7,13 +7,13 @@ import { ProfileAction } from '../ProfileAction/ProfileAction';
 
 const template = `
 <div class="fragment">
-    <div class="profile-page__item">
+    <div class="profile-page__item profile-page__border-bottom">
       {{{editPersonalData}}}
     </div>
-    <div class="profile-page__item">
+    <div class="profile-page__item profile-page__border-bottom">
       {{{editPasswordData}}}
     </div>
-    <div class="profile-page__item">
+    <div class="profile-page__item profile-page__border-bottom">
       {{{logoutLink}}}
     </div>
 </div>

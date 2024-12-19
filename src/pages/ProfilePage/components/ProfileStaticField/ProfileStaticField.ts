@@ -2,7 +2,7 @@ import type { Props } from '../../../../app/Block';
 import Block from '../../../../app/Block';
 
 const profileStaticFieldTemplate = `
-  <div class="profile-page__item">
+  <div class="profile-page__item profile-page__border-bottom">
     <p class="profile-page__left">{{label}}</p>
     <p class="profile-page__right">{{value}}</p>
   </div>
