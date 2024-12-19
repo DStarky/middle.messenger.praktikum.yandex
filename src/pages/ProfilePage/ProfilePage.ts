@@ -27,27 +27,21 @@ const template = `
         <div class="profile-page__block" id="profile-data">
           {{#if isEditingPersonal}}
             {{{personalDataEditable}}}
-          {{else}}
-            {{{profilePersonalData}}}
-          {{/if}}
-          
-          {{#if isEditingPassword}}
+          {{else if isEditingPassword}}
             {{{passwordDataEditable}}}
           {{else}}
-            {{{profilePasswordData}}}
+            {{{profilePersonalData}}}
           {{/if}}
         </div>
 
         <div id="profile-actions" class="profile-page__block">
           {{#if isEditingPersonal}}
             {{{savePersonalDataButton}}}
-          {{/if}}
-          {{#if isEditingPassword}}
+          {{else if isEditingPassword}}
             {{{savePasswordDataButton}}}
-          {{/if}}
-          {{#unless isEditingPersonal}}
+          {{else}}
             {{{actionsList}}}
-          {{/unless}}
+          {{/if}}
         </div>
       </div>
     </section>
@@ -55,7 +49,8 @@ const template = `
 `;
 
 interface ProfilePageState {
-  currentState: 'default' | 'editing-personal' | 'editing-password';
+  isEditingPersonal: boolean;
+  isEditingPassword: boolean;
 }
 
 interface ProfilePageProps extends Props, Partial<ProfilePageState> {}
@@ -64,7 +59,8 @@ export class ProfilePage extends Block<ProfilePageProps> {
   constructor(props: ProfilePageProps = {}) {
     super({
       ...props,
-      currentState: 'default',
+      isEditingPersonal: false,
+      isEditingPassword: false,
       sidebar: new Sidebar({
         compact: true,
         chats: DEFAULT_CHATS,
@@ -222,74 +218,72 @@ export class ProfilePage extends Block<ProfilePageProps> {
   }
 
   private handleChangeAvatar(): void {
-    // Логика смены аватара (например, открыть модальное окно для загрузки нового аватара)
     console.log('Поменять аватар');
   }
 
-  // Обработчики переключения режимов редактирования
   private toggleEditPersonalMode(): void {
-    this.setProps({ currentState: 'editing-personal' });
+    console.log('toggleEditPersonalMode called');
+    this.setProps({
+      isEditingPersonal: true,
+      isEditingPassword: false,
+    });
   }
 
   private toggleEditPasswordMode(): void {
-    this.setProps({ currentState: 'editing-password' });
+    console.log('toggleEditPasswordMode called');
+    this.setProps({
+      isEditingPersonal: false,
+      isEditingPassword: true,
+    });
   }
 
   private resetToDefaultMode(): void {
-    this.setProps({ currentState: 'default' });
+    console.log('resetToDefaultMode called');
+    this.setProps({
+      isEditingPersonal: false,
+      isEditingPassword: false,
+    });
   }
 
-  // Обработчик выхода из профиля
   private handleLogout(): void {
-    // Логика выхода из профиля (например, очистить сессию и перенаправить на страницу входа)
-    console.log('Выйти из профиля');
+    console.log('handleLogout called');
   }
 
-  // Обработчики изменений личных данных
   private handlePersonalDataChange(e: Event): void {
     const input = e.target as HTMLInputElement;
     console.log(`Изменено поле ${input.name}: ${input.value}`);
-    // Логика обработки изменений (например, обновление локального состояния или валидация)
   }
 
-  // Обработчики изменений пароля
   private handlePasswordDataChange(e: Event): void {
     const input = e.target as HTMLInputElement;
     console.log(`Изменено поле ${input.name}: ${input.value}`);
-    // Логика обработки изменений (например, обновление локального состояния или валидация)
   }
 
-  // Обработчики сохранения данных
   private handleSavePersonalData(): void {
-    // Логика сохранения личных данных (например, отправка на сервер)
-    console.log('Сохранение личных данных');
-    // После сохранения сбрасываем режим редактирования
+    console.log('handleSavePersonalData called');
     this.resetToDefaultMode();
   }
 
   private handleSavePasswordData(): void {
-    // Логика сохранения пароля (например, отправка на сервер)
-    console.log('Сохранение пароля');
-    // После сохранения сбрасываем режим редактирования
+    console.log('handleSavePasswordData called');
     this.resetToDefaultMode();
   }
 
-  // Обновление дочерних компонентов при изменении состояния
   protected componentDidUpdate(
     oldProps: ProfilePageProps,
     newProps: ProfilePageProps,
   ): boolean {
-    // Если состояние изменилось, обновляем компоненты
-    if (oldProps.currentState !== newProps.currentState) {
-      this.updateChildComponents();
+    if (
+      oldProps.isEditingPersonal !== newProps.isEditingPersonal ||
+      oldProps.isEditingPassword !== newProps.isEditingPassword
+    ) {
+      console.log(
+        `State changed: isEditingPersonal from ${oldProps.isEditingPersonal} to ${newProps.isEditingPersonal}, isEditingPassword from ${oldProps.isEditingPassword} to ${newProps.isEditingPassword}`,
+      );
       return true;
     }
 
     return false;
-  }
-
-  private updateChildComponents(): void {
-    this.setProps({});
   }
 
   protected override render(): string {
