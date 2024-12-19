@@ -1,5 +1,6 @@
 import type { Props } from '../../../app/Block';
 import Block from '../../../app/Block';
+import type { Events } from '../../../types/Events';
 
 const template = `
     <input 
@@ -19,16 +20,45 @@ interface SimpleInputProps extends Props {
   placeholder: string;
   value?: string;
   className?: string;
-  events?: Record<string, (e: Event) => void>;
+  events?: Events;
 }
 
 export class SimpleInput extends Block<SimpleInputProps> {
   constructor(props: SimpleInputProps) {
-    super(props);
+    super({
+      ...props,
+      events: {
+        ...props.events,
+        input: (e: Event) => this.handleInput(e),
+      },
+    });
+  }
+
+  private handleInput(e: Event): void {
+    const target = e.target as HTMLInputElement;
+    this.setProps({ value: target.value });
   }
 
   public getValue(): string {
     return this.props.value as string;
+  }
+
+  protected override componentDidUpdate(
+    oldProps: SimpleInputProps,
+    newProps: SimpleInputProps,
+  ): boolean {
+    if (oldProps.value !== newProps.value) {
+      const input = this.getContent()?.querySelector(
+        'input',
+      ) as HTMLInputElement;
+      if (input) {
+        input.value = newProps.value as string;
+      }
+
+      return false;
+    }
+
+    return true;
   }
 
   override render(): string {
