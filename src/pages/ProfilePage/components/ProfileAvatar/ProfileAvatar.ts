@@ -23,13 +23,13 @@ export class ProfileAvatar extends Block<ProfileAvatarProps> {
       src: props.src,
       alt: props.alt,
       className: 'avatar_size-large',
-      events: props.onClick ? { click: props.onClick } : undefined,
     });
 
     super({
       ...props,
       avatar,
       text: props.text || 'Поменять аватар',
+      events: props.onClick ? { click: props.onClick } : undefined,
     });
   }
 
