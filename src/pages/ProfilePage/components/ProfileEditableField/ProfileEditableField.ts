@@ -1,13 +1,24 @@
 import type { Props } from '../../../../app/Block';
 import Block from '../../../../app/Block';
 import { SimpleInput } from '../../../../components/common/SimpleInput/SimpleInput';
+import type { Events } from '../../../../types/Events';
 
-const profileEditableFieldTemplate = `
-  <div class="profile-page__item">
-    <p class="profile-page__left">{{label}}</p>
-    <input class="profile-page__right" type="text" name="{{name}}" value="{{value}}" />
+const template = `
+  <div class="profile-page__border-bottom {{#if error}}profile-page__border-bottom-error{{/if}}">
+    {{#if error}}
+      <p class="profile-page__error-message">{{error}}</p>
+    {{/if}}
+    <div class="profile-page__item">
+      <p class="profile-page__left {{#if error}}profile-page__error{{/if}}">{{label}}</p>
+      {{{input}}}
+    </div>
   </div>
 `;
+
+interface ValidationRule {
+  validator: (value: string) => boolean;
+  message: string;
+}
 
 interface ProfileEditableFieldProps extends Props {
   label: string;
@@ -17,7 +28,9 @@ interface ProfileEditableFieldProps extends Props {
   placeholder: string;
   type?: string;
   className?: string;
-  events?: Record<string, (e: Event) => void>;
+  events?: Events;
+  validationRules?: ValidationRule[];
+  error?: string;
 }
 
 export class ProfileEditableField extends Block<ProfileEditableFieldProps> {
@@ -27,7 +40,15 @@ export class ProfileEditableField extends Block<ProfileEditableFieldProps> {
       name: props.name,
       value: props.value,
       className: 'profile-page__right',
-      events: props.events,
+      events: {
+        ...props.events,
+        blur: (e: Event) => {
+          this.validate();
+          if (props.events?.blur) {
+            props.events.blur(e);
+          }
+        },
+      },
       id: props.id,
       placeholder: props.placeholder,
     });
@@ -35,10 +56,40 @@ export class ProfileEditableField extends Block<ProfileEditableFieldProps> {
     super({
       ...props,
       input,
+      error: '',
     });
   }
 
+  validate(): boolean {
+    const inputComponent = this.children.input as SimpleInput;
+    const value = inputComponent.getValue();
+
+    const validationRules =
+      (this.lists.validationRules as ValidationRule[]) || [];
+    let errorMessage = '';
+
+    for (const rule of validationRules) {
+      if (!rule.validator(value)) {
+        errorMessage = rule.message;
+        break;
+      }
+    }
+
+    if (errorMessage) {
+      this.setProps({ error: errorMessage });
+      return false;
+    } else {
+      this.setProps({ error: '' });
+      return true;
+    }
+  }
+
+  getValue(): string {
+    const inputComponent = this.children.input as SimpleInput;
+    return inputComponent.getValue();
+  }
+
   override render(): string {
-    return profileEditableFieldTemplate;
+    return template;
   }
 }
