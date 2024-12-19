@@ -3,31 +3,20 @@ import Block from '../../../../app/Block';
 import { ProfileEditableField } from '../ProfileEditableField/ProfileEditableField';
 
 const passwordDataEditableTemplate = `
-  <div class="fragment">
+  <form id="password-data">
     {{{oldPassword}}}
     {{{newPassword}}}
     {{{confirmPassword}}}
-  </div>
+  </form>
 `;
 
-interface PasswordDataEditableProps extends Props {
-  oldPassword: ProfileEditableField;
-  newPassword: ProfileEditableField;
-  confirmPassword: ProfileEditableField;
-  events?: {
-    oldPasswordChange?: (e: Event) => void;
-    newPasswordChange?: (e: Event) => void;
-    confirmPasswordChange?: (e: Event) => void;
-  };
-}
-
-export class PasswordDataEditable extends Block<PasswordDataEditableProps> {
-  constructor(props: PasswordDataEditableProps) {
+export class PasswordDataEditable extends Block<Props> {
+  constructor(props: Props) {
     super({
       ...props,
       oldPassword: new ProfileEditableField({
-        id: '',
-        placeholder: '',
+        id: 'old-password-input',
+        placeholder: 'Введите старый пароль',
         label: 'Старый пароль',
         name: 'oldPassword',
         value: '',
@@ -37,8 +26,8 @@ export class PasswordDataEditable extends Block<PasswordDataEditableProps> {
           : undefined,
       }),
       newPassword: new ProfileEditableField({
-        id: '',
-        placeholder: '',
+        id: 'new-password-input',
+        placeholder: 'Введите новый пароль',
         label: 'Новый пароль',
         name: 'newPassword',
         value: '',
@@ -48,8 +37,8 @@ export class PasswordDataEditable extends Block<PasswordDataEditableProps> {
           : undefined,
       }),
       confirmPassword: new ProfileEditableField({
-        id: '',
-        placeholder: '',
+        id: 'confirm-password-input',
+        placeholder: 'Повторите новый пароль',
         label: 'Повторите новый пароль',
         name: 'confirmPassword',
         value: '',

@@ -6,7 +6,6 @@ import { ActionsList } from './components/ActionsList/ActionsList';
 import { PasswordDataEditable } from './components/PasswordDataEditable/PasswordDataEditable';
 import { PersonalDataEditable } from './components/PersonalDataEditable/PersonalDataEditable';
 import { ProfileAvatar } from './components/ProfileAvatar/ProfileAvatar';
-import { ProfileEditableField } from './components/ProfileEditableField/ProfileEditableField';
 import { ProfilePasswordData } from './components/ProfilePasswordData/ProfilePasswordData';
 import { ProfilePersonalData } from './components/ProfilePersonalData/ProfilePersonalData';
 import { ProfileSaveButton } from './components/ProfileSaveButton/ProfileSaveButton';
@@ -72,41 +71,7 @@ export class ProfilePage extends Block<ProfilePageProps> {
       }),
       personalDataEditable: new PersonalDataEditable({}),
       profilePersonalData: new ProfilePersonalData({}),
-      passwordDataEditable: new PasswordDataEditable({
-        oldPassword: new ProfileEditableField({
-          label: 'Старый пароль',
-          name: 'oldPassword',
-          value: '',
-          id: 'old-password-input',
-          placeholder: 'Введите старый пароль',
-          type: 'password',
-          events: {
-            change: (e: Event) => this.handlePasswordDataChange(e),
-          },
-        }),
-        newPassword: new ProfileEditableField({
-          label: 'Новый пароль',
-          name: 'newPassword',
-          value: '',
-          id: 'new-password-input',
-          placeholder: 'Введите новый пароль',
-          type: 'password',
-          events: {
-            change: (e: Event) => this.handlePasswordDataChange(e),
-          },
-        }),
-        confirmPassword: new ProfileEditableField({
-          label: 'Повторите новый пароль',
-          name: 'confirmPassword',
-          value: '',
-          id: 'confirm-password-input',
-          placeholder: 'Повторите новый пароль',
-          type: 'password',
-          events: {
-            change: (e: Event) => this.handlePasswordDataChange(e),
-          },
-        }),
-      }),
+      passwordDataEditable: new PasswordDataEditable({}),
       profilePasswordData: new ProfilePasswordData({}),
       savePersonalDataButton: new ProfileSaveButton({
         onClick: () => this.handleSavePersonalData(),
@@ -177,7 +142,13 @@ export class ProfilePage extends Block<ProfilePageProps> {
     this.resetToDefaultMode();
   }
   private handleSavePasswordData(): void {
-    console.log('handleSavePasswordData called');
+    const form = document.getElementById('password-data') as HTMLFormElement;
+    const formData = new FormData(form);
+
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
+    }
+
     this.resetToDefaultMode();
   }
 
