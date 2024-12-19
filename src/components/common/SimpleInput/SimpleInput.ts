@@ -8,7 +8,7 @@ const template = `
       type="{{type}}" 
       id="{{id}}" 
       name="{{name}}" 
-      class="simple-input {{#if search}}simple-input_placeholder-center{{/if}}  {{className}}" 
+      class="{{#if search}}simple-input_placeholder-center{{/if}} {{className}}" 
       placeholder="{{placeholder}} " 
       value="{{value}}" 
     />
@@ -32,6 +32,10 @@ interface SimpleInputProps extends Props {
 export class SimpleInput extends Block<SimpleInputProps> {
   constructor(props: SimpleInputProps) {
     super(props);
+  }
+
+  public getValue(): string {
+    return this.props.value as string;
   }
 
   override render(): string {

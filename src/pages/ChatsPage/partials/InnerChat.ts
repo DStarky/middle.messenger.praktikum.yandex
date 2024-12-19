@@ -98,7 +98,7 @@ export class InnerChat extends Block<InnerChatProps> {
         id: 'message',
         name: 'message',
         placeholder: 'Сообщение',
-        className: 'simple-input_message',
+        className: 'simple-input_message simple-input',
       });
 
       const sendButton = new Button({

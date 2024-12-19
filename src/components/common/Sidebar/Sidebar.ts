@@ -57,6 +57,7 @@ export class Sidebar extends Block<SidebarProps> {
         name: 'search',
         placeholder: 'Поиск',
         search: true,
+        className: 'simple-input',
       }),
       profileLink: new Link({
         href: ROUTES.PROFILE,
