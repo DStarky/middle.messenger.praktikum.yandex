@@ -54,7 +54,6 @@ const template = `
 
 export class InnerChat extends Block<InnerChatProps> {
   constructor(props: InnerChatProps) {
-    // Убедимся, что props.messages всегда есть
     super({
       ...props,
       messages: props.messages || [],
