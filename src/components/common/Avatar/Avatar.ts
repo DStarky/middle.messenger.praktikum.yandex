@@ -17,8 +17,8 @@ interface AvatarProps extends Props {
 export class Avatar extends Block<AvatarProps> {
   constructor(props: AvatarProps) {
     super({
-      src: props.src || 'https://default-avatar.com/default.jpg',
       ...props,
+      src: props.src || '/defaultSrc.png',
     });
   }
 

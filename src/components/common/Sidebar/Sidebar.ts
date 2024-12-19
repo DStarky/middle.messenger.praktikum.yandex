@@ -4,6 +4,7 @@ import { ROUTES } from '../../../app/routes';
 import ArrowLeftIcon from '../../../assets/icons/arrow-left.svg';
 import type { Chat } from '../../../types/Chat';
 import type { Events } from '../../../types/Events';
+import { Avatar } from '../Avatar/Avatar';
 import { ChatItem } from '../ChatItem/ChatItem';
 
 const sidebarCompactTemplate = `
@@ -89,6 +90,7 @@ export class Sidebar extends Block<SidebarProps> {
         new ChatItem({
           ...chat,
           className: chat.id === this.props.selectedChat?.id ? 'active' : '',
+          avatar: new Avatar({ src: chat.avatar, alt: chat.name }),
         }),
     );
 

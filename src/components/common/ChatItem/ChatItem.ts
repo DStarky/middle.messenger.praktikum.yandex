@@ -1,11 +1,12 @@
 import type { Props } from '../../../app/Block';
 import Block from '../../../app/Block';
+import type { Avatar } from '../Avatar/Avatar';
 
 const chatItemTemplate = `
   <li class="chat-item {{{className}}}" data-chat-id="{{id}}">
     <div class="chat-item-container">
       <div class="chat-item__avatar">
-        <img src="{{avatar}}" alt="{{name}}" class="avatar-img" />
+        {{{avatar}}}
       </div>
       <div class="chat-item__content">
         <div class="chat-item__name">{{name}}</div>
@@ -28,7 +29,7 @@ const chatItemTemplate = `
 
 interface ChatItemProps extends Props {
   id: string;
-  avatar: string;
+  avatar: Avatar;
   name: string;
   lastMessage: string;
   time: string;
@@ -39,7 +40,9 @@ interface ChatItemProps extends Props {
 
 export class ChatItem extends Block<ChatItemProps> {
   constructor(props: ChatItemProps) {
-    super(props);
+    super({
+      ...props,
+    });
   }
 
   protected override render(): string {
