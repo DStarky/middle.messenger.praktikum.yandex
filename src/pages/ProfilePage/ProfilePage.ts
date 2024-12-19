@@ -94,7 +94,6 @@ export class ProfilePage extends Block<ProfilePageProps> {
   }
 
   private toggleEditPersonalMode(): void {
-    console.log('toggleEditPersonalMode called');
     this.setProps({
       isEditingPersonal: true,
       isEditingPassword: false,
@@ -102,7 +101,6 @@ export class ProfilePage extends Block<ProfilePageProps> {
   }
 
   private toggleEditPasswordMode(): void {
-    console.log('toggleEditPasswordMode called');
     this.setProps({
       isEditingPersonal: false,
       isEditingPassword: true,
@@ -110,7 +108,7 @@ export class ProfilePage extends Block<ProfilePageProps> {
   }
 
   private resetToDefaultMode(): void {
-    console.log('resetToDefaultMode called');
+    console.log('Тут логика возвращения в дефолтный режим');
     this.setProps({
       isEditingPersonal: false,
       isEditingPassword: false,
@@ -118,17 +116,7 @@ export class ProfilePage extends Block<ProfilePageProps> {
   }
 
   private handleLogout(): void {
-    console.log('handleLogout called');
-  }
-
-  private handlePersonalDataChange(e: Event): void {
-    const input = e.target as HTMLInputElement;
-    console.log(`Изменено поле ${input.name}: ${input.value}`);
-  }
-
-  private handlePasswordDataChange(e: Event): void {
-    const input = e.target as HTMLInputElement;
-    console.log(`Изменено поле ${input.name}: ${input.value}`);
+    console.log('Тут будет логика выхода');
   }
 
   private handleSavePersonalData(): void {

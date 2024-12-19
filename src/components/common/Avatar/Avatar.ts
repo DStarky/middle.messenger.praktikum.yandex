@@ -1,5 +1,6 @@
 import type { Props } from '../../../app/Block';
 import Block from '../../../app/Block';
+import type { Events } from '../../../types/Events';
 
 const template = `
   <div class="avatar">
@@ -11,7 +12,7 @@ interface AvatarProps extends Props {
   src?: string;
   alt: string;
   className?: string;
-  events?: Record<string, (e: Event) => void>;
+  events?: Events;
 }
 
 export class Avatar extends Block<AvatarProps> {
