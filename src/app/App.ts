@@ -6,6 +6,7 @@ import { Page500 } from '../pages/500/Page500';
 import { LoginPage } from '../pages/LoginPage/LoginPage';
 import { RegistrationPage } from '../pages/RegistrationPage/RegistrationPage';
 import { ChatsPage } from '../pages/ChatsPage/ChatsPage';
+import { ProfilePage } from '../pages/ProfilePage/ProfilePage';
 
 export class App {
   private router: Router;
@@ -35,6 +36,11 @@ export class App {
 
     this.router.addRoute(ROUTES.CHATS, () => {
       const page = new ChatsPage(this.router);
+      this.router.render(page.getContent()!);
+    });
+
+    this.router.addRoute(ROUTES.PROFILE, () => {
+      const page = new ProfilePage();
       this.router.render(page.getContent()!);
     });
 
