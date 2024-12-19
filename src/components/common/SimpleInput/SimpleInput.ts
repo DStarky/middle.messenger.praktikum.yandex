@@ -8,12 +8,9 @@ const template = `
       type="{{type}}" 
       id="{{id}}" 
       name="{{name}}" 
-      class="simple-input" 
+      class="simple-input {{#if search}}simple-input_placeholder-center{{/if}}" 
       placeholder="{{placeholder}}" 
       value="{{value}}" 
-      {{#if events}}
-        {{events}}
-      {{/if}}
     />
     {{#if search}}
       <img src="${SearchIcon}" alt="search" class="simple-input_icon" />

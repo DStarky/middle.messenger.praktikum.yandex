@@ -6,6 +6,7 @@ import type { Chat } from '../../../types/Chat';
 import type { Events } from '../../../types/Events';
 import { Avatar } from '../Avatar/Avatar';
 import { ChatItem } from '../ChatItem/ChatItem';
+import { SimpleInput } from '../SimpleInput/SimpleInput';
 
 const sidebarCompactTemplate = `
   <aside class="sidebar sidebar_small {{className}}">
@@ -26,15 +27,7 @@ const sidebarTemplate = `
       <a href="{{routes.PROFILE}}" class="default-link sidebar-link">Профиль ></a>
     </div>
     <div class="sidebar__search">
-      <input 
-        type="text" 
-        id="search" 
-        name="search" 
-        class="simple-input simple-input_placeholder-center" 
-        placeholder="Поиск" 
-        value="{{searchValue}}" 
-        data-id="searchInput"
-      />
+      {{{SimpleInput}}}
     </div>
     <ul class="sidebar__chat-list" data-id="chatList">
       {{{chatList}}}
@@ -62,6 +55,13 @@ export class Sidebar extends Block<SidebarProps> {
       ...props,
       arrowIcon: ArrowLeftIcon,
       routes: ROUTES,
+      SimpleInput: new SimpleInput({
+        type: 'text',
+        id: 'search',
+        name: 'search',
+        placeholder: 'Поиск',
+        search: true,
+      }),
     });
   }
 
