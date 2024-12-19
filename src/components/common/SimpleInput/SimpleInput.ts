@@ -3,13 +3,13 @@ import Block from '../../../app/Block';
 import SearchIcon from '../../../assets/icons/search.svg';
 
 const template = `
-  <div class="simple-input-container {{className}}">
+  <div class="simple-input-container">
     <input 
       type="{{type}}" 
       id="{{id}}" 
       name="{{name}}" 
-      class="simple-input {{#if search}}simple-input_placeholder-center{{/if}}" 
-      placeholder="{{placeholder}}" 
+      class="simple-input {{#if search}}simple-input_placeholder-center{{/if}}  {{className}}" 
+      placeholder="{{placeholder}} " 
       value="{{value}}" 
     />
     {{#if search}}
