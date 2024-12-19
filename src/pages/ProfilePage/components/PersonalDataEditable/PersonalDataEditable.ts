@@ -132,6 +132,28 @@ export class PersonalDataEditable extends Block<Props> {
     });
   }
 
+  public validateAllFields(): boolean {
+    const fields = [
+      this.children.email,
+      this.children.login,
+      this.children.firstName,
+      this.children.secondName,
+      this.children.displayName,
+      this.children.phone,
+    ] as ProfileEditableField[];
+
+    let isValid = true;
+
+    fields.forEach(field => {
+      const fieldValid = field.validate();
+      if (!fieldValid) {
+        isValid = false;
+      }
+    });
+
+    return isValid;
+  }
+
   override render(): string {
     return personalDataEditableTemplate;
   }

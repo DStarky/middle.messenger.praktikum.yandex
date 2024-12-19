@@ -51,17 +51,8 @@ export class PasswordDataEditable extends Block<Props> {
             message: 'Новый пароль обязателен для заполнения',
           },
           {
-            validator: (value: string) => value.length >= 8,
-            message: 'Пароль должен содержать не менее 8 символов',
-          },
-          {
-            validator: (value: string) =>
-              /[A-Z]/.test(value) &&
-              /[a-z]/.test(value) &&
-              /[0-9]/.test(value) &&
-              /[\W_]/.test(value),
-            message:
-              'Пароль должен содержать хотя бы одну заглавную букву, одну строчную букву, одну цифру и один специальный символ',
+            validator: (value: string) => value.length >= 6,
+            message: 'Пароль должен содержать не менее 6 символов',
           },
         ],
       }),
@@ -81,12 +72,35 @@ export class PasswordDataEditable extends Block<Props> {
             message: 'Подтверждение пароля обязательно для заполнения',
           },
           {
-            validator: (value: string) => value === props.newPasswordValue,
+            validator: (value: string) => {
+              const newPasswordField = this.children
+                .newPassword as ProfileEditableField;
+              return value === newPasswordField.getValue();
+            },
             message: 'Пароли не совпадают',
           },
         ],
       }),
     });
+  }
+
+  public validateAllFields(): boolean {
+    const fields = [
+      this.children.oldPassword,
+      this.children.newPassword,
+      this.children.confirmPassword,
+    ] as ProfileEditableField[];
+
+    let isValid = true;
+
+    fields.forEach(field => {
+      const fieldValid = field.validate();
+      if (!fieldValid) {
+        isValid = false;
+      }
+    });
+
+    return isValid;
   }
 
   override render(): string {

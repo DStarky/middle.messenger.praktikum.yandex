@@ -120,6 +120,14 @@ export class ProfilePage extends Block<ProfilePageProps> {
   }
 
   private handleSavePersonalData(): void {
+    const personalDataEditable = this.children
+      .personalDataEditable as PersonalDataEditable;
+    const isValid = personalDataEditable.validateAllFields();
+
+    if (!isValid) {
+      return;
+    }
+
     const form = document.getElementById('profile-data') as HTMLFormElement;
     const formData = new FormData(form);
 
@@ -129,7 +137,16 @@ export class ProfilePage extends Block<ProfilePageProps> {
 
     this.resetToDefaultMode();
   }
+
   private handleSavePasswordData(): void {
+    const passwordDataEditable = this.children
+      .passwordDataEditable as PasswordDataEditable;
+    const isValid = passwordDataEditable.validateAllFields();
+
+    if (!isValid) {
+      return;
+    }
+
     const form = document.getElementById('password-data') as HTMLFormElement;
     const formData = new FormData(form);
 
