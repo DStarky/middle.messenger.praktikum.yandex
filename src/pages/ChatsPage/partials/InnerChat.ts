@@ -18,6 +18,8 @@ interface Chat {
 interface InnerChatProps extends Props {
   selectedChat?: Chat | null;
   messages: MessageData[];
+  isLoading?: boolean;
+  errorMessage?: string | null;
   className?: string;
   events?: Record<string, (e: Event) => void>;
 }
@@ -33,7 +35,13 @@ const template = `
         </button>
       </div>
       <div class="chat-messages">
-        {{{messages}}}
+        {{#if isLoading}}
+          <div class="chat-loading">Загрузка сообщений...</div>
+        {{else if errorMessage}}
+          <div class="chat-error">{{errorMessage}}</div>
+        {{else}}
+          {{{messages}}}
+        {{/if}}
       </div>
       <div class="chat-input">
         <button class="chat-input__attach">
@@ -70,7 +78,9 @@ export class InnerChat extends Block<InnerChatProps> {
   ): boolean {
     if (
       oldProps.selectedChat !== newProps.selectedChat ||
-      oldProps.messages !== newProps.messages
+      oldProps.messages !== newProps.messages ||
+      oldProps.isLoading !== newProps.isLoading ||
+      oldProps.errorMessage !== newProps.errorMessage
     ) {
       this.createChildren(newProps);
       return true;
