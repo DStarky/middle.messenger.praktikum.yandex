@@ -1,4 +1,4 @@
-.floating-input-container {
+.floating-input__container {
   position: relative;
 }
 
@@ -33,4 +33,14 @@
 .floating-input:not(:placeholder-shown) + .floating-label {
   top: -4px;
   font-size: 9px;
+}
+
+.floating-input__container-error > input {
+  color: red;
+}
+
+.floating-input__error {
+  font-size: 9px;
+  color: red;
+  margin-top: 6px;
 }
