@@ -126,8 +126,7 @@ export class LoginPage extends Block<LoginPageProps> {
     console.log('Password:', password);
 
     // Здесь можно добавить логику авторизации
-    // После успешной авторизации навигация на страницу чатов
-    // this.router.navigate(ROUTES.CHATS);
+    this.router.navigate(ROUTES.CHATS);
   }
 
   public validateAllFields(): boolean {

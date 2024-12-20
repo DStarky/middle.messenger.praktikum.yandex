@@ -263,8 +263,7 @@ export class RegistrationPage extends Block<RegistrationPageProps> {
     });
 
     // Здесь можно добавить логику авторизации
-    // После успешной авторизации навигация на страницу чатов
-    // this.router.navigate(ROUTES.CHATS);
+    this.router.navigate(ROUTES.CHATS);
   }
 
   public validateAllFields(): boolean {
