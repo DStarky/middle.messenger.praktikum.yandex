@@ -43,6 +43,10 @@ export class SimpleInput extends Block<SimpleInputProps> {
     return this.props.value as string;
   }
 
+  public setValue(value: string): void {
+    this.props.value = value;
+  }
+
   protected override componentDidUpdate(
     oldProps: SimpleInputProps,
     newProps: SimpleInputProps,
