@@ -33,4 +33,25 @@ export class ChatAPI {
       }, 500);
     });
   }
+
+  public static sendMessage(
+    chatId: string,
+    message: MessageData,
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const shouldError = Math.random() < 0.1;
+        if (shouldError) {
+          reject(new Error('Не удалось отправить сообщение.'));
+        } else {
+          if (!MESSAGES_BY_CHAT_ID[chatId]) {
+            MESSAGES_BY_CHAT_ID[chatId] = [];
+          }
+
+          MESSAGES_BY_CHAT_ID[chatId].push(message);
+          resolve();
+        }
+      }, 500);
+    });
+  }
 }
