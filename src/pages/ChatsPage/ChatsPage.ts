@@ -186,7 +186,10 @@ export class ChatsPage extends Block<ChatsPageProps> {
     const newMessage: MessageData = {
       id: makeUUID(),
       text: message,
-      time: new Date().toISOString(),
+      time: new Intl.DateTimeFormat('ru', {
+        hour: '2-digit',
+        minute: '2-digit',
+      }).format(new Date()),
       isOwn: true,
     };
 
