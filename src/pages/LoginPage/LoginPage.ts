@@ -46,6 +46,13 @@ export class LoginPage extends Block<LoginPageProps> {
       name: 'login',
       label: 'Логин',
       value: '',
+      validationRules: [
+        {
+          validator: (value: string) =>
+            /^[a-zA-Z0-9_А-Яа-я]{3,10}$/.test(value),
+          message: 'Логин должен содержать от 3 до 10 символов',
+        },
+      ],
     });
 
     const passwordInput = new FloatingLabelInput({
@@ -54,6 +61,12 @@ export class LoginPage extends Block<LoginPageProps> {
       name: 'password',
       label: 'Пароль',
       value: '',
+      validationRules: [
+        {
+          validator: (value: string) => value.length >= 6,
+          message: 'Пароль должен содержать не менее 6 символов',
+        },
+      ],
     });
 
     const submitButton = new Button({
@@ -89,6 +102,12 @@ export class LoginPage extends Block<LoginPageProps> {
   private handleSubmit(event: Event) {
     event.preventDefault();
 
+    const isValid = this.validateAllFields();
+    if (!isValid) {
+      alert('Пожалуйста, исправьте ошибки в форме.');
+      return;
+    }
+
     const form = event.target as HTMLFormElement;
     if (form.id !== 'login-form') {
       return;
@@ -109,5 +128,23 @@ export class LoginPage extends Block<LoginPageProps> {
     // Здесь можно добавить логику авторизации
     // После успешной авторизации навигация на страницу чатов
     // this.router.navigate(ROUTES.CHATS);
+  }
+
+  public validateAllFields(): boolean {
+    const fields = [
+      this.children.loginInput,
+      this.children.passwordInput,
+    ] as FloatingLabelInput[];
+
+    let isValid = true;
+
+    fields.forEach(field => {
+      const fieldValid = field.validate();
+      if (!fieldValid) {
+        isValid = false;
+      }
+    });
+
+    return isValid;
   }
 }
