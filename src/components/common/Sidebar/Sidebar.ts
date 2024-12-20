@@ -80,6 +80,10 @@ export class Sidebar extends Block<SidebarProps> {
     this.updateChatList();
   }
 
+  public getChats(): Chat[] {
+    return this.lists.chats as Chat[];
+  }
+
   protected componentDidUpdate(
     oldProps: SidebarProps,
     newProps: SidebarProps,

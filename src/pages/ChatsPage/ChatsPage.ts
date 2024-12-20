@@ -30,7 +30,7 @@ export class ChatsPage extends Block<ChatsPageProps> {
   constructor(router: Router) {
     const sidebar = new Sidebar({
       compact: false,
-      chats: DEFAULT_CHATS,
+      chats: [],
       selectedChat: { id: null },
       events: {
         click: (e: Event) => this.handleChatClick(e),
@@ -48,6 +48,11 @@ export class ChatsPage extends Block<ChatsPageProps> {
     });
 
     this.router = router;
+  }
+
+  protected override init(): void {
+    super.init();
+    this.fetchChatsWithDelay();
   }
 
   protected override render(): string {
@@ -84,7 +89,7 @@ export class ChatsPage extends Block<ChatsPageProps> {
     const sidebar = this.children.sidebar as Sidebar;
     sidebar.setProps({
       selectedChat: selectedChat ? { id: selectedChat.id } : { id: null },
-      chats: this.getChats(),
+      chats: sidebar.getChats(),
     });
 
     const innerChat = this.children.innerChat as InnerChat;
@@ -104,5 +109,16 @@ export class ChatsPage extends Block<ChatsPageProps> {
 
   private getMessages(chatId: string): MessageData[] {
     return MESSAGES_BY_CHAT_ID[chatId] || [];
+  }
+
+  private fetchChatsWithDelay(): void {
+    setTimeout(() => {
+      this.setChats(DEFAULT_CHATS);
+    }, 1000);
+  }
+
+  private setChats(chats: Chat[]): void {
+    const sidebar = this.children.sidebar as Sidebar;
+    sidebar.setLists({ chats });
   }
 }
