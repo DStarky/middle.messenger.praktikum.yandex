@@ -5,6 +5,8 @@ import { Sidebar } from '../../components/common/Sidebar/Sidebar';
 import { ChatAPI } from '../../api/ChatAPI';
 import type { Chat } from '../../types/Chat';
 import { InnerChat } from './partials/InnerChat';
+import type { MessageData } from '../../components/common/Message/Message';
+import { v4 as makeUUID } from 'uuid';
 
 const template = `
   <main class="chats-page">
@@ -43,6 +45,7 @@ export class ChatsPage extends Block<ChatsPageProps> {
       messages: [],
       isLoading: false,
       errorMessage: null,
+      onSendMessage: (message: string) => this.handleSendMessage(message),
     });
 
     super({
@@ -162,6 +165,50 @@ export class ChatsPage extends Block<ChatsPageProps> {
       } else {
         innerChat.setProps({
           errorMessage: 'Неизвестная ошибка при загрузке сообщений.',
+          isLoading: false,
+        });
+      }
+    }
+  }
+
+  private async handleSendMessage(message: string): Promise<void> {
+    if (!this.selectedChatId) {
+      return;
+    }
+
+    const innerChat = this.children.innerChat as InnerChat;
+
+    innerChat.setProps({
+      isLoading: true,
+      errorMessage: null,
+    });
+
+    const newMessage: MessageData = {
+      id: makeUUID(),
+      text: message,
+      time: new Date().toISOString(),
+      isOwn: true,
+    };
+
+    try {
+      await ChatAPI.sendMessage(this.selectedChatId, newMessage);
+
+      const messages = await ChatAPI.fetchMessages(this.selectedChatId);
+
+      innerChat.setProps({
+        messages,
+        isLoading: false,
+        errorMessage: null,
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        innerChat.setProps({
+          errorMessage: error.message,
+          isLoading: false,
+        });
+      } else {
+        innerChat.setProps({
+          errorMessage: 'Неизвестная ошибка при отправке сообщения.',
           isLoading: false,
         });
       }

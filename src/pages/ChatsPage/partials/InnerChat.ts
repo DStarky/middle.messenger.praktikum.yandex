@@ -20,6 +20,7 @@ interface InnerChatProps extends Props {
   messages: MessageData[];
   isLoading?: boolean;
   errorMessage?: string | null;
+  onSendMessage?: (message: string) => void;
   className?: string;
   events?: Record<string, (e: Event) => void>;
 }
@@ -116,12 +117,24 @@ export class InnerChat extends Block<InnerChatProps> {
         className: 'button_round',
         icon: ArrowRightIcon,
         alt: 'Send',
+        events: {
+          click: () => this.handleSendClick(),
+        },
       });
 
       this.children.avatar = avatar;
       this.children.messages = messageBlocks;
       this.children.input = input;
       this.children.sendButton = sendButton;
+    }
+  }
+
+  private handleSendClick(): void {
+    const input = this.children.input as SimpleInput;
+    const message = input.getValue();
+    if (this.props.onSendMessage && message.trim() !== '') {
+      this.props.onSendMessage(message);
+      input.setValue('');
     }
   }
 
