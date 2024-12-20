@@ -57,6 +57,13 @@ export class RegistrationPage extends Block<RegistrationPageProps> {
       label: 'Почта',
       value: '',
       required: true,
+      validationRules: [
+        {
+          validator: (value: string) =>
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+          message: 'Некорректный формат email',
+        },
+      ],
     });
 
     const loginInput = new FloatingLabelInput({
@@ -66,6 +73,12 @@ export class RegistrationPage extends Block<RegistrationPageProps> {
       label: 'Логин',
       value: '',
       required: true,
+      validationRules: [
+        {
+          validator: (value: string) => /^[a-zA-Z0-9_]{3,10}$/.test(value),
+          message: 'Логин должен содержать от 3 до 10 символов',
+        },
+      ],
     });
 
     const firstNameInput = new FloatingLabelInput({
@@ -75,6 +88,13 @@ export class RegistrationPage extends Block<RegistrationPageProps> {
       label: 'Имя',
       value: '',
       required: true,
+      validationRules: [
+        {
+          validator: (value: string) => /^[A-Za-zА-Яа-яЁё]{2,10}$/.test(value),
+          message:
+            'Имя должно содержать только буквы и быть длиной от 2 до 10 символов',
+        },
+      ],
     });
 
     const secondNameInput = new FloatingLabelInput({
@@ -84,6 +104,13 @@ export class RegistrationPage extends Block<RegistrationPageProps> {
       label: 'Фамилия',
       value: '',
       required: true,
+      validationRules: [
+        {
+          validator: (value: string) => /^[A-Za-zА-Яа-яЁё]{2,10}$/.test(value),
+          message:
+            'Фамилия должна содержать только буквы и быть длиной от 2 до 10 символов',
+        },
+      ],
     });
 
     const phoneInput = new FloatingLabelInput({
@@ -93,6 +120,13 @@ export class RegistrationPage extends Block<RegistrationPageProps> {
       label: 'Телефон',
       value: '',
       required: true,
+      validationRules: [
+        {
+          validator: (value: string) =>
+            /^\+7\s\(\d{3}\)\s\d{3}\s\d{2}\s\d{2}$/.test(value),
+          message: 'Номер телефона должен быть +7 (XXX) XXX XX XX',
+        },
+      ],
     });
 
     const passwordInput = new FloatingLabelInput({
@@ -102,6 +136,12 @@ export class RegistrationPage extends Block<RegistrationPageProps> {
       label: 'Пароль',
       value: '',
       required: true,
+      validationRules: [
+        {
+          validator: (value: string) => value.length >= 6,
+          message: 'Пароль должен содержать не менее 6 символов',
+        },
+      ],
     });
 
     const repeatPasswordInput = new FloatingLabelInput({
@@ -111,6 +151,12 @@ export class RegistrationPage extends Block<RegistrationPageProps> {
       label: 'Пароль (ещё раз)',
       value: '',
       required: true,
+      validationRules: [
+        {
+          validator: (value: string) => value.length >= 6,
+          message: 'Пароль должен содержать не менее 6 символов',
+        },
+      ],
     });
 
     const submitButton = new Button({
@@ -156,14 +202,43 @@ export class RegistrationPage extends Block<RegistrationPageProps> {
       return;
     }
 
+    // Сначала валидируем все поля
+    const isValid = this.validateAllFields();
+    if (!isValid) {
+      // Ошибки уже отображены в соответствующих полях
+      return;
+    }
+
+    // Затем проверяем, совпадают ли пароли
+    const password = (
+      this.children.passwordInput as FloatingLabelInput
+    ).getValue();
+    const repeatPassword = (
+      this.children.repeatPasswordInput as FloatingLabelInput
+    ).getValue();
+
+    if (password !== repeatPassword) {
+      // Устанавливаем ошибку на поле повторного ввода пароля
+      (this.children.repeatPasswordInput as FloatingLabelInput).setProps({
+        error: 'Пароли не совпадают.',
+      });
+      return;
+    } else {
+      // Если пароли совпадают, очищаем ошибку (на случай, если она была установлена ранее)
+      (this.children.repeatPasswordInput as FloatingLabelInput).setProps({
+        error: '',
+      });
+    }
+
+    // Собираем данные формы
     const formData = new FormData(form);
     const email = formData.get('email') as string;
     const login = formData.get('login') as string;
     const firstName = formData.get('first_name') as string;
     const secondName = formData.get('second_name') as string;
     const phone = formData.get('phone') as string;
-    const password = formData.get('password') as string;
-    const repeatPassword = formData.get('repeatPassword') as string;
+    const passwordValue = formData.get('password') as string;
+    const repeatPasswordValue = formData.get('repeatPassword') as string;
 
     if (
       !email ||
@@ -171,15 +246,10 @@ export class RegistrationPage extends Block<RegistrationPageProps> {
       !firstName ||
       !secondName ||
       !phone ||
-      !password ||
-      !repeatPassword
+      !passwordValue ||
+      !repeatPasswordValue
     ) {
       alert('Пожалуйста, заполните все поля.');
-      return;
-    }
-
-    if (password !== repeatPassword) {
-      alert('Пароли не совпадают.');
       return;
     }
 
@@ -189,9 +259,34 @@ export class RegistrationPage extends Block<RegistrationPageProps> {
       firstName,
       secondName,
       phone,
-      password,
+      password: passwordValue,
     });
 
-    this.router.navigate(ROUTES.CHATS);
+    // Здесь можно добавить логику авторизации
+    // После успешной авторизации навигация на страницу чатов
+    // this.router.navigate(ROUTES.CHATS);
+  }
+
+  public validateAllFields(): boolean {
+    const fields = [
+      this.children.emailInput,
+      this.children.loginInput,
+      this.children.firstNameInput,
+      this.children.secondNameInput,
+      this.children.phoneInput,
+      this.children.passwordInput,
+      this.children.repeatPasswordInput,
+    ] as FloatingLabelInput[];
+
+    let isValid = true;
+
+    fields.forEach(field => {
+      const fieldValid = field.validate();
+      if (!fieldValid) {
+        isValid = false;
+      }
+    });
+
+    return isValid;
   }
 }
