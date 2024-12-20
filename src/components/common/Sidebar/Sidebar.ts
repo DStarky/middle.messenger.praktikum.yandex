@@ -25,9 +25,15 @@ const sidebarTemplate = `
     <div class="sidebar__search">
       {{{searchInput}}}
     </div>
-    <ul class="sidebar__chat-list" data-id="chatList">
-      {{{chatList}}}
-    </ul>
+    {{#if isLoading}}
+      <div class="sidebar__loading">Загрузка чатов...</div>
+    {{else if errorMessage}}
+      <div class="sidebar__error">{{errorMessage}}</div>
+    {{else}}
+      <ul class="sidebar__chat-list" data-id="chatList">
+        {{{chatList}}}
+      </ul>
+    {{/if}}
   </aside>
 `;
 
@@ -42,6 +48,8 @@ interface SidebarProps extends Props {
   selectedChat: { id: string | null };
   searchValue?: string;
   className?: string;
+  isLoading?: boolean;
+  errorMessage?: string | null;
   events?: SidebarEvents;
 }
 
@@ -81,7 +89,7 @@ export class Sidebar extends Block<SidebarProps> {
   }
 
   public getChats(): Chat[] {
-    return this.lists.chats as Chat[];
+    return this.props.chats;
   }
 
   protected componentDidUpdate(
@@ -90,7 +98,9 @@ export class Sidebar extends Block<SidebarProps> {
   ): boolean {
     if (
       oldProps.selectedChat?.id !== newProps.selectedChat?.id ||
-      oldProps.chats !== newProps.chats
+      oldProps.chats !== newProps.chats ||
+      oldProps.isLoading !== newProps.isLoading ||
+      oldProps.errorMessage !== newProps.errorMessage
     ) {
       this.updateChatList();
     }
@@ -99,7 +109,13 @@ export class Sidebar extends Block<SidebarProps> {
   }
 
   private updateChatList(): void {
-    const chatData = (this.lists.chats as Chat[]) || [];
+    if (this.props.isLoading || this.props.errorMessage) {
+      // Во время загрузки или при ошибке не обновляем список чатов
+      this.children.chatList = [];
+      return;
+    }
+
+    const chatData = this.props.chats || [];
     const chatItems = chatData.map(
       chat =>
         new ChatItem({
