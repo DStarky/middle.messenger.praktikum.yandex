@@ -47,7 +47,8 @@ export class PersonalDataEditable extends Block<Props> {
           : undefined,
         validationRules: [
           {
-            validator: (value: string) => /^[a-zA-Z0-9_]{3,10}$/.test(value),
+            validator: (value: string) =>
+              /^[a-zA-Z0-9_А-Яа-я]{3,10}$/.test(value),
             message:
               'Логин должен содержать от 3 до 10 символов и может включать буквы, цифры и символ подчеркивания',
           },
@@ -66,7 +67,7 @@ export class PersonalDataEditable extends Block<Props> {
         validationRules: [
           {
             validator: (value: string) =>
-              /^[A-Za-zА-Яа-яЁё]{2,10}$/.test(value),
+              /^[a-zA-Z0-9_А-Яа-я]{2,10}$/.test(value),
             message:
               'Имя должно содержать только буквы и быть длиной от 2 до 10 символов',
           },
@@ -85,7 +86,7 @@ export class PersonalDataEditable extends Block<Props> {
         validationRules: [
           {
             validator: (value: string) =>
-              /^[A-Za-zА-Яа-яЁё]{2,10}$/.test(value),
+              /^[a-zA-Z0-9_А-Яа-я]{2,10}$/.test(value),
             message:
               'Фамилия должна содержать только буквы и быть длиной от 2 до 10 символов',
           },
