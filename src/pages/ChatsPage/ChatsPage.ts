@@ -178,11 +178,6 @@ export class ChatsPage extends Block<ChatsPageProps> {
 
     const innerChat = this.children.innerChat as InnerChat;
 
-    innerChat.setProps({
-      isLoading: true,
-      errorMessage: null,
-    });
-
     const newMessage: MessageData = {
       id: makeUUID(),
       text: message,
@@ -196,23 +191,20 @@ export class ChatsPage extends Block<ChatsPageProps> {
     try {
       await ChatAPI.sendMessage(this.selectedChatId, newMessage);
 
-      const messages = await ChatAPI.fetchMessages(this.selectedChatId);
+      const currentMessages = innerChat.getProps().messages || [];
+      const updatedMessages = [...currentMessages, newMessage];
 
       innerChat.setProps({
-        messages,
-        isLoading: false,
-        errorMessage: null,
+        messages: updatedMessages,
       });
     } catch (error) {
       if (error instanceof Error) {
         innerChat.setProps({
           errorMessage: error.message,
-          isLoading: false,
         });
       } else {
         innerChat.setProps({
           errorMessage: 'Неизвестная ошибка при отправке сообщения.',
-          isLoading: false,
         });
       }
     }

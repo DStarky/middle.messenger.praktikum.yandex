@@ -166,6 +166,10 @@ export class InnerChat extends Block<InnerChatProps> {
     }
   }
 
+  public getProps(): InnerChatProps {
+    return this.props;
+  }
+
   protected override render(): string {
     return template;
   }
