@@ -10,6 +10,7 @@ import { Avatar } from '../../../components/common/Avatar/Avatar';
 import { Message } from '../../../components/common/Message/Message';
 import { SimpleInput } from '../../../components/common/SimpleInput/SimpleInput';
 import { Button } from '../../../components/common/Button/Button';
+import type { Events } from '../../../types/Events';
 
 interface Chat {
   id: string;
@@ -24,7 +25,7 @@ interface InnerChatProps extends Props {
   errorMessage?: string | null;
   onSendMessage?: (message: string) => void;
   className?: string;
-  events?: Record<string, (e: Event) => void>;
+  events?: Events;
 }
 
 const template = `
@@ -113,6 +114,14 @@ export class InnerChat extends Block<InnerChatProps> {
         placeholder: 'Сообщение',
         value: '',
         className: 'simple-input_message simple-input',
+        events: {
+          keydown: (e: Event) => {
+            const keyboardEvent = e as KeyboardEvent;
+            if (keyboardEvent.key === 'Enter') {
+              this.handleSendClick();
+            }
+          },
+        },
       });
 
       const sendButton = new Button({
