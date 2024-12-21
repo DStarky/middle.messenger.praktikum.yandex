@@ -6,6 +6,7 @@ import { Button } from '../../components/common/Button/Button';
 import { CardTitle } from '../../components/common/CardTitle/CardTitle';
 import { FloatingLabelInput } from '../../components/common/FloatingLabelInput/FloatingLabelInput';
 import { Link } from '../../components/common/Link/Link';
+import { validationRules } from '../../helpers/validationRules';
 
 const template = `
   <main class="screen-center login-page">
@@ -46,13 +47,7 @@ export class LoginPage extends Block<LoginPageProps> {
       name: 'login',
       label: 'Логин',
       value: '',
-      validationRules: [
-        {
-          validator: (value: string) =>
-            /^[a-zA-Z0-9_А-Яа-я]{3,10}$/.test(value),
-          message: 'Логин должен содержать от 3 до 10 символов',
-        },
-      ],
+      validationRules: validationRules.login,
     });
 
     const passwordInput = new FloatingLabelInput({
@@ -61,12 +56,7 @@ export class LoginPage extends Block<LoginPageProps> {
       name: 'password',
       label: 'Пароль',
       value: '',
-      validationRules: [
-        {
-          validator: (value: string) => value.length >= 6,
-          message: 'Пароль должен содержать не менее 6 символов',
-        },
-      ],
+      validationRules: validationRules.password,
     });
 
     const submitButton = new Button({

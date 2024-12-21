@@ -39,7 +39,7 @@ export class ProfilePersonalData extends Block<Props> {
       }),
       phone: new ProfileStaticField({
         label: 'Телефон',
-        value: '+7 (909) 967 30 30',
+        value: '+79099673030',
       }),
     });
   }

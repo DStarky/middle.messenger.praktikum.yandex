@@ -6,6 +6,8 @@ import { Button } from '../../components/common/Button/Button';
 import { CardTitle } from '../../components/common/CardTitle/CardTitle';
 import { FloatingLabelInput } from '../../components/common/FloatingLabelInput/FloatingLabelInput';
 import { Link } from '../../components/common/Link/Link';
+import { validationRules } from '../../helpers/validationRules';
+import type { Events } from '../../types/Events';
 
 const template = `
   <main class="screen-center registration-page">
@@ -41,7 +43,7 @@ interface RegistrationPageProps extends Props {
   repeatPasswordInput: FloatingLabelInput;
   submitButton: Button;
   loginLink: Link;
-  events?: Record<string, (e: Event) => void>;
+  events?: Events;
 }
 
 export class RegistrationPage extends Block<RegistrationPageProps> {
@@ -57,13 +59,7 @@ export class RegistrationPage extends Block<RegistrationPageProps> {
       label: 'Почта',
       value: '',
       required: true,
-      validationRules: [
-        {
-          validator: (value: string) =>
-            /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
-          message: 'Некорректный формат email',
-        },
-      ],
+      validationRules: validationRules.email,
     });
 
     const loginInput = new FloatingLabelInput({
@@ -73,12 +69,7 @@ export class RegistrationPage extends Block<RegistrationPageProps> {
       label: 'Логин',
       value: '',
       required: true,
-      validationRules: [
-        {
-          validator: (value: string) => /^[a-zA-Z0-9_]{3,10}$/.test(value),
-          message: 'Логин должен содержать от 3 до 10 символов',
-        },
-      ],
+      validationRules: validationRules.login,
     });
 
     const firstNameInput = new FloatingLabelInput({
@@ -88,13 +79,7 @@ export class RegistrationPage extends Block<RegistrationPageProps> {
       label: 'Имя',
       value: '',
       required: true,
-      validationRules: [
-        {
-          validator: (value: string) => /^[A-Za-zА-Яа-яЁё]{2,10}$/.test(value),
-          message:
-            'Имя должно содержать только буквы и быть длиной от 2 до 10 символов',
-        },
-      ],
+      validationRules: validationRules.name,
     });
 
     const secondNameInput = new FloatingLabelInput({
@@ -104,13 +89,7 @@ export class RegistrationPage extends Block<RegistrationPageProps> {
       label: 'Фамилия',
       value: '',
       required: true,
-      validationRules: [
-        {
-          validator: (value: string) => /^[A-Za-zА-Яа-яЁё]{2,10}$/.test(value),
-          message:
-            'Фамилия должна содержать только буквы и быть длиной от 2 до 10 символов',
-        },
-      ],
+      validationRules: validationRules.name,
     });
 
     const phoneInput = new FloatingLabelInput({
@@ -120,13 +99,7 @@ export class RegistrationPage extends Block<RegistrationPageProps> {
       label: 'Телефон',
       value: '',
       required: true,
-      validationRules: [
-        {
-          validator: (value: string) =>
-            /^\+7\s\(\d{3}\)\s\d{3}\s\d{2}\s\d{2}$/.test(value),
-          message: 'Номер телефона должен быть +7 (XXX) XXX XX XX',
-        },
-      ],
+      validationRules: validationRules.phone,
     });
 
     const passwordInput = new FloatingLabelInput({
@@ -136,12 +109,7 @@ export class RegistrationPage extends Block<RegistrationPageProps> {
       label: 'Пароль',
       value: '',
       required: true,
-      validationRules: [
-        {
-          validator: (value: string) => value.length >= 6,
-          message: 'Пароль должен содержать не менее 6 символов',
-        },
-      ],
+      validationRules: validationRules.password,
     });
 
     const repeatPasswordInput = new FloatingLabelInput({
@@ -151,12 +119,7 @@ export class RegistrationPage extends Block<RegistrationPageProps> {
       label: 'Пароль (ещё раз)',
       value: '',
       required: true,
-      validationRules: [
-        {
-          validator: (value: string) => value.length >= 6,
-          message: 'Пароль должен содержать не менее 6 символов',
-        },
-      ],
+      validationRules: validationRules.password,
     });
 
     const submitButton = new Button({

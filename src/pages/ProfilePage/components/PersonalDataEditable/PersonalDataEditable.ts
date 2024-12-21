@@ -1,5 +1,6 @@
 import type { Props } from '../../../../app/Block';
 import Block from '../../../../app/Block';
+import { validationRules } from '../../../../helpers/validationRules';
 import { ProfileEditableField } from '../ProfileEditableField/ProfileEditableField';
 
 const personalDataEditableTemplate = `
@@ -27,13 +28,7 @@ export class PersonalDataEditable extends Block<Props> {
         events: props.events?.emailChange
           ? { change: props.events.emailChange }
           : undefined,
-        validationRules: [
-          {
-            validator: (value: string) =>
-              /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
-            message: 'Некорректный формат email',
-          },
-        ],
+        validationRules: validationRules.email,
       }),
       login: new ProfileEditableField({
         label: 'Логин',
@@ -45,14 +40,7 @@ export class PersonalDataEditable extends Block<Props> {
         events: props.events?.loginChange
           ? { change: props.events.loginChange }
           : undefined,
-        validationRules: [
-          {
-            validator: (value: string) =>
-              /^[a-zA-Z0-9_А-Яа-я]{3,10}$/.test(value),
-            message:
-              'Логин должен содержать от 3 до 10 символов и может включать буквы, цифры и символ подчеркивания',
-          },
-        ],
+        validationRules: validationRules.login,
       }),
       firstName: new ProfileEditableField({
         label: 'Имя',
@@ -64,14 +52,7 @@ export class PersonalDataEditable extends Block<Props> {
         events: props.events?.firstNameChange
           ? { change: props.events.firstNameChange }
           : undefined,
-        validationRules: [
-          {
-            validator: (value: string) =>
-              /^[a-zA-Z0-9_А-Яа-я]{2,10}$/.test(value),
-            message:
-              'Имя должно содержать только буквы и быть длиной от 2 до 10 символов',
-          },
-        ],
+        validationRules: validationRules.name,
       }),
       secondName: new ProfileEditableField({
         label: 'Фамилия',
@@ -83,14 +64,7 @@ export class PersonalDataEditable extends Block<Props> {
         events: props.events?.secondNameChange
           ? { change: props.events.secondNameChange }
           : undefined,
-        validationRules: [
-          {
-            validator: (value: string) =>
-              /^[a-zA-Z0-9_А-Яа-я]{2,10}$/.test(value),
-            message:
-              'Фамилия должна содержать только буквы и быть длиной от 2 до 10 символов',
-          },
-        ],
+        validationRules: validationRules.name,
       }),
       displayName: new ProfileEditableField({
         label: 'Имя в чате',
@@ -102,14 +76,7 @@ export class PersonalDataEditable extends Block<Props> {
         events: props.events?.displayNameChange
           ? { change: props.events.displayNameChange }
           : undefined,
-        validationRules: [
-          {
-            validator: (value: string) =>
-              /^[A-Za-zА-Яа-яЁё0-9_]{2,10}$/.test(value),
-            message:
-              'Имя в чате должно содержать от 2 до 10 символов и может включать буквы, цифры и символ подчеркивания',
-          },
-        ],
+        validationRules: validationRules.login,
       }),
       phone: new ProfileEditableField({
         label: 'Телефон',
@@ -121,14 +88,7 @@ export class PersonalDataEditable extends Block<Props> {
         events: props.events?.phoneChange
           ? { change: props.events.phoneChange }
           : undefined,
-        validationRules: [
-          {
-            validator: (value: string) =>
-              /^\+7\s\(\d{3}\)\s\d{3}\s\d{2}\s\d{2}$/.test(value),
-            message:
-              'Номер телефона должен соответствовать формату +7 (XXX) XXX XX XX',
-          },
-        ],
+        validationRules: validationRules.phone,
       }),
     });
   }

@@ -66,6 +66,7 @@ export default tseslint.config(
       'no-eval': 'error',
       'no-implied-eval': 'error',
       'no-new-wrappers': 'error',
+      'no-useless-escape': 'off',
     },
   },
 );
