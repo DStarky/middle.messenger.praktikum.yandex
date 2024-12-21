@@ -47,6 +47,13 @@ export class SimpleInput extends Block<SimpleInputProps> {
     this.props.value = value;
   }
 
+  public focus(): void {
+    const input = this.getContent()?.querySelector('input') as HTMLInputElement;
+    if (input) {
+      input.focus();
+    }
+  }
+
   protected override componentDidUpdate(
     oldProps: SimpleInputProps,
     newProps: SimpleInputProps,
