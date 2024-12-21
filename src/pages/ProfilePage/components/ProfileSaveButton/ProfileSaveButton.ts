@@ -3,7 +3,7 @@ import Block from '../../../../app/Block';
 import { Button } from '../../../../components/common/Button/Button';
 
 const profileSaveButtonTemplate = `
-  <div class="profile-page__button">
+  <div class="profile-page__save-button">
     {{{button}}}
   </div>
 `;
