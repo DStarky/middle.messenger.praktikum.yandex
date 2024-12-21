@@ -1,3 +1,5 @@
+import type { ValidationRule } from './../../../helpers/validationRules';
+import { validationRules } from './../../../helpers/validationRules';
 import type { Props } from '../../../app/Block';
 import Block from '../../../app/Block';
 import MenuIcon from '../../../assets/icons/menu.svg';
@@ -109,6 +111,7 @@ export class InnerChat extends Block<InnerChatProps> {
         id: 'message',
         name: 'message',
         placeholder: 'Сообщение',
+        value: '',
         className: 'simple-input_message simple-input',
       });
 
@@ -132,6 +135,22 @@ export class InnerChat extends Block<InnerChatProps> {
   private handleSendClick(): void {
     const input = this.children.input as SimpleInput;
     const message = input.getValue();
+
+    const validations = (validationRules.required as ValidationRule[]) || [];
+    let errorMessage = '';
+
+    for (const rule of validations) {
+      if (!rule.validator(message)) {
+        errorMessage = rule.message;
+        break;
+      }
+    }
+
+    if (errorMessage) {
+      alert(errorMessage);
+      return;
+    }
+
     if (this.props.onSendMessage && message.trim() !== '') {
       this.props.onSendMessage(message);
       input.setValue('');
