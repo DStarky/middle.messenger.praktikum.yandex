@@ -1,6 +1,7 @@
 import type { Props } from '../../../app/Block';
 import Block from '../../../app/Block';
 import { SimpleInput } from '../../../components/common/SimpleInput/SimpleInput';
+import type { ValidationRule } from '../../../helpers/validationRules';
 import type { Events } from '../../../types/Events';
 
 const template = `
@@ -25,11 +26,6 @@ interface FloatingLabelInputProps extends Props {
   events?: Events;
   validationRules?: ValidationRule[];
   error?: string;
-}
-
-interface ValidationRule {
-  validator: (value: string) => boolean;
-  message: string;
 }
 
 export class FloatingLabelInput extends Block<FloatingLabelInputProps> {

@@ -1,6 +1,7 @@
 import type { Props } from '../../../../app/Block';
 import Block from '../../../../app/Block';
 import { SimpleInput } from '../../../../components/common/SimpleInput/SimpleInput';
+import type { ValidationRule } from '../../../../helpers/validationRules';
 import type { Events } from '../../../../types/Events';
 
 const template = `
@@ -14,11 +15,6 @@ const template = `
     </div>
   </div>
 `;
-
-interface ValidationRule {
-  validator: (value: string) => boolean;
-  message: string;
-}
 
 interface ProfileEditableFieldProps extends Props {
   label: string;
