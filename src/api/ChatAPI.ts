@@ -1,6 +1,6 @@
 import type { Chat } from '../types/Chat';
 import type { MessageData } from '../components/common/Message/Message';
-import { DEFAULT_CHATS, MESSAGES_BY_CHAT_ID } from '../consts/data';
+import { DEFAULT_CHATS, MESSAGES_BY_CHAT_ID } from '../consts/ChatsData';
 
 export class ChatAPI {
   public static fetchChats(): Promise<Chat[]> {
