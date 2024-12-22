@@ -189,10 +189,9 @@ export class ChatsPage extends Block<ChatsPageProps> {
     };
 
     try {
-      await ChatAPI.sendMessage(this.selectedChatId, newMessage);
-
       const currentMessages = innerChat.getProps().messages || [];
       const updatedMessages = [...currentMessages, newMessage];
+      await ChatAPI.sendMessage(this.selectedChatId, newMessage);
 
       innerChat.setProps({
         messages: updatedMessages,
