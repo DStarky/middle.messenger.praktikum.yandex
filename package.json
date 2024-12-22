@@ -11,7 +11,10 @@
     "build": "tsc && vite build",
     "start": "vite build && node server.cjs",
     "preview": "vite preview",
-    "stylelink": "stylelint src/**/*.pcss --fix"
+    "stylelint": "stylelint src/**/*.pcss --fix",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
