@@ -121,7 +121,11 @@ export class Sidebar extends Block<SidebarProps> {
         new ChatItem({
           ...chat,
           className: chat.id === this.props.selectedChat?.id ? 'active' : '',
-          avatar: new Avatar({ src: chat.avatar, alt: chat.name }),
+          avatar: new Avatar({
+            src: chat.avatar,
+            alt: chat.name,
+            className: 'avatar_size-medium',
+          }),
         }),
     );
 
