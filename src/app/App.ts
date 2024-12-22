@@ -35,7 +35,7 @@ export class App {
     });
 
     this.router.addRoute(ROUTES.CHATS, () => {
-      const page = new ChatsPage(this.router);
+      const page = new ChatsPage();
       this.router.render(page.getContent()!);
     });
 

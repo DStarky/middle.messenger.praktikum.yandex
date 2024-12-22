@@ -1,12 +1,11 @@
+import { v4 as makeUUID } from 'uuid';
+import { ChatAPI } from '../../api/ChatAPI';
 import type { Props } from '../../app/Block';
 import Block from '../../app/Block';
-import type { Router } from '../../app/Router';
+import type { MessageData } from '../../components/common/Message/Message';
 import { Sidebar } from '../../components/common/Sidebar/Sidebar';
-import { ChatAPI } from '../../api/ChatAPI';
 import type { Chat } from '../../types/Chat';
 import { InnerChat } from './partials/InnerChat';
-import type { MessageData } from '../../components/common/Message/Message';
-import { v4 as makeUUID } from 'uuid';
 
 const template = `
   <main class="chats-page">
@@ -26,9 +25,8 @@ interface ChatsPageProps extends Props {
 
 export class ChatsPage extends Block<ChatsPageProps> {
   private selectedChatId: string | null = null;
-  private router: Router;
 
-  constructor(router: Router) {
+  constructor() {
     const sidebar = new Sidebar({
       compact: false,
       chats: [],
@@ -52,8 +50,6 @@ export class ChatsPage extends Block<ChatsPageProps> {
       sidebar,
       innerChat,
     });
-
-    this.router = router;
   }
 
   protected override init(): void {
