@@ -1,7 +1,9 @@
+import { ProfileAPI } from '../../api/ProfileAPI';
 import type { Props } from '../../app/Block';
 import Block from '../../app/Block';
 import { Sidebar } from '../../components/common/Sidebar/Sidebar';
-import { DEFAULT_CHATS } from '../../consts/data';
+import { DEFAULT_CHATS } from '../../consts/ChatsData';
+import type { ProfileData, UpdateProfileData } from '../../types/Profile';
 import { ActionsList } from './components/ActionsList/ActionsList';
 import { PasswordDataEditable } from './components/PasswordDataEditable/PasswordDataEditable';
 import { PersonalDataEditable } from './components/PersonalDataEditable/PersonalDataEditable';
@@ -89,8 +91,55 @@ export class ProfilePage extends Block<ProfilePageProps> {
     });
   }
 
-  private handleChangeAvatar(): void {
-    console.log('Поменять аватар');
+  protected override init(): void {
+    super.init();
+    this.fetchProfile();
+  }
+
+  private async fetchProfile(): Promise<void> {
+    try {
+      const profile = await ProfileAPI.fetchProfile();
+      this.setProfileData(profile);
+    } catch (error) {
+      console.error('Ошибка при загрузке профиля:', error);
+      // Можно добавить обработку ошибок в UI
+    }
+  }
+
+  private setProfileData(profile: ProfileData): void {
+    const profilePersonalData = this.children
+      .profilePersonalData as ProfilePersonalData;
+
+    const profilePersonalDataChildren = profilePersonalData.getChildren();
+
+    profilePersonalDataChildren.email.setProps({
+      value: profile.email,
+    });
+    profilePersonalDataChildren.login.setProps({
+      value: profile.login,
+    });
+    profilePersonalDataChildren.firstName.setProps({
+      value: profile.first_name,
+    });
+    profilePersonalDataChildren.secondName.setProps({
+      value: profile.second_name,
+    });
+    profilePersonalDataChildren.displayName.setProps({
+      value: profile.display_name,
+    });
+    profilePersonalDataChildren.phone.setProps({
+      value: profile.phone,
+    });
+
+    const profileAvatar = this.children.profileAvatar as ProfileAvatar;
+    profileAvatar.getChildren().avatar.setProps({
+      src: profile.avatar,
+    });
+  }
+
+  private async handleChangeAvatar(): Promise<void> {
+    // Логика изменения аватара (например, открытие модального окна для загрузки)
+    console.log('Тут будет логика изменения аватара');
   }
 
   private toggleEditPersonalMode(): void {
@@ -119,7 +168,7 @@ export class ProfilePage extends Block<ProfilePageProps> {
     console.log('Тут будет логика выхода');
   }
 
-  private handleSavePersonalData(): void {
+  private async handleSavePersonalData(): Promise<void> {
     const personalDataEditable = this.children
       .personalDataEditable as PersonalDataEditable;
     const isValid = personalDataEditable.validateAllFields();
@@ -130,15 +179,22 @@ export class ProfilePage extends Block<ProfilePageProps> {
 
     const form = document.getElementById('profile-data') as HTMLFormElement;
     const formData = new FormData(form);
+    const updatedData: UpdateProfileData = {};
 
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
+    formData.forEach((value, key) => {
+      updatedData[key as keyof UpdateProfileData] = value.toString();
+    });
+
+    try {
+      const updatedProfile = await ProfileAPI.updateProfile(updatedData);
+      this.setProfileData(updatedProfile);
+      this.resetToDefaultMode();
+    } catch (error) {
+      console.error('Ошибка при обновлении профиля:', error);
+      // Можно добавить отображение ошибки в UI
     }
-
-    this.resetToDefaultMode();
   }
-
-  private handleSavePasswordData(): void {
+  private async handleSavePasswordData(): Promise<void> {
     const passwordDataEditable = this.children
       .passwordDataEditable as PasswordDataEditable;
     const isValid = passwordDataEditable.validateAllFields();
@@ -149,12 +205,39 @@ export class ProfilePage extends Block<ProfilePageProps> {
 
     const form = document.getElementById('password-data') as HTMLFormElement;
     const formData = new FormData(form);
+    const oldPassword = formData.get('oldPassword') as string;
+    const newPassword = formData.get('newPassword') as string;
+    const confirmPassword = formData.get('confirmPassword') as string;
 
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
+    if (newPassword !== confirmPassword) {
+      alert('Новый пароль и подтверждение не совпадают.');
+      return;
     }
 
-    this.resetToDefaultMode();
+    // Здесь можно добавить вызов API для обновления пароля
+    // Например:
+    // try {
+    //   await ProfileAPI.updatePassword({ oldPassword, newPassword });
+    //   alert('Пароль успешно обновлен.');
+    //   this.resetToDefaultMode();
+    // } catch (error) {
+    //   console.error('Ошибка при обновлении пароля:', error);
+    //   alert('Не удалось обновить пароль.');
+    // }
+
+    try {
+      const updatedProfile = await ProfileAPI.updateProfile({
+        oldPassword,
+        password: newPassword,
+      });
+      // Предполагается, что `password` не отображается, но обновляем данные
+      this.setProfileData(updatedProfile);
+      alert('Пароль успешно обновлен.');
+      this.resetToDefaultMode();
+    } catch (error) {
+      console.error('Ошибка при обновлении пароля:', error);
+      alert('Не удалось обновить пароль.');
+    }
   }
 
   protected componentDidUpdate(

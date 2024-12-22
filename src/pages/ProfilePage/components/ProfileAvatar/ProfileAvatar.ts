@@ -33,6 +33,10 @@ export class ProfileAvatar extends Block<ProfileAvatarProps> {
     });
   }
 
+  public getChildren(): Record<string, Block> {
+    return { avatar: this.children.avatar as Avatar };
+  }
+
   override render(): string {
     return profileAvatarTemplate;
   }

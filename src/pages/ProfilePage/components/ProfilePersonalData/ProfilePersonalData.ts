@@ -19,29 +19,40 @@ export class ProfilePersonalData extends Block<Props> {
       ...props,
       email: new ProfileStaticField({
         label: 'Почта',
-        value: 'pochta@yandex.ru',
+        value: '',
       }),
       login: new ProfileStaticField({
         label: 'Логин',
-        value: 'ivanivanov',
+        value: '',
       }),
       firstName: new ProfileStaticField({
         label: 'Имя',
-        value: 'Иван',
+        value: '',
       }),
       secondName: new ProfileStaticField({
         label: 'Фамилия',
-        value: 'Иванов',
+        value: '',
       }),
       displayName: new ProfileStaticField({
         label: 'Имя в чате',
-        value: 'Ivan',
+        value: '',
       }),
       phone: new ProfileStaticField({
         label: 'Телефон',
-        value: '+79099673030',
+        value: '',
       }),
     });
+  }
+
+  public getChildren(): Record<string, Block> {
+    return {
+      email: this.children.email as ProfileStaticField,
+      login: this.children.login as ProfileStaticField,
+      firstName: this.children.firstName as ProfileStaticField,
+      secondName: this.children.secondName as ProfileStaticField,
+      displayName: this.children.displayName as ProfileStaticField,
+      phone: this.children.phone as ProfileStaticField,
+    };
   }
 
   override render(): string {
