@@ -135,6 +135,20 @@ export class ProfilePage extends Block<ProfilePageProps> {
     profileAvatar.getChildren().avatar.setProps({
       src: profile.avatar,
     });
+
+    const personalDataEditable = this.children
+      .personalDataEditable as PersonalDataEditable;
+
+    personalDataEditable.setProps({
+      initialData: {
+        email: profile.email,
+        login: profile.login,
+        first_name: profile.first_name,
+        second_name: profile.second_name,
+        display_name: profile.display_name,
+        phone: profile.phone,
+      },
+    });
   }
 
   private async handleChangeAvatar(): Promise<void> {

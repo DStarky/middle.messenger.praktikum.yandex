@@ -1,6 +1,8 @@
 import type { Props } from '../../../../app/Block';
 import Block from '../../../../app/Block';
+import type { SimpleInput } from '../../../../components/common/SimpleInput/SimpleInput';
 import { validationRules } from '../../../../helpers/validationRules';
+import type { ProfileData } from '../../../../types/Profile';
 import { ProfileEditableField } from '../ProfileEditableField/ProfileEditableField';
 
 const personalDataEditableTemplate = `
@@ -14,14 +16,18 @@ const personalDataEditableTemplate = `
   </form>
 `;
 
-export class PersonalDataEditable extends Block<Props> {
-  constructor(props: Props) {
+interface PersonalDataEditableProps extends Props {
+  initialData?: Partial<ProfileData>;
+}
+
+export class PersonalDataEditable extends Block<PersonalDataEditableProps> {
+  constructor(props: PersonalDataEditableProps) {
     super({
       ...props,
       email: new ProfileEditableField({
         label: 'Почта',
         name: 'email',
-        value: 'pochta@yandex.ru',
+        value: props.initialData?.email || '',
         id: 'email-input',
         placeholder: 'Введите почту',
         type: 'email',
@@ -33,7 +39,7 @@ export class PersonalDataEditable extends Block<Props> {
       login: new ProfileEditableField({
         label: 'Логин',
         name: 'login',
-        value: 'ivanivanov',
+        value: props.initialData?.login || '',
         id: 'login-input',
         placeholder: 'Введите логин',
         type: 'text',
@@ -45,7 +51,7 @@ export class PersonalDataEditable extends Block<Props> {
       firstName: new ProfileEditableField({
         label: 'Имя',
         name: 'first_name',
-        value: 'Иван',
+        value: props.initialData?.first_name || '',
         id: 'first-name-input',
         placeholder: 'Введите имя',
         type: 'text',
@@ -57,7 +63,7 @@ export class PersonalDataEditable extends Block<Props> {
       secondName: new ProfileEditableField({
         label: 'Фамилия',
         name: 'second_name',
-        value: 'Иванов',
+        value: props.initialData?.second_name || '',
         id: 'second-name-input',
         placeholder: 'Введите фамилию',
         type: 'text',
@@ -69,7 +75,7 @@ export class PersonalDataEditable extends Block<Props> {
       displayName: new ProfileEditableField({
         label: 'Имя в чате',
         name: 'display_name',
-        value: 'Ivan',
+        value: props.initialData?.display_name || '',
         id: 'display-name-input',
         placeholder: 'Введите имя в чате',
         type: 'text',
@@ -81,7 +87,7 @@ export class PersonalDataEditable extends Block<Props> {
       phone: new ProfileEditableField({
         label: 'Телефон',
         name: 'phone',
-        value: '+79099673030',
+        value: props.initialData?.phone || '',
         id: 'phone-input',
         placeholder: 'Введите телефон',
         type: 'tel',
@@ -113,6 +119,53 @@ export class PersonalDataEditable extends Block<Props> {
     });
 
     return isValid;
+  }
+
+  protected componentDidUpdate(
+    oldProps: PersonalDataEditableProps,
+    newProps: PersonalDataEditableProps,
+  ): boolean {
+    if (oldProps.initialData !== newProps.initialData) {
+      if (newProps.initialData?.email) {
+        (this.children.email as SimpleInput).setProps({
+          value: newProps.initialData.email,
+        });
+      }
+
+      if (newProps.initialData?.login) {
+        (this.children.login as ProfileEditableField).setProps({
+          value: newProps.initialData.login,
+        });
+      }
+
+      if (newProps.initialData?.first_name) {
+        (this.children.firstName as ProfileEditableField).setProps({
+          value: newProps.initialData.first_name,
+        });
+      }
+
+      if (newProps.initialData?.second_name) {
+        (this.children.secondName as ProfileEditableField).setProps({
+          value: newProps.initialData.second_name,
+        });
+      }
+
+      if (newProps.initialData?.display_name) {
+        (this.children.displayName as ProfileEditableField).setProps({
+          value: newProps.initialData.display_name,
+        });
+      }
+
+      if (newProps.initialData?.phone) {
+        (this.children.phone as ProfileEditableField).setProps({
+          value: newProps.initialData.phone,
+        });
+      }
+
+      return true;
+    }
+
+    return false;
   }
 
   override render(): string {

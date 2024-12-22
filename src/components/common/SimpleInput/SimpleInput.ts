@@ -8,7 +8,7 @@ const template = `
       id="{{id}}" 
       name="{{name}}" 
       class="{{className}}" 
-      placeholder="{{placeholder}} " 
+      placeholder="{{placeholder}}" 
       value="{{value}}" 
     />
 `;
@@ -24,6 +24,8 @@ interface SimpleInputProps extends Props {
 }
 
 export class SimpleInput extends Block<SimpleInputProps> {
+  private isInternalChange: boolean = false;
+
   constructor(props: SimpleInputProps) {
     super({
       ...props,
@@ -36,15 +38,17 @@ export class SimpleInput extends Block<SimpleInputProps> {
 
   private handleInput(e: Event): void {
     const target = e.target as HTMLInputElement;
+    this.isInternalChange = true;
     this.setProps({ value: target.value });
+    this.isInternalChange = false;
   }
 
   public getValue(): string {
-    return this.props.value as string;
+    return this.props.value ?? '';
   }
 
   public setValue(value: string): void {
-    this.props.value = value;
+    this.setProps({ value });
   }
 
   public focus(): void {
@@ -59,17 +63,14 @@ export class SimpleInput extends Block<SimpleInputProps> {
     newProps: SimpleInputProps,
   ): boolean {
     if (oldProps.value !== newProps.value) {
-      const input = this.getContent()?.querySelector(
-        'input',
-      ) as HTMLInputElement;
-      if (input) {
-        input.value = newProps.value as string;
+      if (this.isInternalChange) {
+        return false;
       }
 
-      return false;
+      return true;
     }
 
-    return true;
+    return false;
   }
 
   override render(): string {

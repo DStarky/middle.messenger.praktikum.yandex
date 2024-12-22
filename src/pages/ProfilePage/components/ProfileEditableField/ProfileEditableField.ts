@@ -80,6 +80,18 @@ export class ProfileEditableField extends Block<ProfileEditableFieldProps> {
     }
   }
 
+  protected componentDidUpdate(
+    oldProps: ProfileEditableFieldProps,
+    newProps: ProfileEditableFieldProps,
+  ): boolean {
+    if (oldProps.value !== newProps.value) {
+      const inputComponent = this.children.input as SimpleInput;
+      inputComponent.setProps({ value: newProps.value });
+    }
+
+    return true;
+  }
+
   getValue(): string {
     const inputComponent = this.children.input as SimpleInput;
     return inputComponent.getValue();
