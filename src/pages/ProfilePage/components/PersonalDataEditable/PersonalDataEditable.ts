@@ -69,7 +69,7 @@ export class PersonalDataEditable extends Block<Props> {
       displayName: new ProfileEditableField({
         label: 'Имя в чате',
         name: 'display_name',
-        value: 'Иван',
+        value: 'Ivan',
         id: 'display-name-input',
         placeholder: 'Введите имя в чате',
         type: 'text',
@@ -81,7 +81,7 @@ export class PersonalDataEditable extends Block<Props> {
       phone: new ProfileEditableField({
         label: 'Телефон',
         name: 'phone',
-        value: '+7 (909) 967 30 30',
+        value: '+79099673030',
         id: 'phone-input',
         placeholder: 'Введите телефон',
         type: 'tel',

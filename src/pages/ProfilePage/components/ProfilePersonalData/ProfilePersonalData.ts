@@ -35,7 +35,7 @@ export class ProfilePersonalData extends Block<Props> {
       }),
       displayName: new ProfileStaticField({
         label: 'Имя в чате',
-        value: 'Иван',
+        value: 'Ivan',
       }),
       phone: new ProfileStaticField({
         label: 'Телефон',
