@@ -1,27 +1,27 @@
 .message {
   display: flex;
+  padding: 11px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: var(--base-font-weight);
+  line-height: 15px;
+  color: var(--gray-color);
   flex-direction: column;
   max-width: 40%;
   margin-bottom: 10px;
-  padding: 11px;
-  font-weight: var(--base-font-weight);
-  font-size: 12px;
-  line-height: 15px;
-  color: var(--gray-color);
   word-wrap: break-word;
-  border-radius: 12px;
 }
 
 .message_other {
-  align-self: flex-start;
+  border-radius: 0 12px 12px;
   background-color: var(--gray-message-bg);
-  border-radius: 0 12px 12px 12px;
+  align-self: flex-start;
 }
 
 .message_own {
-  align-self: flex-end;
+  border-radius: 12px 12px 0;
   background-color: var(--active-chat-bg);
-  border-radius: 12px 12px 0 12px;
+  align-self: flex-end;
 }
 
 .message__time {

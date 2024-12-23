@@ -10,7 +10,11 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "start": "vite build && node server.cjs",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "stylelint:fix": "stylelint src/**/*.pcss --fix",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
@@ -19,16 +23,22 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "globals": "^15.12.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.10",
     "postcss": "^8.4.49",
     "postcss-nested": "^7.0.2",
     "postcss-preset-env": "^10.1.1",
     "prettier": "^3.4.1",
+    "stylelint": "^16.11.0",
+    "stylelint-config-standard": "^36.0.1",
+    "stylelint-order": "^6.0.4",
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.16.0",
     "vite": "^6.0.1"
   },
   "dependencies": {
     "express": "^4.19.2",
-    "handlebars": "^4.7.8"
+    "handlebars": "^4.7.8",
+    "uuid": "^11.0.3"
   }
 }

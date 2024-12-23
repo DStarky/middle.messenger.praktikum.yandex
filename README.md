@@ -75,6 +75,30 @@
    npm run start
    ```
 
+7. Проверка и правка стилей:
+
+   ```bash
+   npm run stylelint:fix
+   ```
+
+8. Проверка типизации:
+
+   ```bash
+   npm run typecheck
+   ```
+
+9. Проверка линтером:
+
+   ```bash
+   npm run lint
+   ```
+
+10. Исправление замечаний линтера:
+
+```bash
+npm run lint:fix
+```
+
 ---
 
 ## Технологии
