@@ -44,6 +44,10 @@ export class App {
       this.router.render(page.getContent()!);
     });
 
+    this.router.addRoute('/', () => {
+      this.router.navigate(ROUTES.LOGIN);
+    });
+
     this.router.init();
   }
 
