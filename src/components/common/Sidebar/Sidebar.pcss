@@ -1,12 +1,12 @@
 .sidebar {
-  height: 100%;
+  display: flex;
   width: 310px;
+  height: 100%;
+  background-color: var(--sidebar-background);
   max-width: 310px;
   border-right: 1px solid var(--gray-border);
-  display: flex;
   flex-direction: column;
   padding-top: 20px;
-  background-color: var(--sidebar-background);
 }
 
 .sidebar__profile-link {
@@ -26,27 +26,27 @@
 
 .sidebar_small {
   position: relative;
-  width: 64px;
-  max-width: 64px;
-  border-right: 1px solid var(--gray-border);
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 64px;
   background-color: var(--sidebar-background);
+  max-width: 64px;
+  border-right: 1px solid var(--gray-border);
 }
 
 .sidebar_small a::before {
-  content: '';
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  content: '';
 }
 
 .sidebar__center-button {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   text-decoration: none;
 }
