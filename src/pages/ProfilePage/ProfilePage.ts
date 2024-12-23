@@ -199,6 +199,8 @@ export class ProfilePage extends Block<ProfilePageProps> {
       updatedData[key as keyof UpdateProfileData] = value.toString();
     });
 
+    console.log('Обновленные данные профиля:', updatedData);
+
     try {
       const updatedProfile = await ProfileAPI.updateProfile(updatedData);
       this.setProfileData(updatedProfile);
@@ -238,6 +240,8 @@ export class ProfilePage extends Block<ProfilePageProps> {
     //   console.error('Ошибка при обновлении пароля:', error);
     //   alert('Не удалось обновить пароль.');
     // }
+
+    console.log('Обновленные данные пароля:', { oldPassword, newPassword });
 
     try {
       const updatedProfile = await ProfileAPI.updateProfile({

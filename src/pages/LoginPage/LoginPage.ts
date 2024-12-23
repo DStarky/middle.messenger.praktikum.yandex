@@ -112,8 +112,10 @@ export class LoginPage extends Block<LoginPageProps> {
       return;
     }
 
-    console.log('Login:', login);
-    console.log('Password:', password);
+    console.log('Login:', {
+      login,
+      password,
+    });
 
     // Здесь можно добавить логику авторизации
     this.router.navigate(ROUTES.CHATS);

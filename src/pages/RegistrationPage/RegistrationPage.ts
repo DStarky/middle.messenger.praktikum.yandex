@@ -165,10 +165,8 @@ export class RegistrationPage extends Block<RegistrationPageProps> {
       return;
     }
 
-    // Сначала валидируем все поля
     const isValid = this.validateAllFields();
     if (!isValid) {
-      // Ошибки уже отображены в соответствующих полях
       return;
     }
 
@@ -181,19 +179,16 @@ export class RegistrationPage extends Block<RegistrationPageProps> {
     ).getValue();
 
     if (password !== repeatPassword) {
-      // Устанавливаем ошибку на поле повторного ввода пароля
       (this.children.repeatPasswordInput as FloatingLabelInput).setProps({
         error: 'Пароли не совпадают.',
       });
       return;
     } else {
-      // Если пароли совпадают, очищаем ошибку (на случай, если она была установлена ранее)
       (this.children.repeatPasswordInput as FloatingLabelInput).setProps({
         error: '',
       });
     }
 
-    // Собираем данные формы
     const formData = new FormData(form);
     const email = formData.get('email') as string;
     const login = formData.get('login') as string;
