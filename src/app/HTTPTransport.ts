@@ -14,6 +14,11 @@ type RequestOptions = {
   timeout?: number;
 };
 
+type HTTPMethod = <R = unknown>(
+  url: string,
+  options?: RequestOptions,
+) => Promise<R>;
+
 function queryStringify(data: Record<string, unknown>): string {
   if (typeof data !== 'object') {
     throw new Error('Data must be object');
@@ -28,58 +33,26 @@ function queryStringify(data: Record<string, unknown>): string {
 }
 
 export class HTTPTransport {
-  get = (
-    url: string,
-    options: RequestOptions = {},
-  ): Promise<XMLHttpRequest> => {
-    return this.request(
-      url,
-      { ...options, method: METHODS.GET },
-      options.timeout,
-    );
-  };
+  get: HTTPMethod = (url, options = {}) =>
+    this.request(url, { ...options, method: METHODS.GET }, options.timeout);
 
-  post = (
-    url: string,
-    options: RequestOptions = {},
-  ): Promise<XMLHttpRequest> => {
-    return this.request(
-      url,
-      { ...options, method: METHODS.POST },
-      options.timeout,
-    );
-  };
+  put: HTTPMethod = (url, options = {}) =>
+    this.request(url, { ...options, method: METHODS.PUT }, options.timeout);
 
-  put = (
-    url: string,
-    options: RequestOptions = {},
-  ): Promise<XMLHttpRequest> => {
-    return this.request(
-      url,
-      { ...options, method: METHODS.PUT },
-      options.timeout,
-    );
-  };
+  post: HTTPMethod = (url, options = {}) =>
+    this.request(url, { ...options, method: METHODS.POST }, options.timeout);
 
-  delete = (
-    url: string,
-    options: RequestOptions = {},
-  ): Promise<XMLHttpRequest> => {
-    return this.request(
-      url,
-      { ...options, method: METHODS.DELETE },
-      options.timeout,
-    );
-  };
+  delete: HTTPMethod = (url, options = {}) =>
+    this.request(url, { ...options, method: METHODS.DELETE }, options.timeout);
 
-  request = (
+  request = <R = unknown>(
     url: string,
     options: RequestOptions = {},
     timeout: number = 5000,
-  ): Promise<XMLHttpRequest> => {
+  ): Promise<R> => {
     const { headers = {}, method, data } = options;
 
-    return new Promise<XMLHttpRequest>(function (resolve, reject) {
+    return new Promise<R>((resolve, reject) => {
       if (!method) {
         reject(new Error('No method'));
         return;
@@ -100,12 +73,17 @@ export class HTTPTransport {
       });
 
       xhr.onload = function () {
-        resolve(xhr);
+        try {
+          const responseData = JSON.parse(xhr.responseText) as R;
+          resolve(responseData);
+        } catch (e) {
+          console.error(e);
+          resolve(xhr.responseText as unknown as R);
+        }
       };
 
       xhr.onabort = () => reject(new Error('Request aborted'));
       xhr.onerror = () => reject(new Error('Network error'));
-
       xhr.timeout = timeout;
       xhr.ontimeout = () => reject(new Error('Request timed out'));
 
