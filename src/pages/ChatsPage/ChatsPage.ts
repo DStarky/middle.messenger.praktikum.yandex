@@ -1,46 +1,85 @@
-import Handlebars from 'handlebars';
-import { BasePage } from '../basePage';
+import { v4 as makeUUID } from 'uuid';
+import { ChatAPI } from '../../api/ChatAPI';
+import type { Props } from '../../app/Block';
+import Block from '../../app/Block';
+import type { MessageData } from '../../components/common/Message/Message';
+import { Sidebar } from '../../components/common/Sidebar/Sidebar';
 import type { Chat } from '../../types/Chat';
-import { DEFAULT_CHATS, MESSAGES_BY_CHAT_ID } from '../../consts/data';
+import { InnerChat } from './partials/InnerChat';
 
 const template = `
-<main class="chats-page">
-  <div class="chats-page__sidebar">
-    {{> Sidebar chats=chats}}
-   </div>
-  <section class="chat-content">
-    {{> InnerChat selectedChat=selectedChat messages=messages}}
-  </section>
-</main>
+  <main class="chats-page">
+    <div class="chats-page__sidebar">
+      {{{ sidebar }}}
+    </div>
+    <section class="chat-content">
+      {{{ innerChat }}}
+    </section>
+  </main>
 `;
 
-export class ChatsPage extends BasePage {
-  private selectedChatId: number | null = null;
+interface ChatsPageProps extends Props {
+  sidebar: Sidebar;
+  innerChat: InnerChat;
+}
+
+export class ChatsPage extends Block<ChatsPageProps> {
+  private selectedChatId: string | null = null;
 
   constructor() {
-    super(template);
-    this.addEventListeners();
-  }
+    const sidebar = new Sidebar({
+      compact: false,
+      chats: [],
+      selectedChat: { id: null },
+      isLoading: true,
+      errorMessage: null,
+      events: {
+        click: (e: Event) => this.handleChatClick(e),
+      },
+    });
 
-  private addEventListeners(): void {
-    document.addEventListener('click', event => {
-      const chatItem = (event.target as HTMLElement).closest('.chat-item');
+    const innerChat = new InnerChat({
+      selectedChat: null,
+      messages: [],
+      isLoading: false,
+      errorMessage: null,
+      onSendMessage: (message: string) => this.handleSendMessage(message),
+    });
 
-      if (chatItem) {
-        const chatId = Number(chatItem.getAttribute('data-chat-id'));
-        this.handleChatSelect(chatId);
-      }
+    super({
+      sidebar,
+      innerChat,
     });
   }
 
-  private handleChatSelect(chatId: number): void {
+  protected override init(): void {
+    super.init();
+    this.fetchChats();
+  }
+
+  protected override render(): string {
+    return template;
+  }
+
+  private handleChatClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    const chatItem = target.closest('.chat-item') as HTMLElement | null;
+
+    if (chatItem) {
+      const chatId = String(chatItem.getAttribute('data-chat-id'));
+      this.handleChatSelect(chatId);
+    }
+  }
+
+  private handleChatSelect(chatId: string): void {
     if (this.selectedChatId === chatId) {
       this.selectedChatId = null;
+      this.updatePage();
     } else {
       this.selectedChatId = chatId;
+      this.updatePage();
+      this.fetchMessages(chatId);
     }
-
-    this.updatePage();
   }
 
   private updatePage(): void {
@@ -48,52 +87,121 @@ export class ChatsPage extends BasePage {
       ? this.getChatById(this.selectedChatId)
       : null;
 
-    const context = {
-      chats: this.getChats(),
+    const sidebar = this.children.sidebar as Sidebar;
+    sidebar.setProps({
+      selectedChat: selectedChat ? { id: selectedChat.id } : { id: null },
+    });
+
+    const innerChat = this.children.innerChat as InnerChat;
+    innerChat.setProps({
       selectedChat,
-      messages: selectedChat ? this.getMessages(selectedChat.id) : [],
-    };
+      messages: selectedChat ? [] : [],
+      isLoading: selectedChat ? true : false,
+      errorMessage: null,
+    });
+  }
 
-    const sidebarElement = document.querySelector('.chats-page__sidebar');
-    const chatContentElement = document.querySelector('.chat-content');
-
-    if (sidebarElement && chatContentElement) {
-      sidebarElement.innerHTML = this.renderSidebar(context);
-      chatContentElement.innerHTML = this.renderChatContent(context);
+  private getChatById(chatId: string): Chat | null {
+    const sidebar = this.children.sidebar as Sidebar;
+    const chats = sidebar.getChats();
+    return chats.find(chat => chat.id === chatId) || null;
+  }
+  private async fetchChats(): Promise<void> {
+    try {
+      const chats = await ChatAPI.fetchChats();
+      this.setChats(chats);
+    } catch (error) {
+      if (error instanceof Error) {
+        this.setError(error.message);
+      } else {
+        this.setError('Неизвестная ошибка при загрузке чатов.');
+      }
     }
   }
 
-  private renderSidebar(context: Record<string, unknown>): string {
-    return Handlebars.compile(`
-    {{> Sidebar chats=chats}}
-  `)(context);
+  private setChats(chats: Chat[]): void {
+    const sidebar = this.children.sidebar as Sidebar;
+    sidebar.setProps({
+      chats: chats,
+      isLoading: false,
+      errorMessage: null,
+    });
   }
 
-  private renderChatContent(context: Record<string, unknown>): string {
-    return Handlebars.compile(`
-   {{> InnerChat selectedChat=selectedChat messages=messages}}
-  `)(context);
+  private setError(message: string): void {
+    const sidebar = this.children.sidebar as Sidebar;
+    sidebar.setProps({
+      errorMessage: message,
+      isLoading: false,
+    });
   }
 
-  private getChats(): Chat[] {
-    return DEFAULT_CHATS;
-  }
-
-  private getChatById(chatId: number): Chat | null {
-    return this.getChats().find(chat => chat.id === chatId) || null;
-  }
-
-  private getMessages(chatId: number): Record<string, unknown>[] {
-    return MESSAGES_BY_CHAT_ID[chatId] || [];
-  }
-
-  render(context: Record<string, unknown> = {}): string {
-    const data = {
-      chats: DEFAULT_CHATS,
-      selectedChat: null,
+  private async fetchMessages(chatId: string): Promise<void> {
+    const innerChat = this.children.innerChat as InnerChat;
+    innerChat.setProps({
+      isLoading: true,
+      errorMessage: null,
       messages: [],
-      ...context,
+    });
+
+    try {
+      const messages = await ChatAPI.fetchMessages(chatId);
+      innerChat.setProps({
+        selectedChat: this.getChatById(chatId),
+        messages: messages,
+        isLoading: false,
+        errorMessage: null,
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        innerChat.setProps({
+          errorMessage: error.message,
+          isLoading: false,
+        });
+      } else {
+        innerChat.setProps({
+          errorMessage: 'Неизвестная ошибка при загрузке сообщений.',
+          isLoading: false,
+        });
+      }
+    }
+  }
+
+  private async handleSendMessage(message: string): Promise<void> {
+    if (!this.selectedChatId) {
+      return;
+    }
+
+    const innerChat = this.children.innerChat as InnerChat;
+
+    const newMessage: MessageData = {
+      id: makeUUID(),
+      text: message,
+      time: new Intl.DateTimeFormat('ru', {
+        hour: '2-digit',
+        minute: '2-digit',
+      }).format(new Date()),
+      isOwn: true,
     };
-    return super.render(data);
+
+    try {
+      const currentMessages = innerChat.getProps().messages || [];
+      const updatedMessages = [...currentMessages, newMessage];
+      await ChatAPI.sendMessage(this.selectedChatId, newMessage);
+
+      innerChat.setProps({
+        messages: updatedMessages,
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        innerChat.setProps({
+          errorMessage: error.message,
+        });
+      } else {
+        innerChat.setProps({
+          errorMessage: 'Неизвестная ошибка при отправке сообщения.',
+        });
+      }
+    }
   }
 }

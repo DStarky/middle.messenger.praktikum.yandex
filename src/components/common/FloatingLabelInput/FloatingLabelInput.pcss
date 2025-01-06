@@ -1,4 +1,4 @@
-.floating-input-container {
+.floating-input__container {
   position: relative;
 }
 
@@ -6,31 +6,42 @@
   width: 100%;
   padding: 6px 0;
   border: none;
-  border-bottom: 1px solid var(--primary-color);
   outline: none;
-  font-weight: var(--base-font-weight);
   font-size: var(--base-font-size);
+  font-weight: var(--base-font-weight);
   line-height: var(--base-line-height);
   color: var(--gray-color);
   background-color: transparent;
   transition: border-color 0.3s;
+  border-bottom: 1px solid var(--primary-color);
 }
 
 .floating-label {
   position: absolute;
   top: 50%;
   left: 0;
-  transform: translateY(-50%);
-  font-weight: var(--base-font-weight);
   font-size: var(--base-font-size);
+  font-weight: var(--base-font-weight);
   line-height: var(--base-line-height);
   color: #999;
-  pointer-events: none;
   transition: all 0.3s;
+  transform: translateY(-50%);
+  pointer-events: none;
 }
 
 .floating-input:focus + .floating-label,
 .floating-input:not(:placeholder-shown) + .floating-label {
   top: -4px;
   font-size: 9px;
+}
+
+.floating-input__container-error > input {
+  color: red;
+}
+
+.floating-input__error {
+  font-size: 9px;
+  color: red;
+  margin-top: 6px;
+  max-width: 250px;
 }

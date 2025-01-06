@@ -1,182 +1,281 @@
-import Handlebars from 'handlebars';
-
-import { BasePage } from '../basePage';
-import { ActionsList } from './partials/ActionsList';
-import { ProfileSaveButton } from './partials/ProfileSaveButton';
-import { ProfilePersonalData } from './partials/ProfilePersonalData';
-import { ProfileAvatar } from './partials/ProfileAvatar';
-import { ProfilePasswordData } from './partials/ProfilePasswordData';
-import { PersonalDataEditable } from './partials/PersonalDataEditable';
-import { PasswordDataEditable } from './partials/PasswordDataEditable';
-
-Handlebars.registerPartial('ActionsList', ActionsList);
-Handlebars.registerPartial('ProfileSaveButton', ProfileSaveButton);
-Handlebars.registerPartial('ProfilePersonalData', ProfilePersonalData);
-Handlebars.registerPartial('PersonalDataEditable', PersonalDataEditable);
-Handlebars.registerPartial('ProfileAvatar', ProfileAvatar);
-Handlebars.registerPartial('ProfilePasswordData', ProfilePasswordData);
-Handlebars.registerPartial('PasswordDataEditable', PasswordDataEditable);
+import { ProfileAPI } from '../../api/ProfileAPI';
+import type { Props } from '../../app/Block';
+import Block from '../../app/Block';
+import { Sidebar } from '../../components/common/Sidebar/Sidebar';
+import { DEFAULT_CHATS } from '../../consts/ChatsData';
+import type { ProfileData, UpdateProfileData } from '../../types/Profile';
+import { ActionsList } from './components/ActionsList/ActionsList';
+import { PasswordDataEditable } from './components/PasswordDataEditable/PasswordDataEditable';
+import { PersonalDataEditable } from './components/PersonalDataEditable/PersonalDataEditable';
+import { ProfileAvatar } from './components/ProfileAvatar/ProfileAvatar';
+import { ProfilePasswordData } from './components/ProfilePasswordData/ProfilePasswordData';
+import { ProfilePersonalData } from './components/ProfilePersonalData/ProfilePersonalData';
+import { ProfileSaveButton } from './components/ProfileSaveButton/ProfileSaveButton';
 
 const template = `
-<main class="profile-page">
-  <div class="profile-page__sidebar">
-    {{> Sidebar compact=true}}
-  </div>
-  <section class="profile-page__content">
-    <div class="profile-page__data">
-      <div class="profile-page__block">
-        {{> ProfileAvatar}}
-        <h4 class="profile-page__name">Иван</h4>
-      </div>
-
-      <div class="profile-page__block" id="profile-data">
-        {{> ProfilePersonalData}}
-      </div>
-
-      <div id="profile-actions" class="profile-page__block">
-        {{> ActionsList}}
-      </div>
-  
+  <main class="profile-page">
+    <div class="profile-page__sidebar">
+      {{{sidebar}}}
     </div>
-  </section>
-</main>
+    <section class="profile-page__content">
+      <div class="profile-page__data">
+        <div class="profile-page__block">
+          {{{profileAvatar}}}
+          <h4 class="profile-page__name">Иван</h4>
+        </div>
+
+        <div class="profile-page__block">
+          {{#if isEditingPersonal}}
+            {{{personalDataEditable}}}
+          {{else if isEditingPassword}}
+            {{{passwordDataEditable}}}
+          {{else}}
+            {{{profilePersonalData}}}
+          {{/if}}
+        </div>
+
+        <div id="profile-actions" class="profile-page__block">
+          {{#if isEditingPersonal}}
+            {{{savePersonalDataButton}}}
+          {{else if isEditingPassword}}
+            {{{savePasswordDataButton}}}
+          {{else}}
+            {{{actionsList}}}
+          {{/if}}
+        </div>
+      </div>
+    </section>
+  </main>
 `;
 
-export class ProfilePage extends BasePage {
-  private currentState: 'default' | 'editing-personal' | 'editing-password' =
-    'default';
+interface ProfilePageState {
+  isEditingPersonal: boolean;
+  isEditingPassword: boolean;
+}
 
-  constructor() {
-    super(template);
-    this.addEventListeners();
-  }
+interface ProfilePageProps extends Props, Partial<ProfilePageState> {}
 
-  private addEventListeners(): void {
-    document.addEventListener('click', event => {
-      const editPersonalButton = (event.target as HTMLElement).closest(
-        '#edit-personal-data',
-      );
-      const editPasswordButton = (event.target as HTMLElement).closest(
-        '#edit-password-data',
-      );
-      const saveButton = (event.target as HTMLElement).closest(
-        '.profile-page__button button',
-      );
-
-      if (editPersonalButton) {
-        this.toggleEditPersonalMode();
-      } else if (editPasswordButton) {
-        this.toggleEditPasswordMode();
-      } else if (saveButton) {
-        this.handleSave();
-      }
+export class ProfilePage extends Block<ProfilePageProps> {
+  constructor(props: ProfilePageProps = {}) {
+    super({
+      ...props,
+      isEditingPersonal: false,
+      isEditingPassword: false,
+      sidebar: new Sidebar({
+        compact: true,
+        chats: DEFAULT_CHATS,
+        selectedChat: { id: null },
+      }),
+      profileAvatar: new ProfileAvatar({
+        src: '',
+        alt: 'User Avatar',
+        onClick: () => this.handleChangeAvatar(),
+      }),
+      personalDataEditable: new PersonalDataEditable({}),
+      profilePersonalData: new ProfilePersonalData({}),
+      passwordDataEditable: new PasswordDataEditable({}),
+      profilePasswordData: new ProfilePasswordData({}),
+      savePersonalDataButton: new ProfileSaveButton({
+        onClick: () => this.handleSavePersonalData(),
+      }),
+      savePasswordDataButton: new ProfileSaveButton({
+        onClick: () => this.handleSavePasswordData(),
+      }),
+      actionsList: new ActionsList({
+        events: {
+          onEditPersonalDataClick: () => this.toggleEditPersonalMode(),
+          onEditPasswordDataClick: () => this.toggleEditPasswordMode(),
+          onLogoutClick: () => this.handleLogout(),
+        },
+      }),
     });
   }
 
-  private toggleEditPersonalMode(): void {
-    const actionsContainer = document.getElementById('profile-actions');
-    const personalDataContainer = document.getElementById('profile-data');
+  protected override init(): void {
+    super.init();
+    this.fetchProfile();
+  }
 
-    if (actionsContainer && personalDataContainer) {
-      if (this.currentState === 'default') {
-        actionsContainer.innerHTML = this.renderSaveButton({});
-        personalDataContainer.innerHTML = this.renderPersonalDataEditable({});
-        this.currentState = 'editing-personal';
-      } else {
-        this.resetToDefaultMode();
-      }
+  private async fetchProfile(): Promise<void> {
+    try {
+      const profile = await ProfileAPI.fetchProfile();
+      this.setProfileData(profile);
+    } catch (error) {
+      console.error('Ошибка при загрузке профиля:', error);
+      // Можно добавить обработку ошибок в UI
     }
+  }
+
+  private setProfileData(profile: ProfileData): void {
+    const profilePersonalData = this.children
+      .profilePersonalData as ProfilePersonalData;
+
+    const profilePersonalDataChildren = profilePersonalData.getChildren();
+
+    profilePersonalDataChildren.email.setProps({
+      value: profile.email,
+    });
+    profilePersonalDataChildren.login.setProps({
+      value: profile.login,
+    });
+    profilePersonalDataChildren.firstName.setProps({
+      value: profile.first_name,
+    });
+    profilePersonalDataChildren.secondName.setProps({
+      value: profile.second_name,
+    });
+    profilePersonalDataChildren.displayName.setProps({
+      value: profile.display_name,
+    });
+    profilePersonalDataChildren.phone.setProps({
+      value: profile.phone,
+    });
+
+    const profileAvatar = this.children.profileAvatar as ProfileAvatar;
+    profileAvatar.getChildren().avatar.setProps({
+      src: profile.avatar,
+    });
+
+    const personalDataEditable = this.children
+      .personalDataEditable as PersonalDataEditable;
+
+    personalDataEditable.setProps({
+      initialData: {
+        email: profile.email,
+        login: profile.login,
+        first_name: profile.first_name,
+        second_name: profile.second_name,
+        display_name: profile.display_name,
+        phone: profile.phone,
+      },
+    });
+  }
+
+  private async handleChangeAvatar(): Promise<void> {
+    // Логика изменения аватара (например, открытие модального окна для загрузки)
+    console.log('Тут будет логика изменения аватара');
+  }
+
+  private toggleEditPersonalMode(): void {
+    this.setProps({
+      isEditingPersonal: true,
+      isEditingPassword: false,
+    });
   }
 
   private toggleEditPasswordMode(): void {
-    const actionsContainer = document.getElementById('profile-actions');
-    const personalDataContainer = document.getElementById('profile-data');
-
-    if (actionsContainer && personalDataContainer) {
-      if (this.currentState === 'default') {
-        actionsContainer.innerHTML = this.renderSaveButton({});
-        personalDataContainer.innerHTML = this.renderPasswordDataEditable({});
-        this.currentState = 'editing-password';
-      } else {
-        this.resetToDefaultMode();
-      }
-    }
+    this.setProps({
+      isEditingPersonal: false,
+      isEditingPassword: true,
+    });
   }
 
   private resetToDefaultMode(): void {
-    const actionsContainer = document.getElementById('profile-actions');
-    const personalDataContainer = document.getElementById('profile-data');
-
-    if (actionsContainer && personalDataContainer) {
-      actionsContainer.innerHTML = this.renderActions({});
-      personalDataContainer.innerHTML = this.renderPersonalData({});
-      this.currentState = 'default';
-    }
+    console.log('Тут логика возвращения в дефолтный режим');
+    this.setProps({
+      isEditingPersonal: false,
+      isEditingPassword: false,
+    });
   }
 
-  private handleSave(): void {
-    const personalDataContainer = document.getElementById('profile-data');
+  private handleLogout(): void {
+    console.log('Тут будет логика выхода');
+  }
 
-    if (personalDataContainer) {
-      if (this.currentState === 'editing-personal') {
-        const inputs = personalDataContainer.querySelectorAll(
-          'input.profile-page__right',
-        );
-        const formData: Record<string, string> = {};
+  private async handleSavePersonalData(): Promise<void> {
+    const personalDataEditable = this.children
+      .personalDataEditable as PersonalDataEditable;
+    const isValid = personalDataEditable.validateAllFields();
 
-        inputs.forEach(input => {
-          const name = (input as HTMLInputElement).name;
-          const value = (input as HTMLInputElement).value;
-          formData[name] = value;
-        });
-      } else if (this.currentState === 'editing-password') {
-        const inputs = personalDataContainer.querySelectorAll(
-          'input.profile-page__right',
-        );
-        const passwordData: Record<string, string> = {};
+    if (!isValid) {
+      return;
+    }
 
-        inputs.forEach(input => {
-          const name = (input as HTMLInputElement).name;
-          const value = (input as HTMLInputElement).value;
-          passwordData[name] = value;
-        });
-      }
+    const form = document.getElementById('profile-data') as HTMLFormElement;
+    const formData = new FormData(form);
+    const updatedData: UpdateProfileData = {};
 
+    formData.forEach((value, key) => {
+      updatedData[key as keyof UpdateProfileData] = value.toString();
+    });
+
+    console.log('Обновленные данные профиля:', updatedData);
+
+    try {
+      const updatedProfile = await ProfileAPI.updateProfile(updatedData);
+      this.setProfileData(updatedProfile);
       this.resetToDefaultMode();
+    } catch (error) {
+      console.error('Ошибка при обновлении профиля:', error);
+      // Можно добавить отображение ошибки в UI
+    }
+  }
+  private async handleSavePasswordData(): Promise<void> {
+    const passwordDataEditable = this.children
+      .passwordDataEditable as PasswordDataEditable;
+    const isValid = passwordDataEditable.validateAllFields();
+
+    if (!isValid) {
+      return;
+    }
+
+    const form = document.getElementById('password-data') as HTMLFormElement;
+    const formData = new FormData(form);
+    const oldPassword = formData.get('oldPassword') as string;
+    const newPassword = formData.get('newPassword') as string;
+    const confirmPassword = formData.get('confirmPassword') as string;
+
+    if (newPassword !== confirmPassword) {
+      alert('Новый пароль и подтверждение не совпадают.');
+      return;
+    }
+
+    // Здесь можно добавить вызов API для обновления пароля
+    // Например:
+    // try {
+    //   await ProfileAPI.updatePassword({ oldPassword, newPassword });
+    //   alert('Пароль успешно обновлен.');
+    //   this.resetToDefaultMode();
+    // } catch (error) {
+    //   console.error('Ошибка при обновлении пароля:', error);
+    //   alert('Не удалось обновить пароль.');
+    // }
+
+    console.log('Обновленные данные пароля:', { oldPassword, newPassword });
+
+    try {
+      const updatedProfile = await ProfileAPI.updateProfile({
+        oldPassword,
+        password: newPassword,
+      });
+      // Предполагается, что `password` не отображается, но обновляем данные
+      this.setProfileData(updatedProfile);
+      alert('Пароль успешно обновлен.');
+      this.resetToDefaultMode();
+    } catch (error) {
+      console.error('Ошибка при обновлении пароля:', error);
+      alert('Не удалось обновить пароль.');
     }
   }
 
-  private renderPersonalDataEditable(context: Record<string, unknown>): string {
-    return Handlebars.compile(`
-      {{> PersonalDataEditable}}
-    `)(context);
+  protected componentDidUpdate(
+    oldProps: ProfilePageProps,
+    newProps: ProfilePageProps,
+  ): boolean {
+    if (
+      oldProps.isEditingPersonal !== newProps.isEditingPersonal ||
+      oldProps.isEditingPassword !== newProps.isEditingPassword
+    ) {
+      console.log(
+        `State changed: isEditingPersonal from ${oldProps.isEditingPersonal} to ${newProps.isEditingPersonal}, isEditingPassword from ${oldProps.isEditingPassword} to ${newProps.isEditingPassword}`,
+      );
+      return true;
+    }
+
+    return false;
   }
 
-  private renderPasswordDataEditable(context: Record<string, unknown>): string {
-    return Handlebars.compile(`
-    {{> PasswordDataEditable}}
-  `)(context);
-  }
-
-  private renderSaveButton(context: Record<string, unknown>): string {
-    return Handlebars.compile(`
-      {{> ProfileSaveButton}}
-    `)(context);
-  }
-
-  private renderActions(context: Record<string, unknown>): string {
-    return Handlebars.compile(`
-      {{> ActionsList}}
-    `)(context);
-  }
-
-  private renderPersonalData(context: Record<string, unknown>): string {
-    return Handlebars.compile(`
-      {{> ProfilePersonalData}}
-    `)(context);
-  }
-
-  render(context: Record<string, unknown> = {}): string {
-    return super.render(context);
+  protected override render(): string {
+    return template;
   }
 }
