@@ -63,6 +63,14 @@ export class Router {
     this.navigate(ROUTES.NOT_FOUND);
   }
 
+  back(): void {
+    window.history.back();
+  }
+
+  forward(): void {
+    window.history.forward();
+  }
+
   render(content: HTMLElement): void {
     this.rootElement.innerHTML = '';
     this.rootElement.appendChild(content);
