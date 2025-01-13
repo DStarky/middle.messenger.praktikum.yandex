@@ -19,26 +19,28 @@ const template = `
       <div class="form-container__title">
         {{{ cardTitle }}}
       </div>
+
+      <div class="form-container__inputs">
+        {{{ loginInput }}}
+        {{{ passwordInput }}}
+      </div>
+
       {{#if isLoading}}
         <div class="loader__wrapper">
           {{{ loader }}}
         </div>
       {{/if}}
+
       {{#if error}}
-        <div class="error-message">{{error}}</div>
+        <div class="error-message-red text-center">{{error}}</div>
       {{/if}}
-      <div class="form-container__inputs">
-        {{{ loginInput }}}
-        {{{ passwordInput }}}
-      </div>
+
       <div class="form-container__links">
         {{{ submitButton }}}
         {{{ registrationLink }}}
       </div>
 
     </form>
-
-
   </main>
 `;
 

@@ -38,13 +38,7 @@ export class AuthAPI extends BaseAPI {
       },
       body: JSON.stringify(data),
     }).then(response => {
-      if (!response.ok) {
-        return response.text().then(text => {
-          throw new Error(text);
-        });
-      }
-
-      return response;
+      return response.json();
     });
   }
 

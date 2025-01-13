@@ -14,18 +14,24 @@ class AuthController {
 
   public async signIn(login: string, password: string) {
     try {
-      store.set('error', null); // Сбрасываем ошибку перед запросом
+      store.set('error', null);
       store.set('isLoading', true);
 
-      await this.api.signIn({ login, password });
+      const loginRes = await this.api.signIn({ login, password });
+
+      if (loginRes.reason) {
+        if (loginRes.reason === 'Login or password is incorrect') {
+          store.set('error', 'Логин или пароль пользователя неверный');
+          return;
+        }
+
+        return;
+      }
+
       const user = await this.api.getUser();
 
       store.set('user', user);
       this.router.navigate(ROUTES.CHATS);
-    } catch (error: unknown) {
-      console.error('Sign In Error:', error);
-      store.set('error', (error as Error).message);
-      // Можете здесь не делать alert, а вывести ошибку через Store
     } finally {
       store.set('isLoading', false);
     }
