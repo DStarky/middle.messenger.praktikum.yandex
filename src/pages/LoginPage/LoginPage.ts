@@ -11,29 +11,34 @@ import AuthController from '../../controllers/AuthController';
 import type { Indexed } from '../../app/Store';
 import type { Events } from '../../types/Events';
 import { connect } from '../../app/HOC';
+import { Loader } from '../../components/common/Loader/Loader';
 
 const template = `
   <main class="screen-center login-page">
-    {{#if isLoading}}
-      <div class="loader">Загрузка...</div>
-    {{else}}
-      <form class="form-container" id="login-form">
-        <div class="form-container__title">
-          {{{ cardTitle }}}
+    <form class="form-container" id="login-form">
+      <div class="form-container__title">
+        {{{ cardTitle }}}
+      </div>
+      {{#if isLoading}}
+        <div class="loader__wrapper">
+          {{{ loader }}}
         </div>
-        {{#if error}}
-          <div class="error-message">{{error}}</div>
-        {{/if}}
-        <div class="form-container__inputs">
-          {{{ loginInput }}}
-          {{{ passwordInput }}}
-        </div>
-        <div class="form-container__links">
-          {{{ submitButton }}}
-          {{{ registrationLink }}}
-        </div>
-      </form>
-    {{/if}}
+      {{/if}}
+      {{#if error}}
+        <div class="error-message">{{error}}</div>
+      {{/if}}
+      <div class="form-container__inputs">
+        {{{ loginInput }}}
+        {{{ passwordInput }}}
+      </div>
+      <div class="form-container__links">
+        {{{ submitButton }}}
+        {{{ registrationLink }}}
+      </div>
+
+    </form>
+
+
   </main>
 `;
 
@@ -83,6 +88,8 @@ export class _LoginPage extends Block<LoginPageProps> {
       className: 'form-container__registration-link',
     });
 
+    const loader = new Loader();
+
     super({
       ...props,
       cardTitle,
@@ -90,6 +97,7 @@ export class _LoginPage extends Block<LoginPageProps> {
       passwordInput,
       submitButton,
       registrationLink,
+      loader,
       events: {
         submit: (e: Event) => this.handleSubmit(e),
       },
