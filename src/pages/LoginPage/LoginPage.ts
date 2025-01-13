@@ -1,44 +1,56 @@
-import type { Props } from '../../app/Block';
+import type { Props, PropsWithChildren } from '../../app/Block';
 import Block from '../../app/Block';
-import type { Router } from '../../app/Router';
 import { ROUTES } from '../../app/routes';
 import { Button } from '../../components/common/Button/Button';
 import { CardTitle } from '../../components/common/CardTitle/CardTitle';
 import { FloatingLabelInput } from '../../components/common/FloatingLabelInput/FloatingLabelInput';
 import { Link } from '../../components/common/Link/Link';
 import { validationRules } from '../../helpers/validationRules';
+import AuthController from '../../controllers/AuthController';
+
+import type { Indexed } from '../../app/Store';
+import { connect } from '../../app/HOC';
+import type { Events } from '../../types/Events';
 
 const template = `
   <main class="screen-center login-page">
-    <form class="form-container" id="login-form">
-      <div class="form-container__title">
-        {{{ cardTitle }}}
-      </div>
-      <div class="form-container__inputs">
-        {{{ loginInput }}}
-        {{{ passwordInput }}}
-      </div>
-      <div class="form-container__links">
-        {{{ submitButton }}}
-        {{{ registrationLink }}}
-      </div>
-    </form>
+    {{#if isLoading}}
+      <div class="loader">Загрузка...</div>
+    {{else}}
+      <form class="form-container" id="login-form">
+        <div class="form-container__title">
+          {{{ cardTitle }}}
+        </div>
+        {{#if error}}
+          <div class="error-message">{{error}}</div>
+        {{/if}}
+        <div class="form-container__inputs">
+          {{{ loginInput }}}
+          {{{ passwordInput }}}
+        </div>
+        <div class="form-container__links">
+          {{{ submitButton }}}
+          {{{ registrationLink }}}
+        </div>
+      </form>
+    {{/if}}
   </main>
 `;
 
 interface LoginPageProps extends Props {
-  cardTitle: CardTitle;
-  loginInput: FloatingLabelInput;
-  passwordInput: FloatingLabelInput;
-  submitButton: Button;
-  registrationLink: Link;
-  events?: Record<string, (e: Event) => void>;
+  cardTitle?: CardTitle;
+  loginInput?: FloatingLabelInput;
+  passwordInput?: FloatingLabelInput;
+  submitButton?: Button;
+  registrationLink?: Link;
+  events?: Events;
+
+  isLoading?: boolean;
+  error?: string | null;
 }
 
-export class LoginPage extends Block<LoginPageProps> {
-  private router: Router;
-
-  constructor(router: Router) {
+export class _LoginPage extends Block<LoginPageProps> {
+  constructor(props: PropsWithChildren<LoginPageProps> = {}) {
     const cardTitle = new CardTitle({ text: 'Вход' });
 
     const loginInput = new FloatingLabelInput({
@@ -72,6 +84,7 @@ export class LoginPage extends Block<LoginPageProps> {
     });
 
     super({
+      ...props,
       cardTitle,
       loginInput,
       passwordInput,
@@ -81,20 +94,18 @@ export class LoginPage extends Block<LoginPageProps> {
         submit: (e: Event) => this.handleSubmit(e),
       },
     });
-
-    this.router = router;
   }
 
   override render(): string {
     return template;
   }
 
-  private handleSubmit(event: Event) {
+  private async handleSubmit(event: Event) {
     event.preventDefault();
 
     const isValid = this.validateAllFields();
     if (!isValid) {
-      alert('Пожалуйста, исправьте ошибки в форме.');
+      // Можно показать ошибку в Store: store.set('error', 'Исправьте ошибки');
       return;
     }
 
@@ -108,17 +119,11 @@ export class LoginPage extends Block<LoginPageProps> {
     const password = formData.get('password') as string;
 
     if (!login || !password) {
-      alert('Пожалуйста, заполните все поля.');
+      // store.set('error', 'Введите логин и пароль');
       return;
     }
 
-    console.log('Login:', {
-      login,
-      password,
-    });
-
-    // Здесь можно добавить логику авторизации
-    this.router.navigate(ROUTES.CHATS);
+    await AuthController.signIn(login, password);
   }
 
   public validateAllFields(): boolean {
@@ -139,3 +144,12 @@ export class LoginPage extends Block<LoginPageProps> {
     return isValid;
   }
 }
+
+function mapStateToProps(state: Indexed) {
+  return {
+    isLoading: state.isLoading,
+    error: state.error,
+  };
+}
+
+export const LoginPage = connect(mapStateToProps)(_LoginPage);

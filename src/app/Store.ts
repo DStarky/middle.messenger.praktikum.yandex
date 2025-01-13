@@ -9,12 +9,18 @@ export interface Indexed {
 }
 
 interface State extends Indexed {
-  user?: {
-    name?: string;
-    avatar?: string;
-    [key: string]: unknown;
+  user: null | {
+    id: number;
+    first_name: string;
+    second_name: string;
+    display_name: string;
+    phone: string;
+    login: string;
+    avatar: string;
+    email: string;
   };
-  chats?: unknown[];
+  isLoading: boolean;
+  error: null | string;
 }
 
 /**
@@ -41,7 +47,11 @@ function set(object: Indexed, path: string, value: unknown): void {
 }
 
 class Store extends EventBus {
-  private state: State = {};
+  private state: State = {
+    user: null,
+    isLoading: false,
+    error: null,
+  };
 
   public getState(): State {
     return { ...this.state };
