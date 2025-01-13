@@ -16,7 +16,7 @@ interface SignUpData {
 
 export class AuthAPI extends BaseAPI {
   private host = 'https://ya-praktikum.tech/api/v2';
-  // Или используйте переменную окружения, если хотите
+  // TODO: переделать на переменную окружения
 
   public signUp(data: SignUpData) {
     return fetch(`${this.host}/auth/signup`, {

@@ -8,7 +8,7 @@ export interface Indexed {
   [key: string]: unknown;
 }
 
-interface State extends Indexed {
+export interface State extends Indexed {
   user: null | {
     id: number;
     first_name: string;

@@ -13,7 +13,9 @@ interface Children {
   [key: string]: Block<Props> | Block<Props>[];
 }
 
-type PropsWithChildren<T extends Props = Props> = T & { children?: Children };
+export type PropsWithChildren<T extends Props = Props> = T & {
+  children?: Children;
+};
 
 export default abstract class Block<T extends Props = Props> {
   static EVENTS = {
@@ -274,7 +276,9 @@ export default abstract class Block<T extends Props = Props> {
     this.addAttributes();
   }
 
-  protected abstract render(): string;
+  protected render(): string {
+    return '';
+  }
 
   getContent(): HTMLElement | null {
     if (this.element?.parentNode?.nodeType === Node.DOCUMENT_FRAGMENT_NODE) {

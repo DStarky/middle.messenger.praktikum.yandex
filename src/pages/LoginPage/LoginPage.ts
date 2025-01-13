@@ -9,8 +9,8 @@ import { validationRules } from '../../helpers/validationRules';
 import AuthController from '../../controllers/AuthController';
 
 import type { Indexed } from '../../app/Store';
-import { connect } from '../../app/HOC';
 import type { Events } from '../../types/Events';
+import { connect } from '../../app/HOC';
 
 const template = `
   <main class="screen-center login-page">
