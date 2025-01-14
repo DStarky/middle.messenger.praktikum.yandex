@@ -85,9 +85,13 @@ export class App {
 
     router.init();
 
-    AuthController.getUserInfo().catch(() => {
-      router.navigate(ROUTES.LOGIN);
-    });
+    AuthController.getUserInfo()
+      .then(() => {
+        router.navigate(ROUTES.CHATS);
+      })
+      .catch(() => {
+        router.navigate(ROUTES.LOGIN);
+      });
   }
 
   render(): void {}

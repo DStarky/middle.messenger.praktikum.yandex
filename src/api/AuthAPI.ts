@@ -1,3 +1,9 @@
+import type {
+  SignUpSuccessResponse,
+  SignInSuccessResponse,
+  UserData,
+  ErrorResponse,
+} from '../types/AuthResponses';
 import { BaseAPI } from './BaseAPI';
 
 interface SignInData {
@@ -18,7 +24,19 @@ export class AuthAPI extends BaseAPI {
   private host = 'https://ya-praktikum.tech/api/v2';
   // TODO: переделать на переменную окружения
 
-  public signUp(data: SignUpData) {
+  private async handleResponse<T>(response: Response): Promise<T> {
+    const contentType = response.headers.get('Content-Type');
+    if (contentType && contentType.includes('application/json')) {
+      return response.json() as Promise<T>;
+    } else {
+      const text = await response.text();
+      return text as unknown as T;
+    }
+  }
+
+  public signUp(
+    data: SignUpData,
+  ): Promise<SignUpSuccessResponse | ErrorResponse | string> {
     return fetch(`${this.host}/auth/signup`, {
       method: 'POST',
       credentials: 'include',
@@ -26,10 +44,14 @@ export class AuthAPI extends BaseAPI {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
-    }).then(response => response.json());
+    }).then(
+      this.handleResponse<SignUpSuccessResponse | ErrorResponse | string>,
+    );
   }
 
-  public signIn(data: SignInData) {
+  public signIn(
+    data: SignInData,
+  ): Promise<SignInSuccessResponse | ErrorResponse | string> {
     return fetch(`${this.host}/auth/signin`, {
       method: 'POST',
       credentials: 'include',
@@ -37,38 +59,29 @@ export class AuthAPI extends BaseAPI {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
-    }).then(response => {
-      return response.json();
-    });
+    }).then(
+      this.handleResponse<SignInSuccessResponse | ErrorResponse | string>,
+    );
   }
 
-  public getUser() {
+  public getUser(): Promise<UserData> {
     return fetch(`${this.host}/auth/user`, {
       method: 'GET',
       credentials: 'include',
-    }).then(response => {
+    }).then(async response => {
       if (!response.ok) {
-        return response.text().then(text => {
-          throw new Error(text);
-        });
+        const errorText = await response.text();
+        throw new Error(errorText);
       }
 
-      return response.json();
+      return response.json() as Promise<UserData>;
     });
   }
 
-  public logout() {
+  public logout(): Promise<string | ErrorResponse> {
     return fetch(`${this.host}/auth/logout`, {
       method: 'POST',
       credentials: 'include',
-    }).then(response => {
-      if (!response.ok) {
-        return response.text().then(text => {
-          throw new Error(text);
-        });
-      }
-
-      return response;
-    });
+    }).then(this.handleResponse<string | ErrorResponse>);
   }
 }
