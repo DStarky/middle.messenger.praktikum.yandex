@@ -7,11 +7,8 @@ export class Router {
 
   constructor(rootSelector: string) {
     const root = document.querySelector(rootSelector);
-
     if (!(root instanceof HTMLElement)) {
-      throw new Error(
-        `Root element ${rootSelector} не найден или не является типом HTMLElement`,
-      );
+      throw new Error(`Root element ${rootSelector} не найден`);
     }
 
     this.rootElement = root;
@@ -23,22 +20,31 @@ export class Router {
 
   navigate(path: Route): void {
     window.history.pushState({}, '', path);
-    this.routes[path]();
+
+    const routeFunc = this.routes[path];
+    if (!routeFunc) {
+      this.handle404();
+      return;
+    }
+
+    routeFunc();
   }
 
   public init(): void {
     window.addEventListener('popstate', () => {
       const path = window.location.pathname as Route;
-      if (this.routes[path]) {
-        this.routes[path]();
+      const routeFunc = this.routes[path];
+      if (routeFunc) {
+        routeFunc();
       } else {
         this.handle404();
       }
     });
 
-    const path = window.location.pathname as Route;
-    if (this.routes[path]) {
-      this.routes[path]();
+    const currentPath = window.location.pathname as Route;
+    const routeFunc = this.routes[currentPath];
+    if (routeFunc) {
+      routeFunc();
     } else {
       this.handle404();
     }
@@ -63,6 +69,11 @@ export class Router {
     this.navigate(ROUTES.NOT_FOUND);
   }
 
+  public render(content: HTMLElement): void {
+    this.rootElement.innerHTML = '';
+    this.rootElement.appendChild(content);
+  }
+
   back(): void {
     window.history.back();
   }
@@ -70,9 +81,6 @@ export class Router {
   forward(): void {
     window.history.forward();
   }
-
-  render(content: HTMLElement): void {
-    this.rootElement.innerHTML = '';
-    this.rootElement.appendChild(content);
-  }
 }
+
+export const router = new Router('#app');

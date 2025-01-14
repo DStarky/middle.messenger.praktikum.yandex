@@ -1,15 +1,13 @@
 import { AuthAPI } from '../api/AuthAPI';
 import store from '../app/Store';
-import { Router } from '../app/Router';
+import { router } from '../app/Router';
 import { ROUTES } from '../app/routes';
 
 class AuthController {
   private api: AuthAPI;
-  private router: Router;
 
   constructor() {
     this.api = new AuthAPI();
-    this.router = new Router('#app');
   }
 
   public async signIn(login: string, password: string) {
@@ -25,13 +23,17 @@ class AuthController {
           return;
         }
 
+        store.set('error', loginRes.reason);
         return;
       }
 
       const user = await this.api.getUser();
 
       store.set('user', user);
-      this.router.navigate(ROUTES.CHATS);
+      router.navigate(ROUTES.CHATS);
+    } catch (error: unknown) {
+      console.error('Sign In Error:', error);
+      store.set('error', (error as Error).message);
     } finally {
       store.set('isLoading', false);
     }
@@ -49,7 +51,7 @@ class AuthController {
       store.set('error', null);
       store.set('isLoading', true);
 
-      await this.api.signUp({
+      const signUpResponse = await this.api.signUp({
         first_name,
         second_name,
         login,
@@ -57,10 +59,16 @@ class AuthController {
         password,
         phone,
       });
-      const user = await this.api.getUser();
 
+      if (signUpResponse?.reason) {
+        store.set('error', signUpResponse.reason);
+        return;
+      }
+
+      const user = await this.api.getUser();
       store.set('user', user);
-      this.router.navigate(ROUTES.CHATS);
+
+      router.navigate(ROUTES.CHATS);
     } catch (error: unknown) {
       console.error('Sign Up Error:', error);
       store.set('error', (error as Error).message);
@@ -78,7 +86,6 @@ class AuthController {
     } catch (error: unknown) {
       console.error('getUserInfo error', error);
       store.set('user', null);
-      // Может бросить ошибку выше, чтобы перехватить в route guard
       throw error;
     } finally {
       store.set('isLoading', false);
@@ -92,7 +99,8 @@ class AuthController {
 
       await this.api.logout();
       store.set('user', null);
-      this.router.navigate(ROUTES.LOGIN);
+
+      router.navigate(ROUTES.LOGIN);
     } catch (error: unknown) {
       console.error('Logout error', error);
       store.set('error', (error as Error).message);

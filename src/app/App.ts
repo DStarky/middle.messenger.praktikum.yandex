@@ -1,5 +1,5 @@
 import { ROUTES } from './routes';
-import { Router } from './Router';
+import { router } from './Router';
 
 import { Page404 } from '../pages/404/Page404';
 import { Page500 } from '../pages/500/Page500';
@@ -7,48 +7,87 @@ import { LoginPage } from '../pages/LoginPage/LoginPage';
 import { RegistrationPage } from '../pages/RegistrationPage/RegistrationPage';
 import { ChatsPage } from '../pages/ChatsPage/ChatsPage';
 import { ProfilePage } from '../pages/ProfilePage/ProfilePage';
+import type Block from './Block';
+import store from './Store';
+import AuthController from '../controllers/AuthController';
+
+function renderPage(page: Block) {
+  const content = page.getContent();
+  if (content) {
+    router.render(content);
+  }
+}
 
 export class App {
-  private router: Router;
-
   constructor() {
-    this.router = new Router('#app');
+    router.addRoute(ROUTES.LOGIN, () => {
+      const state = store.getState();
+      if (state.user) {
+        router.navigate(ROUTES.CHATS);
+        return;
+      }
 
-    this.router.addRoute(ROUTES.NOT_FOUND, () => {
-      const page = new Page404();
-      this.router.render(page.getContent()!);
+      const loginPage = new LoginPage();
+      renderPage(loginPage);
     });
 
-    this.router.addRoute(ROUTES.ERROR_500, () => {
-      const page = new Page500();
-      this.router.render(page.getContent()!);
+    router.addRoute(ROUTES.REGISTRATION, () => {
+      const state = store.getState();
+      if (state.user) {
+        router.navigate(ROUTES.CHATS);
+        return;
+      }
+
+      const registrationPage = new RegistrationPage();
+      renderPage(registrationPage);
     });
 
-    this.router.addRoute(ROUTES.LOGIN, () => {
-      const page = new LoginPage(this.router);
-      this.router.render(page.getContent()!);
+    router.addRoute(ROUTES.CHATS, () => {
+      const state = store.getState();
+      if (!state.user) {
+        router.navigate(ROUTES.LOGIN);
+        return;
+      }
+
+      const chatsPage = new ChatsPage();
+      renderPage(chatsPage);
     });
 
-    this.router.addRoute(ROUTES.REGISTRATION, () => {
-      const page = new RegistrationPage(this.router);
-      this.router.render(page.getContent()!);
+    router.addRoute(ROUTES.PROFILE, () => {
+      const state = store.getState();
+      if (!state.user) {
+        router.navigate(ROUTES.LOGIN);
+        return;
+      }
+
+      const profilePage = new ProfilePage();
+      renderPage(profilePage);
     });
 
-    this.router.addRoute(ROUTES.CHATS, () => {
-      const page = new ChatsPage();
-      this.router.render(page.getContent()!);
+    router.addRoute(ROUTES.NOT_FOUND, () => {
+      const notFoundPage = new Page404();
+      renderPage(notFoundPage);
     });
 
-    this.router.addRoute(ROUTES.PROFILE, () => {
-      const page = new ProfilePage();
-      this.router.render(page.getContent()!);
+    router.addRoute(ROUTES.ERROR_500, () => {
+      const error500Page = new Page500();
+      renderPage(error500Page);
     });
 
-    this.router.addRoute('/', () => {
-      this.router.navigate(ROUTES.LOGIN);
+    router.addRoute('/', () => {
+      const state = store.getState();
+      if (state.user) {
+        router.navigate(ROUTES.CHATS);
+      } else {
+        router.navigate(ROUTES.LOGIN);
+      }
     });
 
-    this.router.init();
+    router.init();
+
+    AuthController.getUserInfo().catch(() => {
+      router.navigate(ROUTES.LOGIN);
+    });
   }
 
   render(): void {}

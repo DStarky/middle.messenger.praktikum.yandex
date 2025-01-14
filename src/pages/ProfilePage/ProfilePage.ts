@@ -11,6 +11,10 @@ import { ProfileAvatar } from './components/ProfileAvatar/ProfileAvatar';
 import { ProfilePasswordData } from './components/ProfilePasswordData/ProfilePasswordData';
 import { ProfilePersonalData } from './components/ProfilePersonalData/ProfilePersonalData';
 import { ProfileSaveButton } from './components/ProfileSaveButton/ProfileSaveButton';
+import { connect } from '../../app/HOC'; // Если нужно
+import type { Indexed } from '../../app/Store';
+import store from '../../app/Store'; // Импортируем Store для установки ошибок
+import AuthController from '../../controllers/AuthController';
 
 const template = `
   <main class="profile-page">
@@ -21,7 +25,7 @@ const template = `
       <div class="profile-page__data">
         <div class="profile-page__block">
           {{{profileAvatar}}}
-          <h4 class="profile-page__name">Иван</h4>
+          <h4 class="profile-page__name">{{displayName}}</h4>
         </div>
 
         <div class="profile-page__block">
@@ -53,9 +57,12 @@ interface ProfilePageState {
   isEditingPassword: boolean;
 }
 
-interface ProfilePageProps extends Props, Partial<ProfilePageState> {}
+interface ProfilePageProps extends Props, Partial<ProfilePageState> {
+  displayName?: string; // Добавляем проп для отображения имени
+  error?: string | null; // Добавляем проп для отображения ошибок
+}
 
-export class ProfilePage extends Block<ProfilePageProps> {
+class _ProfilePage extends Block<ProfilePageProps> {
   constructor(props: ProfilePageProps = {}) {
     super({
       ...props,
@@ -102,7 +109,8 @@ export class ProfilePage extends Block<ProfilePageProps> {
       this.setProfileData(profile);
     } catch (error) {
       console.error('Ошибка при загрузке профиля:', error);
-      // Можно добавить обработку ошибок в UI
+      // Устанавливаем ошибку в Store для отображения на странице
+      store.set('error', 'Не удалось загрузить профиль');
     }
   }
 
@@ -149,6 +157,12 @@ export class ProfilePage extends Block<ProfilePageProps> {
         phone: profile.phone,
       },
     });
+
+    // Обновляем отображаемое имя
+    this.setProps({
+      displayName:
+        profile.display_name || `${profile.first_name} ${profile.second_name}`,
+    });
   }
 
   private async handleChangeAvatar(): Promise<void> {
@@ -171,15 +185,21 @@ export class ProfilePage extends Block<ProfilePageProps> {
   }
 
   private resetToDefaultMode(): void {
-    console.log('Тут логика возвращения в дефолтный режим');
+    console.log('Тут логика возвращения в дефолтный режим');
     this.setProps({
       isEditingPersonal: false,
       isEditingPassword: false,
     });
   }
 
-  private handleLogout(): void {
-    console.log('Тут будет логика выхода');
+  private async handleLogout(): Promise<void> {
+    try {
+      await AuthController.logout();
+      // После успешного выхода AuthController перенаправит на страницу логина
+    } catch (error) {
+      console.error('Ошибка при выходе:', error);
+      store.set('error', 'Не удалось выйти из системы');
+    }
   }
 
   private async handleSavePersonalData(): Promise<void> {
@@ -207,9 +227,10 @@ export class ProfilePage extends Block<ProfilePageProps> {
       this.resetToDefaultMode();
     } catch (error) {
       console.error('Ошибка при обновлении профиля:', error);
-      // Можно добавить отображение ошибки в UI
+      store.set('error', 'Не удалось обновить профиль');
     }
   }
+
   private async handleSavePasswordData(): Promise<void> {
     const passwordDataEditable = this.children
       .passwordDataEditable as PasswordDataEditable;
@@ -221,7 +242,7 @@ export class ProfilePage extends Block<ProfilePageProps> {
 
     const form = document.getElementById('password-data') as HTMLFormElement;
     const formData = new FormData(form);
-    const oldPassword = formData.get('oldPassword') as string;
+    // const oldPassword = formData.get('oldPassword') as string;
     const newPassword = formData.get('newPassword') as string;
     const confirmPassword = formData.get('confirmPassword') as string;
 
@@ -230,31 +251,14 @@ export class ProfilePage extends Block<ProfilePageProps> {
       return;
     }
 
-    // Здесь можно добавить вызов API для обновления пароля
-    // Например:
-    // try {
-    //   await ProfileAPI.updatePassword({ oldPassword, newPassword });
-    //   alert('Пароль успешно обновлен.');
-    //   this.resetToDefaultMode();
-    // } catch (error) {
-    //   console.error('Ошибка при обновлении пароля:', error);
-    //   alert('Не удалось обновить пароль.');
-    // }
-
-    console.log('Обновленные данные пароля:', { oldPassword, newPassword });
-
     try {
-      const updatedProfile = await ProfileAPI.updateProfile({
-        oldPassword,
-        password: newPassword,
-      });
-      // Предполагается, что `password` не отображается, но обновляем данные
-      this.setProfileData(updatedProfile);
+      // await ProfileAPI.updatePassword({ oldPassword, newPassword });
       alert('Пароль успешно обновлен.');
       this.resetToDefaultMode();
     } catch (error) {
       console.error('Ошибка при обновлении пароля:', error);
       alert('Не удалось обновить пароль.');
+      store.set('error', 'Не удалось обновить пароль');
     }
   }
 
@@ -279,3 +283,14 @@ export class ProfilePage extends Block<ProfilePageProps> {
     return template;
   }
 }
+
+// Функция маппинга состояния Store к пропсам компонента
+function mapStateToProps(state: Indexed) {
+  return {
+    // Здесь можно добавить нужные пропсы из Store
+    error: state.error,
+  };
+}
+
+// Подключаем компонент к Store
+export const ProfilePage = connect(mapStateToProps)(_ProfilePage);
