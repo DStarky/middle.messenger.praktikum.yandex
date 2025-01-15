@@ -15,6 +15,7 @@ import type { Indexed } from '../../app/Store';
 import store from '../../app/Store';
 import AuthController from '../../controllers/AuthController';
 import ProfileController from '../../controllers/ProfileController';
+import { RESOURCE_URL } from '../../consts/URLs';
 
 const template = `
   <main class="profile-page">
@@ -148,7 +149,9 @@ class _ProfilePage extends Block<ProfilePageProps> {
 
     const profileAvatar = this.children.profileAvatar as ProfileAvatar;
     profileAvatar.getChildren().avatar.setProps({
-      src: profile.avatar,
+      src: profile.avatar
+        ? `${RESOURCE_URL}${profile.avatar}`
+        : '/defaultSrc.png',
     });
 
     const personalDataEditable = this.children

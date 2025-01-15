@@ -23,6 +23,14 @@ export class Avatar extends Block<AvatarProps> {
     });
   }
 
+  override setProps(nextProps: Partial<AvatarProps>): void {
+    if ('src' in nextProps) {
+      nextProps.src = nextProps.src || '/defaultSrc.png';
+    }
+
+    super.setProps(nextProps);
+  }
+
   override render(): string {
     return template;
   }
