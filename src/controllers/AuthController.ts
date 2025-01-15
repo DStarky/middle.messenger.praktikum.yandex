@@ -31,6 +31,11 @@ class AuthController {
       }
 
       if ('reason' in loginRes) {
+        if (loginRes.reason === 'Login or password is incorrect') {
+          store.set('error', 'Неверный логин или пароль');
+          return;
+        }
+
         store.set('error', loginRes.reason);
         return;
       }
