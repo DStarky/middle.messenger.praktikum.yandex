@@ -18,3 +18,8 @@ export interface UpdateProfileData {
   password?: string;
   oldPassword?: string;
 }
+
+export interface UpdatePasswordData {
+  oldPassword: string;
+  newPassword: string;
+}
