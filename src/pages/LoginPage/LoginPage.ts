@@ -8,10 +8,9 @@ import { Link } from '../../components/common/Link/Link';
 import { validationRules } from '../../helpers/validationRules';
 import AuthController from '../../controllers/AuthController';
 
-import type { Indexed } from '../../app/Store';
 import type { Events } from '../../types/Events';
-import { connect } from '../../app/HOC';
 import { Loader } from '../../components/common/Loader/Loader';
+import { router } from '../../app/Router';
 
 const template = `
   <main class="screen-center login-page">
@@ -39,7 +38,6 @@ const template = `
         {{{ submitButton }}}
         {{{ registrationLink }}}
       </div>
-
     </form>
   </main>
 `;
@@ -50,13 +48,14 @@ interface LoginPageProps extends Props {
   passwordInput?: FloatingLabelInput;
   submitButton?: Button;
   registrationLink?: Link;
+  loader?: Loader;
   events?: Events;
 
   isLoading?: boolean;
   error?: string | null;
 }
 
-export class _LoginPage extends Block<LoginPageProps> {
+export class LoginPage extends Block<LoginPageProps> {
   constructor(props: PropsWithChildren<LoginPageProps> = {}) {
     const cardTitle = new CardTitle({ text: 'Вход' });
 
@@ -100,6 +99,8 @@ export class _LoginPage extends Block<LoginPageProps> {
       submitButton,
       registrationLink,
       loader,
+      isLoading: false,
+      error: null,
       events: {
         submit: (e: Event) => this.handleSubmit(e),
       },
@@ -115,7 +116,7 @@ export class _LoginPage extends Block<LoginPageProps> {
 
     const isValid = this.validateAllFields();
     if (!isValid) {
-      // Можно показать ошибку в Store: store.set('error', 'Исправьте ошибки');
+      // Можем выставить локальную ошибку: this.setProps({ error: 'Исправьте ошибки' });
       return;
     }
 
@@ -129,11 +130,28 @@ export class _LoginPage extends Block<LoginPageProps> {
     const password = formData.get('password') as string;
 
     if (!login || !password) {
-      // store.set('error', 'Введите логин и пароль');
+      this.setProps({ error: 'Введите логин и пароль' });
       return;
     }
 
-    await AuthController.signIn(login, password);
+    // Вызываем AuthController и передаём колбэки
+    await AuthController.signIn(
+      login,
+      password,
+      // onLoading
+      (loading: boolean) => {
+        this.setProps({ isLoading: loading });
+      },
+      // onError
+      (error: string | null) => {
+        this.setProps({ error });
+      },
+      // onSuccess
+      user => {
+        console.log('Успешный вход, пользователь:', user);
+        router.navigate(ROUTES.CHATS);
+      },
+    );
   }
 
   public validateAllFields(): boolean {
@@ -154,12 +172,3 @@ export class _LoginPage extends Block<LoginPageProps> {
     return isValid;
   }
 }
-
-function mapStateToProps(state: Indexed) {
-  return {
-    isLoading: state.isLoading,
-    error: state.error,
-  };
-}
-
-export const LoginPage = connect(mapStateToProps)(_LoginPage);

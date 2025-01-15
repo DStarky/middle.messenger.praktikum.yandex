@@ -8,9 +8,8 @@ import { Link } from '../../components/common/Link/Link';
 import { Loader } from '../../components/common/Loader/Loader';
 import { validationRules } from '../../helpers/validationRules';
 import AuthController from '../../controllers/AuthController';
-import { connect } from '../../app/HOC';
-import type { Indexed } from '../../app/Store';
 import type { Events } from '../../types/Events';
+import { router } from '../../app/Router';
 
 const template = `
   <main class="screen-center registration-page">
@@ -61,14 +60,12 @@ interface RegistrationPageProps extends Props {
   loader?: Loader;
   events?: Events;
 
-  // Пропы, приходящие из Store:
+  // Локальное состояние
   isLoading?: boolean;
   error?: string | null;
 }
 
-class _RegistrationPage extends Block<RegistrationPageProps> {
-  private loader: Loader;
-
+export class RegistrationPage extends Block<RegistrationPageProps> {
   constructor(props: PropsWithChildren<RegistrationPageProps> = {}) {
     const cardTitle = new CardTitle({ text: 'Регистрация' });
 
@@ -154,7 +151,6 @@ class _RegistrationPage extends Block<RegistrationPageProps> {
       className: 'form-container__login-link',
     });
 
-    // Создаём Loader
     const loader = new Loader();
 
     super({
@@ -170,12 +166,12 @@ class _RegistrationPage extends Block<RegistrationPageProps> {
       submitButton,
       loginLink,
       loader,
+      isLoading: false,
+      error: null,
       events: {
         submit: (e: Event) => this.handleSubmit(e),
       },
     });
-
-    this.loader = loader;
   }
 
   override render(): string {
@@ -192,10 +188,10 @@ class _RegistrationPage extends Block<RegistrationPageProps> {
 
     const isValid = this.validateAllFields();
     if (!isValid) {
+      this.setProps({ error: 'Исправьте ошибки в полях' });
       return;
     }
 
-    // Проверяем пароли
     const password = (
       this.children.passwordInput as FloatingLabelInput
     ).getValue();
@@ -234,7 +230,6 @@ class _RegistrationPage extends Block<RegistrationPageProps> {
       return;
     }
 
-    // Вызываем метод контроллера
     await AuthController.signUp(
       firstName,
       secondName,
@@ -242,6 +237,16 @@ class _RegistrationPage extends Block<RegistrationPageProps> {
       email,
       passwordValue,
       phone,
+      (loading: boolean) => {
+        this.setProps({ isLoading: loading });
+      },
+      (error: string | null) => {
+        this.setProps({ error });
+      },
+      user => {
+        console.log('Регистрация прошла успешно, пользователь:', user);
+        router.navigate(ROUTES.CHATS);
+      },
     );
   }
 
@@ -268,13 +273,3 @@ class _RegistrationPage extends Block<RegistrationPageProps> {
     return isValid;
   }
 }
-
-// Подключаемся к Store
-function mapStateToProps(state: Indexed) {
-  return {
-    isLoading: state.isLoading,
-    error: state.error,
-  };
-}
-
-export const RegistrationPage = connect(mapStateToProps)(_RegistrationPage);

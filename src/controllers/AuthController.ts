@@ -11,10 +11,16 @@ class AuthController {
     this.api = new AuthAPI();
   }
 
-  public async signIn(login: string, password: string): Promise<void> {
+  public async signIn(
+    login: string,
+    password: string,
+    onLoading: (loading: boolean) => void,
+    onError: (error: string | null) => void,
+    onSuccess: (user: UserData) => void,
+  ): Promise<void> {
     try {
-      store.set('error', null);
-      store.set('isLoading', true);
+      onError(null);
+      onLoading(true);
 
       const loginRes = await this.api.signIn({ login, password });
 
@@ -22,9 +28,9 @@ class AuthController {
         if (loginRes.toUpperCase() === 'OK') {
           const user = await this.api.getUser();
           store.set('user', user);
-          router.navigate(ROUTES.CHATS);
+          onSuccess(user);
         } else {
-          store.set('error', loginRes);
+          onError(loginRes);
         }
 
         return;
@@ -32,11 +38,11 @@ class AuthController {
 
       if ('reason' in loginRes) {
         if (loginRes.reason === 'Login or password is incorrect') {
-          store.set('error', 'Неверный логин или пароль');
+          onError('Неверный логин или пароль');
           return;
         }
 
-        store.set('error', loginRes.reason);
+        onError(loginRes.reason);
         return;
       }
 
@@ -44,14 +50,15 @@ class AuthController {
         const user = await this.api.getUser();
         store.set('user', user);
         router.navigate(ROUTES.CHATS);
+        onSuccess(user);
       } else {
-        store.set('error', 'Неизвестный ответ от сервера');
+        onError('Неизвестный ответ от сервера');
       }
     } catch (error: unknown) {
       console.error('Sign In Error:', error);
-      store.set('error', (error as Error).message);
+      onError((error as Error).message);
     } finally {
-      store.set('isLoading', false);
+      onLoading(false);
     }
   }
 
@@ -62,10 +69,13 @@ class AuthController {
     email: string,
     password: string,
     phone: string,
+    onLoading: (loading: boolean) => void,
+    onError: (error: string | null) => void,
+    onSuccess: (user: UserData) => void,
   ): Promise<void> {
     try {
-      store.set('error', null);
-      store.set('isLoading', true);
+      onError(null);
+      onLoading(true);
 
       const signUpRes = await this.api.signUp({
         first_name,
@@ -80,16 +90,16 @@ class AuthController {
         if (signUpRes.toUpperCase() === 'OK') {
           const user = await this.api.getUser();
           store.set('user', user);
-          router.navigate(ROUTES.CHATS);
+          onSuccess(user);
         } else {
-          store.set('error', signUpRes);
+          onError(signUpRes);
         }
 
         return;
       }
 
       if ('reason' in signUpRes) {
-        store.set('error', signUpRes.reason);
+        onError(signUpRes.reason);
         return;
       }
 
@@ -97,14 +107,15 @@ class AuthController {
         const user = await this.api.getUser();
         store.set('user', user);
         router.navigate(ROUTES.CHATS);
+        onSuccess(user);
       } else {
-        store.set('error', 'Неизвестный ответ от сервера');
+        onError('Неизвестный ответ от сервера');
       }
     } catch (error: unknown) {
       console.error('Sign Up Error:', error);
-      store.set('error', (error as Error).message);
+      onError((error as Error).message);
     } finally {
-      store.set('isLoading', false);
+      onLoading(false);
     }
   }
 
