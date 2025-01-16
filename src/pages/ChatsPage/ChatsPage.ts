@@ -39,7 +39,6 @@ interface ChatsPageProps extends Props {
 export class ChatsPage extends Block<ChatsPageProps> {
   private selectedChatId: number | null = null;
   private socket: WebSocket | null = null;
-  private messages: MessageData[] = [];
 
   constructor() {
     const sidebar = new Sidebar({
@@ -55,7 +54,6 @@ export class ChatsPage extends Block<ChatsPageProps> {
 
     const innerChat = new InnerChat({
       selectedChat: null,
-      messages: [],
       isLoading: false,
       errorMessage: null,
       onSendMessage: (message: string) => this.handleSendMessage(message),
@@ -122,12 +120,30 @@ export class ChatsPage extends Block<ChatsPageProps> {
     if (this.selectedChatId === chatId) {
       this.selectedChatId = null;
       this.closeCurrentSocket();
-      this.updatePage();
+      this.updatePage(null);
     } else {
       this.closeCurrentSocket();
       this.selectedChatId = chatId;
-      this.updatePage();
+      this.updatePage(chatId);
       this.initChatSocket(chatId);
+    }
+  }
+
+  private updatePage(chatId: number | null): void {
+    const sidebar = this.children.sidebar as Sidebar;
+    if (chatId) {
+      const chatData = this.getChatById(chatId);
+      if (chatData) {
+        sidebar.setProps({ selectedChat: { id: chatData.id } });
+        const innerChat = this.children.innerChat as InnerChat;
+        innerChat.setProps({
+          selectedChat: chatData,
+        });
+      }
+    } else {
+      sidebar.setProps({ selectedChat: { id: null } });
+      const innerChat = this.children.innerChat as InnerChat;
+      innerChat.setProps({ selectedChat: null });
     }
   }
 
@@ -183,9 +199,6 @@ export class ChatsPage extends Block<ChatsPageProps> {
       this.socket.close();
       this.socket = null;
     }
-
-    this.messages = [];
-    this.updateInnerChat();
   }
 
   private handleSocketMessage(rawData: string): void {
@@ -197,8 +210,7 @@ export class ChatsPage extends Block<ChatsPageProps> {
           this.convertWSMessage(msg),
         );
         loaded.reverse();
-        this.messages = [...loaded, ...this.messages];
-        this.updateInnerChat();
+        this.handleOldMessages(loaded);
       } else if (parsed.type === 'pong') {
         console.log('pong received');
       } else if (
@@ -207,25 +219,11 @@ export class ChatsPage extends Block<ChatsPageProps> {
         parsed.type === 'sticker'
       ) {
         const newMsg = this.convertWSMessage(parsed);
-
         if (!newMsg.isOwn) {
-          this.messages = [...this.messages, newMsg];
-          this.updateInnerChat();
+          this.handleNewMessage(newMsg);
         } else {
-          const index = this.messages.findIndex(
-            msg =>
-              msg.text === newMsg.text &&
-              msg.time === newMsg.time &&
-              msg.isOwn === true,
-          );
-          if (index !== -1) {
-            this.messages[index] = {
-              ...this.messages[index],
-              id: newMsg.id,
-              time: newMsg.time,
-            };
-            this.updateInnerChat();
-          }
+          // echo
+          // можно обновить локально при желании
         }
       } else if (parsed.type === 'user connected') {
         console.log(`User connected: ${parsed.content}`);
@@ -235,11 +233,21 @@ export class ChatsPage extends Block<ChatsPageProps> {
     }
   }
 
+  private handleOldMessages(messages: MessageData[]): void {
+    const innerChat = this.children.innerChat as InnerChat;
+    innerChat.prependMessages(messages);
+  }
+
+  private handleNewMessage(message: MessageData): void {
+    const innerChat = this.children.innerChat as InnerChat;
+    innerChat.appendMessage(message);
+  }
+
   private convertWSMessage(parsedMsg: ParsedMessage): MessageData {
     const currentUserId = store.getState().user?.id;
     const userId = parsedMsg.user_id;
 
-    const isMine = userId && currentUserId && userId === currentUserId;
+    const isMine = Boolean(userId && currentUserId && userId === currentUserId);
 
     const msgId = parsedMsg.id ? String(parsedMsg.id) : makeUUID();
 
@@ -261,7 +269,7 @@ export class ChatsPage extends Block<ChatsPageProps> {
       id: msgId,
       text: parsedMsg.content || '',
       time: msgTime,
-      isOwn: !!isMine,
+      isOwn: isMine,
     };
   }
 
@@ -292,8 +300,8 @@ export class ChatsPage extends Block<ChatsPageProps> {
       }),
       isOwn: true,
     };
-    this.messages = [...this.messages, newMessage];
-    this.updateInnerChat();
+    const innerChat = this.children.innerChat as InnerChat;
+    innerChat.appendMessage(newMessage);
 
     if (this.socket.readyState === WebSocket.OPEN) {
       const payload = {
@@ -304,30 +312,5 @@ export class ChatsPage extends Block<ChatsPageProps> {
     } else {
       console.error('WS не открыт, сообщение не отправлено');
     }
-  }
-
-  private updateInnerChat(): void {
-    const innerChat = this.children.innerChat as InnerChat;
-    innerChat.setProps({
-      selectedChat: this.selectedChatId
-        ? this.getChatById(this.selectedChatId)
-        : null,
-      messages: [...this.messages],
-      isLoading: false,
-      errorMessage: null,
-    });
-  }
-
-  private updatePage(): void {
-    const selectedChat = this.selectedChatId
-      ? this.getChatById(this.selectedChatId)
-      : null;
-
-    (this.children.sidebar as Sidebar).setProps({
-      selectedChat: selectedChat ? { id: selectedChat.id } : { id: null },
-    });
-
-    this.messages = [];
-    this.updateInnerChat();
   }
 }

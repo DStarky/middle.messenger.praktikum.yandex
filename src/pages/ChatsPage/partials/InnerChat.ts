@@ -21,7 +21,8 @@ interface ChatProps {
 
 interface InnerChatProps extends Props {
   selectedChat?: ChatProps | null;
-  messages: MessageData[];
+  // messages НЕ будет менять пропсы при каждом новом сообщении
+  messages?: MessageData[];
   isLoading?: boolean;
   errorMessage?: string | null;
   onSendMessage?: (message: string) => void;
@@ -46,6 +47,7 @@ const template = `
           <div class="chat-error">{{errorMessage}}</div>
         {{else}}
           {{{messages}}}
+          <div id="scroll-anchor"></div>
         {{/if}}
       </div>
       <div class="chat-input">
@@ -67,27 +69,27 @@ const template = `
 
 export class InnerChat extends Block<InnerChatProps> {
   constructor(props: InnerChatProps) {
-    super({
-      ...props,
-      messages: props.messages || [],
-    });
+    super(props);
   }
 
-  override init() {
+  override init(): void {
     this.createChildren(this.props);
+    requestAnimationFrame(() => this.scrollToBottom());
   }
 
   override componentDidUpdate(
     oldProps: InnerChatProps,
     newProps: InnerChatProps,
   ): boolean {
-    if (
-      oldProps.selectedChat !== newProps.selectedChat ||
-      oldProps.messages !== newProps.messages ||
+    const chatChanged = oldProps.selectedChat !== newProps.selectedChat;
+    const needFullRender =
+      chatChanged ||
       oldProps.isLoading !== newProps.isLoading ||
-      oldProps.errorMessage !== newProps.errorMessage
-    ) {
+      oldProps.errorMessage !== newProps.errorMessage;
+
+    if (needFullRender) {
       this.createChildren(newProps);
+      requestAnimationFrame(() => this.scrollToBottom());
       return true;
     }
 
@@ -103,10 +105,6 @@ export class InnerChat extends Block<InnerChatProps> {
         alt: props.selectedChat.title,
         className: 'avatar_size-small',
       });
-
-      const messageBlocks = (props.messages || []).map(
-        msgData => new Message({ message: msgData }),
-      );
 
       const input = new SimpleInput({
         type: 'text',
@@ -136,9 +134,41 @@ export class InnerChat extends Block<InnerChatProps> {
       });
 
       this.children.avatar = avatar;
-      this.children.messages = messageBlocks;
       this.children.input = input;
       this.children.sendButton = sendButton;
+    }
+  }
+
+  public appendMessage(message: MessageData): void {
+    const container = this.getContent()?.querySelector('.chat-messages');
+    if (!container) {
+      return;
+    }
+
+    const msg = new Message({ message });
+    const content = msg.getContent();
+    if (content) {
+      container.insertBefore(
+        content,
+        container.querySelector('#scroll-anchor'),
+      );
+      requestAnimationFrame(() => this.scrollToBottom());
+    }
+  }
+
+  public prependMessages(oldMessages: MessageData[]): void {
+    const container = this.getContent()?.querySelector('.chat-messages');
+    if (!container) {
+      return;
+    }
+
+    const anchor = container.querySelector('#scroll-anchor');
+    for (let i = oldMessages.length - 1; i >= 0; i--) {
+      const msg = new Message({ message: oldMessages[i] });
+      const content = msg.getContent();
+      if (content && anchor) {
+        container.insertBefore(content, anchor);
+      }
     }
   }
 
@@ -146,7 +176,6 @@ export class InnerChat extends Block<InnerChatProps> {
     const input = this.children.input as SimpleInput;
     const message = input.getValue().trim();
 
-    // Простая валидация (обязательно заполнить)
     const requiredRules = validationRules.required || [];
     let errorMessage = '';
 
@@ -162,10 +191,23 @@ export class InnerChat extends Block<InnerChatProps> {
       return;
     }
 
-    // Вызываем колбэк пропса
     if (this.props.onSendMessage && message) {
       this.props.onSendMessage(message);
       input.setValue('');
+    }
+  }
+
+  private scrollToBottom(): void {
+    const content = this.getContent();
+    if (!content) {
+      return;
+    }
+
+    const anchor = content.querySelector(
+      '#scroll-anchor',
+    ) as HTMLElement | null;
+    if (anchor) {
+      anchor.scrollIntoView({ behavior: 'smooth' });
     }
   }
 
