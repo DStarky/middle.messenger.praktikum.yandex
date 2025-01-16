@@ -8,9 +8,10 @@ import type {
   NewMessagesCountResponse,
 } from '../types/Chat';
 import type { ErrorResponse } from '../types/Common';
+import { API_URL } from '../consts/URLs';
 
 export class ChatAPI extends BaseAPI {
-  private host = 'https://ya-praktikum.tech/api/v2';
+  private host = API_URL;
 
   private async handleResponse<T>(response: Response): Promise<T> {
     const contentType = response.headers.get('Content-Type');

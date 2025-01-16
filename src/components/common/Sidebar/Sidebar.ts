@@ -45,7 +45,8 @@ interface SidebarEvents extends Events {
 interface SidebarProps extends Props {
   compact: boolean;
   chats: Chat[];
-  selectedChat: { id: string | null };
+  // selectedChat.id — число
+  selectedChat: { id: number | null };
   searchValue?: string;
   className?: string;
   isLoading?: boolean;
@@ -110,27 +111,24 @@ export class Sidebar extends Block<SidebarProps> {
 
   private updateChatList(): void {
     if (this.props.isLoading || this.props.errorMessage) {
-      // Во время загрузки или при ошибке не обновляем список чатов
       this.children.chatList = [];
       return;
     }
 
     const chatData = this.props.chats || [];
-    const chatItems = chatData.map(
-      chat =>
-        new ChatItem({
-          ...chat,
-          className: chat.id === this.props.selectedChat?.id ? 'active' : '',
-          avatar: new Avatar({
-            src: chat.avatar,
-            alt: chat.name,
-            className: 'avatar_size-medium',
-          }),
+    const chatItems = chatData.map(chat => {
+      return new ChatItem({
+        ...chat,
+        className: chat.id === this.props.selectedChat.id ? 'active' : '',
+        avatar: new Avatar({
+          src: chat.avatar,
+          alt: chat.title,
+          className: 'avatar_size-medium',
         }),
-    );
+      });
+    });
 
     this.children.chatList = chatItems;
-
     this.setProps({});
   }
 

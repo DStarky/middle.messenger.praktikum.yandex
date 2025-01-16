@@ -1,5 +1,3 @@
-import type { ValidationRule } from './../../../helpers/validationRules';
-import { validationRules } from './../../../helpers/validationRules';
 import type { Props } from '../../../app/Block';
 import Block from '../../../app/Block';
 import MenuIcon from '../../../assets/icons/menu.svg';
@@ -11,15 +9,18 @@ import { Message } from '../../../components/common/Message/Message';
 import { SimpleInput } from '../../../components/common/SimpleInput/SimpleInput';
 import { Button } from '../../../components/common/Button/Button';
 import type { Events } from '../../../types/Events';
+import { validationRules } from '../../../helpers/validationRules';
 
-interface Chat {
-  id: string;
-  name: string;
+interface ChatProps {
+  id: number;
+  title: string;
   avatar: string;
+  unread_count?: number;
+  created_by?: number;
 }
 
 interface InnerChatProps extends Props {
-  selectedChat?: Chat | null;
+  selectedChat?: ChatProps | null;
   messages: MessageData[];
   isLoading?: boolean;
   errorMessage?: string | null;
@@ -33,7 +34,7 @@ const template = `
     <div class="fragment">
       <div class="chat-header">
         {{{avatar}}}
-        <div class="chat-header__name">{{selectedChat.name}}</div>
+        <div class="chat-header__name">{{selectedChat.title}}</div>
         <button class="chat-header__settings">
           <img src="${MenuIcon}" alt="menu" />
         </button>
@@ -99,7 +100,7 @@ export class InnerChat extends Block<InnerChatProps> {
     if (props.selectedChat) {
       const avatar = new Avatar({
         src: props.selectedChat.avatar,
-        alt: props.selectedChat.name,
+        alt: props.selectedChat.title,
         className: 'avatar_size-small',
       });
 
@@ -143,12 +144,13 @@ export class InnerChat extends Block<InnerChatProps> {
 
   private handleSendClick(): void {
     const input = this.children.input as SimpleInput;
-    const message = input.getValue();
+    const message = input.getValue().trim();
 
-    const validations = (validationRules.required as ValidationRule[]) || [];
+    // Простая валидация (обязательно заполнить)
+    const requiredRules = validationRules.required || [];
     let errorMessage = '';
 
-    for (const rule of validations) {
+    for (const rule of requiredRules) {
       if (!rule.validator(message)) {
         errorMessage = rule.message;
         break;
@@ -160,14 +162,11 @@ export class InnerChat extends Block<InnerChatProps> {
       return;
     }
 
-    if (this.props.onSendMessage && message.trim() !== '') {
+    // Вызываем колбэк пропса
+    if (this.props.onSendMessage && message) {
       this.props.onSendMessage(message);
       input.setValue('');
     }
-  }
-
-  public getProps(): InnerChatProps {
-    return this.props;
   }
 
   protected override render(): string {
