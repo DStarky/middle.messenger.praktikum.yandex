@@ -1,7 +1,3 @@
-export interface ErrorResponse {
-  reason: string;
-}
-
 export interface SignUpSuccessResponse {
   id: number;
 }

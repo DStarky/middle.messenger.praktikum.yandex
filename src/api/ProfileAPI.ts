@@ -4,7 +4,7 @@ import type {
   UpdatePasswordData,
   UpdateProfileData,
 } from '../types/Profile';
-import type { ErrorResponse } from '../types/AuthResponses';
+import type { ErrorResponse } from '../types/Common';
 
 export class ProfileAPI extends BaseAPI {
   private host = 'https://ya-praktikum.tech/api/v2';

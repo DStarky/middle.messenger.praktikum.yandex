@@ -2,8 +2,8 @@ import type {
   SignUpSuccessResponse,
   SignInSuccessResponse,
   UserData,
-  ErrorResponse,
 } from '../types/AuthResponses';
+import type { ErrorResponse } from '../types/Common';
 import { BaseAPI } from './BaseAPI';
 
 interface SignInData {
