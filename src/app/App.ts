@@ -83,14 +83,12 @@ export class App {
       }
     });
 
-    router.init();
-
     AuthController.getUserInfo()
       .then(() => {
-        router.navigate(ROUTES.CHATS);
+        router.init();
       })
       .catch(() => {
-        router.navigate(ROUTES.LOGIN);
+        router.init();
       });
   }
 
