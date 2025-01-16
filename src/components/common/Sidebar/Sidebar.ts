@@ -45,7 +45,6 @@ interface SidebarEvents extends Events {
 interface SidebarProps extends Props {
   compact: boolean;
   chats: Chat[];
-  // selectedChat.id — число
   selectedChat: { id: number | null };
   searchValue?: string;
   className?: string;
