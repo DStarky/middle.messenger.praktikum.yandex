@@ -33,6 +33,11 @@ export default abstract class Block<T extends Props = Props> {
   name: string;
   private eventBusInstance: EventBus;
 
+  private _initHandler: () => void;
+  private _componentDidMountHandler: () => void;
+  private _componentDidUpdateHandler: (...args: unknown[]) => void;
+  private _renderHandler: () => void;
+
   constructor(
     propsWithChildren: PropsWithChildren<T> = {} as PropsWithChildren<T>,
   ) {
@@ -48,16 +53,21 @@ export default abstract class Block<T extends Props = Props> {
     >;
     this.name = '';
 
+    this._initHandler = this._init.bind(this);
+    this._componentDidMountHandler = this._componentDidMount.bind(this);
+    this._componentDidUpdateHandler = this._componentDidUpdate.bind(this);
+    this._renderHandler = this._render.bind(this);
+
     this._registerEvents(this.eventBusInstance);
 
     this.eventBusInstance.emit(Block.EVENTS.INIT);
   }
 
   private _registerEvents(eventBus: EventBus): void {
-    eventBus.on(Block.EVENTS.INIT, this._init.bind(this));
-    eventBus.on(Block.EVENTS.FLOW_CDM, this._componentDidMount.bind(this));
-    eventBus.on(Block.EVENTS.FLOW_CDU, this._componentDidUpdate.bind(this));
-    eventBus.on(Block.EVENTS.FLOW_RENDER, this._render.bind(this));
+    eventBus.on(Block.EVENTS.INIT, this._initHandler);
+    eventBus.on(Block.EVENTS.FLOW_CDM, this._componentDidMountHandler);
+    eventBus.on(Block.EVENTS.FLOW_CDU, this._componentDidUpdateHandler);
+    eventBus.on(Block.EVENTS.FLOW_RENDER, this._renderHandler);
   }
 
   private _init(): void {
@@ -354,5 +364,38 @@ export default abstract class Block<T extends Props = Props> {
 
   getId(): string {
     return this._id;
+  }
+
+  public destroy(): void {
+    this._removeEvents();
+
+    this.eventBusInstance.off(Block.EVENTS.INIT, this._initHandler);
+    this.eventBusInstance.off(
+      Block.EVENTS.FLOW_CDM,
+      this._componentDidMountHandler,
+    );
+    this.eventBusInstance.off(
+      Block.EVENTS.FLOW_CDU,
+      this._componentDidUpdateHandler,
+    );
+    this.eventBusInstance.off(Block.EVENTS.FLOW_RENDER, this._renderHandler);
+
+    Object.values(this.children).forEach(child => {
+      if (Array.isArray(child)) {
+        child.forEach(c => c.destroy());
+      } else {
+        child.destroy();
+      }
+    });
+
+    if (this._element && this._element.parentNode) {
+      this._element.parentNode.removeChild(this._element);
+    }
+
+    this._element = null;
+
+    this.props = {} as T;
+    this.children = {};
+    this.lists = {};
   }
 }
