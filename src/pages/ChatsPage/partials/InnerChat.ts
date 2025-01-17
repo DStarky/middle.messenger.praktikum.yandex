@@ -21,7 +21,6 @@ interface ChatProps {
 
 interface InnerChatProps extends Props {
   selectedChat?: ChatProps | null;
-  // messages НЕ будет менять пропсы при каждом новом сообщении
   messages?: MessageData[];
   isLoading?: boolean;
   errorMessage?: string | null;
@@ -170,6 +169,8 @@ export class InnerChat extends Block<InnerChatProps> {
         container.insertBefore(content, anchor);
       }
     }
+
+    this.scrollToBottom();
   }
 
   private handleSendClick(): void {

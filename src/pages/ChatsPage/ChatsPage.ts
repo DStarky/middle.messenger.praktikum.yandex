@@ -209,7 +209,6 @@ export class ChatsPage extends Block<ChatsPageProps> {
         const loaded: MessageData[] = parsed.map(msg =>
           this.convertWSMessage(msg),
         );
-        loaded.reverse();
         this.handleOldMessages(loaded);
       } else if (parsed.type === 'pong') {
         console.log('pong received');
@@ -222,7 +221,6 @@ export class ChatsPage extends Block<ChatsPageProps> {
         if (!newMsg.isOwn) {
           this.handleNewMessage(newMsg);
         } else {
-          // echo
           // можно обновить локально при желании
         }
       } else if (parsed.type === 'user connected') {
