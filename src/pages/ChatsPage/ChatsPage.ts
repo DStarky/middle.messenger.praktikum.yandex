@@ -138,6 +138,8 @@ export class ChatsPage extends Block<ChatsPageProps> {
         const innerChat = this.children.innerChat as InnerChat;
         innerChat.setProps({
           selectedChat: chatData,
+          isLoading: true,
+          errorMessage: null,
         });
       }
     } else {
@@ -233,7 +235,10 @@ export class ChatsPage extends Block<ChatsPageProps> {
 
   private handleOldMessages(messages: MessageData[]): void {
     const innerChat = this.children.innerChat as InnerChat;
-    innerChat.prependMessages(messages);
+    innerChat.setProps({ isLoading: false });
+    setTimeout(() => {
+      innerChat.prependMessages(messages);
+    }, 0);
   }
 
   private handleNewMessage(message: MessageData): void {
