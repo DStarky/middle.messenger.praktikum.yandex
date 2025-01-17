@@ -21,7 +21,10 @@ const sidebarCompactTemplate = `
 const sidebarTemplate = `
   <aside class="sidebar {{className}}">
     <div class="sidebar__profile-link">
-      {{{profileLink}}}
+    {{{profileLink}}}
+    </div>
+    <div class="sidebar__new-chat-button">
+      {{{ newChatButton }}}
     </div>
     <div class="sidebar__search">
       {{{searchInput}}}
@@ -81,6 +84,11 @@ export class Sidebar extends Block<SidebarProps> {
       }),
       link: new Link({
         href: ROUTES.CHATS,
+      }),
+      newChatButton: new Button({
+        type: 'button',
+        text: 'Новый чат',
+        className: 'w-full',
       }),
     });
   }
