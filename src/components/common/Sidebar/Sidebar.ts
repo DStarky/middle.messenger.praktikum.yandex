@@ -1,6 +1,7 @@
 import type { Props } from '../../../app/Block';
 import Block from '../../../app/Block';
 import { ROUTES } from '../../../app/routes';
+import store from '../../../app/Store';
 import ArrowLeftIcon from '../../../assets/icons/arrow-left.svg';
 import type { Chat } from '../../../types/Chat';
 import type { Events } from '../../../types/Events';
@@ -115,9 +116,13 @@ export class Sidebar extends Block<SidebarProps> {
     }
 
     const chatData = this.props.chats || [];
+    const currentUserLogin = store.getState().user?.login;
+
     const chatItems = chatData.map(chat => {
+      const isOwn = chat.last_message?.user?.login === currentUserLogin;
       return new ChatItem({
         ...chat,
+        isOwn,
         className: chat.id === this.props.selectedChat.id ? 'active' : '',
         avatar: new Avatar({
           src: chat.avatar,
