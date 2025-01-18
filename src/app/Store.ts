@@ -1,3 +1,4 @@
+import type { Chat } from '../types/Chat';
 import { EventBus } from './EventBus';
 
 export enum StoreEvents {
@@ -21,6 +22,7 @@ export interface State extends Indexed {
   };
   isLoading: boolean;
   error: null | string;
+  chats: Chat[];
 }
 
 /**
@@ -51,6 +53,7 @@ class Store extends EventBus {
     user: null,
     isLoading: false,
     error: null,
+    chats: [],
   };
 
   public getState(): State {
