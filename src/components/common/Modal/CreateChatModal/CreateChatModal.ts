@@ -11,6 +11,9 @@ const template = `
     </div>
     <div class="create-chat-form__body">
       {{{ chatNameInput }}}
+      {{#if errorMessage}}
+        <div class="create-chat__error-message">{{errorMessage}}</div>
+      {{/if}}
     </div>
     <div class="create-chat-form__footer">
       {{{ createButton }}}
@@ -20,6 +23,7 @@ const template = `
 
 interface CreateChatModalProps extends Props {
   events?: Events;
+  errorMessage?: string | null;
 }
 
 export class CreateChatModal extends Block<CreateChatModalProps> {
@@ -31,6 +35,9 @@ export class CreateChatModal extends Block<CreateChatModalProps> {
       placeholder: 'Введите название чата',
       className: 'modal-input',
       value: '',
+      events: {
+        input: () => this.clearError(),
+      },
     });
 
     const createButton = new Button({
@@ -43,6 +50,7 @@ export class CreateChatModal extends Block<CreateChatModalProps> {
       ...props,
       chatNameInput,
       createButton,
+      errorMessage: null,
       events: {
         ...props.events,
         submit: (e: Event) => this.handleSubmit(e),
@@ -62,12 +70,21 @@ export class CreateChatModal extends Block<CreateChatModalProps> {
     }
 
     const formData = new FormData(form);
-    const chatName = formData.get('chatName') as string;
+    const chatName = (formData.get('chatName') as string).trim();
 
     if (!chatName) {
+      this.setProps({ errorMessage: 'Название чата не может быть пустым.' });
       return;
     }
 
+    this.setProps({ errorMessage: null });
+
     console.log('Chat name:', chatName);
+  }
+
+  private clearError(): void {
+    if (this.props.errorMessage) {
+      this.setProps({ errorMessage: null });
+    }
   }
 }
