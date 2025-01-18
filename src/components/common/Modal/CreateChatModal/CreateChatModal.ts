@@ -54,9 +54,9 @@ export class CreateChatModal extends Block<CreateChatModalProps> {
     return template;
   }
 
-  private handleSubmit(event: Event): void {
+  private async handleSubmit(event: Event): Promise<void> {
     event.preventDefault();
-
+    console.log('handleSubmit called');
     const form = event.target as HTMLFormElement;
     if (form.id !== 'create-chat-form') {
       return;

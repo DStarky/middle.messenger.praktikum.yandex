@@ -1,9 +1,8 @@
 import Block from '../../../app/Block';
-import Handlebars from 'handlebars';
 import type { Props } from '../../../app/Block';
 import type { Events } from '../../../types/Events';
 
-const modalTemplate = `
+const template = `
   <div class="modal-overlay" data-modal>
     <div class="modal-content {{sizeClass}}">
       {{{children}}}
@@ -16,15 +15,19 @@ interface ModalEvents extends Events {
 }
 
 interface ModalProps extends Props {
-  size?: 'small' | 'auto';
+  sizeClass?: 'small' | 'auto';
   events?: ModalEvents;
 }
 
 export class Modal<P extends ModalProps = ModalProps> extends Block<P> {
   constructor(props: P) {
+    const sizeVariant = props.size || 'small';
+    const sizeClass =
+      sizeVariant === 'small' ? 'modal-content__small' : 'modal-content__auto';
+
     super({
       ...props,
-      size: props.size || 'small',
+      sizeClass,
       events: {
         ...props.events,
         click: (e: Event) => this.handleOverlayClick(e),
@@ -62,18 +65,6 @@ export class Modal<P extends ModalProps = ModalProps> extends Block<P> {
   }
 
   protected override render(): string {
-    const sizeClass =
-      this.props.size === 'auto' ? 'modal-content_auto' : 'modal-content_small';
-
-    const childrenHTML = Object.values(this.children)
-      .map(child =>
-        child instanceof Block ? child.getContent()!.outerHTML : '',
-      )
-      .join('');
-
-    return Handlebars.compile(modalTemplate)({
-      sizeClass,
-      children: childrenHTML,
-    });
+    return template;
   }
 }
