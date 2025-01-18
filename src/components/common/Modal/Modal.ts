@@ -11,7 +11,7 @@ const template = `
 `;
 
 interface ModalEvents extends Events {
-  close?: () => void;
+  close?: (e: Event) => void;
 }
 
 interface ModalProps extends Props {
@@ -38,13 +38,13 @@ export class Modal<P extends ModalProps = ModalProps> extends Block<P> {
   private handleOverlayClick(e: Event): void {
     const target = e.target as HTMLElement;
     if (target.dataset.modal !== undefined) {
-      this.close();
+      this.close(e);
     }
   }
 
   private handleEsc = (e: KeyboardEvent): void => {
     if (e.key === 'Escape') {
-      this.close();
+      this.close(e);
     }
   };
 
@@ -56,10 +56,10 @@ export class Modal<P extends ModalProps = ModalProps> extends Block<P> {
     document.removeEventListener('keydown', this.handleEsc);
   }
 
-  public close(): void {
+  public close(e: Event): void {
     this.hide();
     if (this.props.events?.close) {
-      this.props.events.close();
+      this.props.events.close(e);
     }
 
     this.destroy();

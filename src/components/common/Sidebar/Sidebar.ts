@@ -164,6 +164,7 @@ export class Sidebar extends Block<SidebarProps> {
       events: {
         close: () => {
           console.log('Modal закрыт');
+          modal.destroy();
           this.modalInstance = null;
         },
       },

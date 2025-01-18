@@ -1,8 +1,10 @@
 import type { Props } from '../../../../app/Block';
 import Block from '../../../../app/Block';
+import ChatController from '../../../../controllers/ChatController';
 import type { Events } from '../../../../types/Events';
 import { Button } from '../../Button/Button';
 import { SimpleInput } from '../../SimpleInput/SimpleInput';
+import { Loader } from '../../Loader/Loader';
 
 const template = `
   <form class="create-chat-form" id="create-chat-form">
@@ -14,6 +16,9 @@ const template = `
       {{#if errorMessage}}
         <div class="create-chat__error-message">{{errorMessage}}</div>
       {{/if}}
+      {{#if loading}}
+        <div class="create-chat__loader">{{{ loader }}}</div>
+      {{/if}}
     </div>
     <div class="create-chat-form__footer">
       {{{ createButton }}}
@@ -24,6 +29,7 @@ const template = `
 interface CreateChatModalProps extends Props {
   events?: Events;
   errorMessage?: string | null;
+  loading?: boolean;
 }
 
 export class CreateChatModal extends Block<CreateChatModalProps> {
@@ -44,13 +50,20 @@ export class CreateChatModal extends Block<CreateChatModalProps> {
       type: 'submit',
       text: 'Создать чат',
       className: 'create-chat-button w-full',
+      disabled: false,
+    });
+
+    const loader = new Loader({
+      className: 'create-chat-loader',
     });
 
     super({
       ...props,
       chatNameInput,
       createButton,
+      loader,
       errorMessage: null,
+      loading: false,
       events: {
         ...props.events,
         submit: (e: Event) => this.handleSubmit(e),
@@ -77,9 +90,37 @@ export class CreateChatModal extends Block<CreateChatModalProps> {
       return;
     }
 
-    this.setProps({ errorMessage: null });
+    this.setProps({ errorMessage: null, loading: true });
+    const createButton = this.children.createButton as Button;
+    if (createButton) {
+      createButton.setProps({ disabled: true });
+    }
 
-    console.log('Chat name:', chatName);
+    try {
+      await ChatController.createChat(
+        chatName,
+        () => {},
+        (error: string | null) => {
+          if (error) {
+            this.setProps({ errorMessage: error });
+          }
+        },
+        () => {
+          if (this.props.events?.close) {
+            this.props.events.close(new Event('close'));
+          }
+          // TODO добавить сообщение об успешном создании чата
+        },
+      );
+    } catch (error) {
+      console.error('Ошибка при создании чата:', error);
+      this.setProps({ errorMessage: 'Произошла ошибка при создании чата.' });
+    } finally {
+      this.setProps({ loading: false });
+      if (createButton) {
+        createButton.setProps({ disabled: false });
+      }
+    }
   }
 
   private clearError(): void {
