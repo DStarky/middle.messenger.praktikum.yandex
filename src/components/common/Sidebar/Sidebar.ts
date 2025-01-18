@@ -10,6 +10,8 @@ import { Button } from '../Button/Button';
 import { ChatItem } from '../ChatItem/ChatItem';
 import { Link } from '../Link/Link';
 import { SearchInput } from '../SearchInput/SearchInput';
+import { Modal } from '../Modal/Modal';
+import { CreateChatModal } from '../Modal/CreateChatModal/CreateChatModal';
 
 const sidebarCompactTemplate = `
   <aside class="sidebar sidebar_small {{className}}">
@@ -21,7 +23,7 @@ const sidebarCompactTemplate = `
 const sidebarTemplate = `
   <aside class="sidebar {{className}}">
     <div class="sidebar__profile-link">
-    {{{profileLink}}}
+      {{{profileLink}}}
     </div>
     <div class="sidebar__new-chat-button">
       {{{ newChatButton }}}
@@ -58,7 +60,18 @@ interface SidebarProps extends Props {
 }
 
 export class Sidebar extends Block<SidebarProps> {
+  private modalInstance: Modal | null = null;
+
   constructor(props: SidebarProps) {
+    const newChatButton = new Button({
+      type: 'button',
+      text: 'Новый чат',
+      className: 'w-full',
+      events: {
+        click: (e: Event) => this.handleNewChatClick(e),
+      },
+    });
+
     super({
       ...props,
       arrowIcon: ArrowLeftIcon,
@@ -85,11 +98,7 @@ export class Sidebar extends Block<SidebarProps> {
       link: new Link({
         href: ROUTES.CHATS,
       }),
-      newChatButton: new Button({
-        type: 'button',
-        text: 'Новый чат',
-        className: 'w-full',
-      }),
+      newChatButton,
     });
   }
 
@@ -142,6 +151,41 @@ export class Sidebar extends Block<SidebarProps> {
 
     this.children.chatList = chatItems;
     this.setProps({});
+  }
+
+  private handleNewChatClick(e: Event): void {
+    e.preventDefault();
+
+    if (this.modalInstance) {
+      return;
+    }
+
+    const createChatModalContent = new CreateChatModal({
+      events: {
+        close: () => {
+          console.log('Modal закрыт');
+          this.modalInstance = null;
+        },
+      },
+    });
+
+    const modal = new Modal({
+      size: 'small',
+      children: createChatModalContent,
+      events: {
+        close: () => {
+          modal.destroy();
+          this.modalInstance = null;
+        },
+      },
+    });
+
+    this.modalInstance = modal;
+
+    const appRoot = document.getElementById('app');
+    if (appRoot) {
+      appRoot.appendChild(modal.getContent()!);
+    }
   }
 
   protected override render(): string {
