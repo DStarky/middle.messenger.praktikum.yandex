@@ -58,10 +58,11 @@ export class Modal<P extends ModalProps = ModalProps> extends Block<P> {
 
   public close(): void {
     this.hide();
-    this.destroy();
     if (this.props.events?.close) {
       this.props.events.close();
     }
+
+    this.destroy();
   }
 
   protected override render(): string {
