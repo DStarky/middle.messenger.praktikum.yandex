@@ -2,7 +2,6 @@ import Block from '../../../app/Block';
 import Handlebars from 'handlebars';
 import type { Props } from '../../../app/Block';
 import type { Events } from '../../../types/Events';
-import './Modal.css';
 
 const modalTemplate = `
   <div class="modal-overlay" data-modal>
@@ -21,8 +20,8 @@ interface ModalProps extends Props {
   events?: ModalEvents;
 }
 
-export class Modal extends Block<ModalProps> {
-  constructor(props: ModalProps) {
+export class Modal<P extends ModalProps = ModalProps> extends Block<P> {
+  constructor(props: P) {
     super({
       ...props,
       size: props.size || 'small',
@@ -49,8 +48,6 @@ export class Modal extends Block<ModalProps> {
   protected init(): void {
     document.addEventListener('keydown', this.handleEsc);
   }
-
-  protected componentDidMount(): void {}
 
   protected componentWillUnmount(): void {
     document.removeEventListener('keydown', this.handleEsc);
