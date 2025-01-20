@@ -212,10 +212,16 @@ export class ChatsPage extends Block<ChatsPageProps> {
       const parsed = JSON.parse(rawData);
 
       if (Array.isArray(parsed)) {
+        // old messages
         const loaded: MessageData[] = parsed.map(msg =>
           this.convertWSMessage(msg),
         );
         this.handleOldMessages(loaded);
+
+        if (loaded.length > 0) {
+          const lastMsg = loaded[loaded.length - 1];
+          this.updateChatInStore(this.selectedChatId, lastMsg, false);
+        }
       } else if (parsed.type === 'pong') {
         console.log('pong received');
       } else if (
@@ -226,8 +232,10 @@ export class ChatsPage extends Block<ChatsPageProps> {
         const newMsg = this.convertWSMessage(parsed);
         if (!newMsg.isOwn) {
           this.handleNewMessage(newMsg);
+
+          this.updateChatInStore(this.selectedChatId, newMsg, true);
         } else {
-          // можно обновить локально при желании
+          this.updateChatInStore(this.selectedChatId, newMsg, false);
         }
       } else if (parsed.type === 'user connected') {
         console.log(`User connected: ${parsed.content}`);
@@ -235,6 +243,40 @@ export class ChatsPage extends Block<ChatsPageProps> {
     } catch (err) {
       console.error('Ошибка при парсинге WS-сообщения:', err);
     }
+  }
+
+  private updateChatInStore(
+    chatId: number | null,
+    newMsg: MessageData,
+    incrementUnread: boolean,
+  ) {
+    if (!chatId) {
+      return;
+    }
+
+    const { chats } = store.getState();
+    const updatedChats = chats.map(chat => {
+      if (chat.id === chatId) {
+        const last_message = {
+          user: { login: newMsg.isOwn ? 'currentUserLogin' : 'anotherUser' },
+          time: new Date().toISOString(),
+          content: newMsg.text,
+        };
+        let unread_count = chat.unread_count || 0;
+        if (incrementUnread && !newMsg.isOwn) {
+          unread_count += 1;
+        }
+
+        return {
+          ...chat,
+          last_message,
+          unread_count,
+        };
+      }
+
+      return chat;
+    });
+    store.set('chats', updatedChats);
   }
 
   private handleOldMessages(messages: MessageData[]): void {
@@ -246,6 +288,26 @@ export class ChatsPage extends Block<ChatsPageProps> {
   }
 
   private handleNewMessage(message: MessageData): void {
+    const { chats } = store.getState();
+
+    const updatedChats = chats.map(chat => {
+      if (chat.id === this.selectedChatId) {
+        const lastMessage = {
+          time: new Date().toISOString(),
+          content: message.text,
+        };
+
+        return {
+          ...chat,
+          last_message: lastMessage,
+        };
+      }
+
+      return chat;
+    });
+
+    store.set('chats', updatedChats);
+
     const innerChat = this.children.innerChat as InnerChat;
     innerChat.appendMessage(message);
   }
