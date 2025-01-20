@@ -212,14 +212,13 @@ export class ChatsPage extends Block<ChatsPageProps> {
       const parsed = JSON.parse(rawData);
 
       if (Array.isArray(parsed)) {
-        // old messages
         const loaded: MessageData[] = parsed.map(msg =>
           this.convertWSMessage(msg),
         );
         this.handleOldMessages(loaded);
 
         if (loaded.length > 0) {
-          const lastMsg = loaded[loaded.length - 1];
+          const lastMsg = loaded[0];
           this.updateChatInStore(this.selectedChatId, lastMsg, false);
         }
       } else if (parsed.type === 'pong') {
