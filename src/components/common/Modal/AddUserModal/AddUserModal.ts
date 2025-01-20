@@ -12,7 +12,7 @@ const template = `
       <h3>Добавить пользоваетля</h3>
     </div>
     <div class="create-chat-form__body">
-      {{{ chatNameInput }}}
+      {{{ userIdsInput }}}
       {{#if errorMessage}}
         <div class="create-chat__error-message">{{errorMessage}}</div>
       {{/if}}
@@ -21,7 +21,7 @@ const template = `
       {{/if}}
     </div>
     <div class="create-chat-form__footer">
-      {{{ createButton }}}
+      {{{ addButton }}}
     </div>
   </form>
 `;
