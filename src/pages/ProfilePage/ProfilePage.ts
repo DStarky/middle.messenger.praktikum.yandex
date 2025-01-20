@@ -1,7 +1,6 @@
 import type { Props } from '../../app/Block';
 import Block from '../../app/Block';
 import { Sidebar } from '../../components/common/Sidebar/Sidebar';
-import { DEFAULT_CHATS } from '../../consts/ChatsData';
 import type { ProfileData, UpdateProfileData } from '../../types/Profile';
 import { ActionsList } from './components/ActionsList/ActionsList';
 import { PasswordDataEditable } from './components/PasswordDataEditable/PasswordDataEditable';
@@ -71,7 +70,6 @@ class _ProfilePage extends Block<ProfilePageProps> {
       isEditingPassword: false,
       sidebar: new Sidebar({
         compact: true,
-        chats: DEFAULT_CHATS,
         selectedChat: { id: null },
       }),
       profileAvatar: new ProfileAvatar({

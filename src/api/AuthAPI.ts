@@ -3,7 +3,7 @@ import type {
   SignInSuccessResponse,
   UserData,
 } from '../types/AuthResponses';
-import type { ErrorResponse } from '../types/Common';
+import type { ErrorResponse } from '../types/common';
 import { BaseAPI } from './BaseAPI';
 
 interface SignInData {

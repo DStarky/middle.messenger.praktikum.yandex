@@ -1,4 +1,4 @@
-import type { ErrorResponse } from './Common';
+import type { ErrorResponse } from './common';
 
 export interface User {
   id: number;

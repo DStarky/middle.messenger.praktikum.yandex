@@ -7,7 +7,7 @@ import type {
   GetChatUsersResponse,
   NewMessagesCountResponse,
 } from '../types/Chat';
-import type { ErrorResponse } from '../types/Common';
+import type { ErrorResponse } from '../types/common';
 import { API_URL } from '../consts/URLs';
 
 export class ChatAPI extends BaseAPI {

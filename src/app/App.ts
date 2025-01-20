@@ -60,7 +60,7 @@ export class App {
         return;
       }
 
-      const profilePage = new ProfilePage();
+      const profilePage = new ProfilePage({});
       renderPage(profilePage);
     });
 
