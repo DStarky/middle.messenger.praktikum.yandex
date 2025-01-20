@@ -10,6 +10,7 @@ import { SimpleInput } from '../../../components/common/SimpleInput/SimpleInput'
 import { Button } from '../../../components/common/Button/Button';
 import type { Events } from '../../../types/Events';
 import { validationRules } from '../../../helpers/validationRules';
+import { UsersPopup } from './UsersPopup/UsersPopup';
 
 interface ChatProps {
   id: number;
@@ -27,6 +28,7 @@ interface InnerChatProps extends Props {
   onSendMessage?: (message: string) => void;
   className?: string;
   events?: Events;
+  usersPopup?: UsersPopup;
 }
 
 const template = `
@@ -39,6 +41,7 @@ const template = `
           <img src="${MenuIcon}" alt="menu" />
         </button>
       </div>
+      {{{usersPopup}}}
       <div class="chat-messages">
         {{#if isLoading}}
           <div class="chat-loading">Загрузка сообщений...</div>
@@ -73,6 +76,18 @@ export class InnerChat extends Block<InnerChatProps> {
 
   override init(): void {
     this.createChildren(this.props);
+
+    this.setProps({
+      events: {
+        click: (e: Event) => {
+          const target = e.target as HTMLElement;
+          if (target.closest('.chat-header__settings')) {
+            this.toggleUsersPopup();
+          }
+        },
+      },
+    });
+
     requestAnimationFrame(() => this.scrollToBottom());
   }
 
@@ -99,6 +114,9 @@ export class InnerChat extends Block<InnerChatProps> {
     this.children = {};
 
     if (props.selectedChat) {
+      this.children.usersPopup = new UsersPopup({});
+      this.children.usersPopup.hide();
+
       const avatar = new Avatar({
         src: props.selectedChat.avatar,
         alt: props.selectedChat.title,
@@ -135,6 +153,26 @@ export class InnerChat extends Block<InnerChatProps> {
       this.children.avatar = avatar;
       this.children.input = input;
       this.children.sendButton = sendButton;
+    }
+  }
+
+  private toggleUsersPopup(): void {
+    const popup = this.children.usersPopup as UsersPopup;
+    if (!popup) {
+      return;
+    }
+
+    const popupEl = popup.getContent();
+    if (!popupEl) {
+      return;
+    }
+
+    const isHidden = popupEl.style.display === 'none' || !popupEl.style.display;
+
+    if (isHidden) {
+      popup.show();
+    } else {
+      popup.hide();
     }
   }
 
