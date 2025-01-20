@@ -61,6 +61,11 @@ export class ChatsPage extends Block<ChatsPageProps> {
       isLoading: false,
       errorMessage: null,
       onSendMessage: (message: string) => this.handleSendMessage(message),
+      onFocusChat: () => {
+        if (this.selectedChatId) {
+          this.resetUnreadCount(this.selectedChatId);
+        }
+      },
     });
 
     super({
@@ -131,6 +136,27 @@ export class ChatsPage extends Block<ChatsPageProps> {
       this.updatePage(chatId);
       this.initChatSocket(chatId);
     }
+
+    this.resetUnreadCount(chatId);
+  }
+
+  private resetUnreadCount(chatId: number | null): void {
+    if (!chatId) {
+      return;
+    }
+
+    const { chats } = store.getState();
+    const updatedChats = chats.map(chat => {
+      if (chat.id === chatId) {
+        return {
+          ...chat,
+          unread_count: 0,
+        };
+      }
+
+      return chat;
+    });
+    store.set('chats', updatedChats);
   }
 
   private updatePage(chatId: number | null): void {

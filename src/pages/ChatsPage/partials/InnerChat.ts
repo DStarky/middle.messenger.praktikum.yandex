@@ -29,6 +29,7 @@ interface InnerChatProps extends Props {
   className?: string;
   events?: Events;
   usersPopup?: UsersPopup;
+  onFocusChat?: () => void;
 }
 
 const template = `
@@ -84,6 +85,8 @@ export class InnerChat extends Block<InnerChatProps> {
           if (target.closest('.chat-header__settings')) {
             this.toggleUsersPopup();
           }
+
+          this.props.onFocusChat?.();
         },
       },
     });
@@ -138,6 +141,9 @@ export class InnerChat extends Block<InnerChatProps> {
             if (keyboardEvent.key === 'Enter') {
               this.handleSendClick();
             }
+          },
+          focus: () => {
+            this.props.onFocusChat?.();
           },
         },
       });
