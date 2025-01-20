@@ -4,7 +4,11 @@ import Block from '../../app/Block';
 import ChatController from '../../controllers/ChatController';
 import store from '../../app/Store';
 import type { MessageData } from '../../components/common/Message/Message';
-import { Sidebar } from '../../components/common/Sidebar/Sidebar';
+import type {
+  Sidebar,
+  SidebarProps,
+} from '../../components/common/Sidebar/Sidebar';
+import { SidebarConnected } from '../../components/common/Sidebar/Sidebar';
 import type { Chat } from '../../types/Chat';
 import { InnerChat } from './partials/InnerChat';
 
@@ -30,7 +34,7 @@ interface ParsedMessage {
 }
 
 interface ChatsPageProps extends Props {
-  sidebar: Sidebar;
+  sidebar: Block<SidebarProps>;
   innerChat: InnerChat;
   isLoading?: boolean;
   error?: string | null;
@@ -41,7 +45,7 @@ export class ChatsPage extends Block<ChatsPageProps> {
   private socket: WebSocket | null = null;
 
   constructor() {
-    const sidebar = new Sidebar({
+    const sidebar = new SidebarConnected({
       compact: false,
       chats: [],
       selectedChat: { id: null },

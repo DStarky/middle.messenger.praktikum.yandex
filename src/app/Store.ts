@@ -23,6 +23,7 @@ export interface State extends Indexed {
   isLoading: boolean;
   error: null | string;
   chats: Chat[];
+  selectedChatId?: number | null;
 }
 
 /**

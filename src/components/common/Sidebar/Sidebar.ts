@@ -1,6 +1,7 @@
 import type { Props } from '../../../app/Block';
 import Block from '../../../app/Block';
 import { ROUTES } from '../../../app/routes';
+import type { State } from '../../../app/Store';
 import store from '../../../app/Store';
 import ArrowLeftIcon from '../../../assets/icons/arrow-left.svg';
 import type { Chat } from '../../../types/Chat';
@@ -12,6 +13,7 @@ import { Link } from '../Link/Link';
 import { SearchInput } from '../SearchInput/SearchInput';
 import { Modal } from '../Modal/Modal';
 import { CreateChatModal } from '../Modal/CreateChatModal/CreateChatModal';
+import { connect } from '../../../app/HOC';
 
 const sidebarCompactTemplate = `
   <aside class="sidebar sidebar_small {{className}}">
@@ -48,10 +50,10 @@ interface SidebarEvents extends Events {
   searchInput?: (e: Event) => void;
 }
 
-interface SidebarProps extends Props {
-  compact: boolean;
-  chats: Chat[];
-  selectedChat: { id: number | null };
+export interface SidebarProps extends Props {
+  compact?: boolean;
+  chats?: Chat[];
+  selectedChat?: { id: number | null };
   searchValue?: string;
   className?: string;
   isLoading?: boolean;
@@ -107,7 +109,7 @@ export class Sidebar extends Block<SidebarProps> {
   }
 
   public getChats(): Chat[] {
-    return this.props.chats;
+    return this.props.chats || [];
   }
 
   protected componentDidUpdate(
@@ -140,7 +142,7 @@ export class Sidebar extends Block<SidebarProps> {
       return new ChatItem({
         ...chat,
         isOwn,
-        className: chat.id === this.props.selectedChat.id ? 'active' : '',
+        className: chat.id === this.props?.selectedChat?.id ? 'active' : '',
         avatar: new Avatar({
           src: chat.avatar,
           alt: chat.title,
@@ -197,3 +199,12 @@ export class Sidebar extends Block<SidebarProps> {
     return sidebarTemplate;
   }
 }
+
+function mapStateToProps(state: State) {
+  return {
+    chats: state.chats,
+    selectedChat: { id: state.selectedChatId ?? null },
+  };
+}
+
+export const SidebarConnected = connect(mapStateToProps)(Sidebar);

@@ -1,11 +1,11 @@
-import { isEqual } from '../utils/isEqual';
-import type { Props, PropsWithChildren } from './Block';
-import type Block from './Block';
-import type { Indexed, State } from './Store';
+import type { State } from './Store';
 import store, { StoreEvents } from './Store';
+import { isEqual } from '../utils/isEqual';
+import type Block from './Block';
+import type { Props, PropsWithChildren } from './Block';
 
 export type BlockClass<T extends Props> = new (
-  props?: PropsWithChildren<T>,
+  props: PropsWithChildren<T>,
 ) => Block<T>;
 
 export function connect<
@@ -14,29 +14,21 @@ export function connect<
 >(mapStateToProps: (state: State) => TStateProps) {
   return function wrap(Component: BlockClass<TProps>) {
     return class WithStore extends Component {
-      private stateProps: Indexed;
+      private stateProps = mapStateToProps(store.getState());
 
-      constructor(props: Indexed = {}) {
-        const initialStateProps = mapStateToProps(store.getState());
-        super({
-          ...props,
-          ...initialStateProps,
-        } as unknown as PropsWithChildren<TProps>);
-
-        this.stateProps = initialStateProps;
+      constructor(props: TProps) {
+        super({ ...props, ...mapStateToProps(store.getState()) } as TProps);
 
         store.on(StoreEvents.Updated, () => {
           const newStateProps = mapStateToProps(store.getState());
-
           if (!isEqual(this.stateProps, newStateProps)) {
+            this.stateProps = { ...newStateProps };
             this.setProps({ ...newStateProps });
-            this.stateProps = newStateProps;
           }
         });
       }
 
       override render(): string {
-        console.log('WithStore render');
         return super.render();
       }
     };

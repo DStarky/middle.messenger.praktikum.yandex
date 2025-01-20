@@ -96,6 +96,12 @@ class ChatController {
       }
 
       onSuccess();
+
+      this.fetchChats(
+        () => {},
+        () => {},
+        () => {},
+      );
     } catch (error) {
       console.error('createChat error:', error);
       onError((error as Error).message);
