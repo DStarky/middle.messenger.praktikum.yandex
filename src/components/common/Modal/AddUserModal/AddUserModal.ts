@@ -7,7 +7,7 @@ import { SimpleInput } from '../../SimpleInput/SimpleInput';
 import { Loader } from '../../Loader/Loader';
 
 const template = `
-  <form class="create-chat-form" id="create-chat-form">
+  <form class="create-chat-form" id="add-user-form">
     <div class="create-chat-form__header">
       <h3>Добавить пользоваетля</h3>
     </div>
@@ -50,13 +50,11 @@ export class AddUserModal extends Block<AddUserModalProps> {
     const addButton = new Button({
       type: 'submit',
       text: 'Добавить',
-      className: 'add-user-button w-full',
+      className: 'w-full',
       disabled: false,
     });
 
-    const loader = new Loader({
-      className: 'add-user-loader',
-    });
+    const loader = new Loader({});
 
     super({
       ...props,
@@ -93,7 +91,6 @@ export class AddUserModal extends Block<AddUserModalProps> {
       return;
     }
 
-    // Разделение ID по запятой и преобразование в числа
     const userIds = userIdsRaw
       .split(',')
       .map(id => parseInt(id.trim(), 10))
@@ -117,6 +114,10 @@ export class AddUserModal extends Block<AddUserModalProps> {
         () => {},
         (error: string | null) => {
           if (error) {
+            if (error === 'Internal Server Error') {
+              error = 'Ошибка сервера';
+            }
+
             this.setProps({ errorMessage: error });
           }
         },

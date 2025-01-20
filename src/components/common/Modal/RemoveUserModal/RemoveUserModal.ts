@@ -7,7 +7,7 @@ import { SimpleInput } from '../../SimpleInput/SimpleInput';
 import { Loader } from '../../Loader/Loader';
 
 const template = `
-  <form class="create-chat-form" id="create-chat-form">
+  <form class="create-chat-form" id="remove-user-form">
     <div class="create-chat-form__header">
       <h3>Удалить пользователя</h3>
     </div>
@@ -50,13 +50,11 @@ export class RemoveUserModal extends Block<RemoveUserModalProps> {
     const removeButton = new Button({
       type: 'submit',
       text: 'Удалить',
-      className: 'remove-user-button w-full',
+      className: 'w-full',
       disabled: false,
     });
 
-    const loader = new Loader({
-      className: 'remove-user-loader',
-    });
+    const loader = new Loader({});
 
     super({
       ...props,
@@ -117,6 +115,10 @@ export class RemoveUserModal extends Block<RemoveUserModalProps> {
         () => {},
         (error: string | null) => {
           if (error) {
+            if (error === 'Internal Server Error') {
+              error = 'Ошибка сервера';
+            }
+
             this.setProps({ errorMessage: error });
           }
         },

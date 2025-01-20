@@ -134,7 +134,7 @@ export class ChatAPI extends BaseAPI {
   public async addUsersToChat(
     data: AddRemoveUsersRequest,
   ): Promise<string | ErrorResponse> {
-    const response = await fetch(`${this.host}/chats/users`, {
+    const response = await fetch(`${this.host}chats/users`, {
       method: 'PUT',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },

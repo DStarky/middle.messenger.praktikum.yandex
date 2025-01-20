@@ -114,7 +114,9 @@ export class InnerChat extends Block<InnerChatProps> {
     this.children = {};
 
     if (props.selectedChat) {
-      this.children.usersPopup = new UsersPopup({});
+      this.children.usersPopup = new UsersPopup({
+        chatId: props.selectedChat.id,
+      });
       this.children.usersPopup.hide();
 
       const avatar = new Avatar({
