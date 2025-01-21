@@ -63,6 +63,8 @@ export class UsersPopup extends Block<UsersPopupProps> {
       return;
     }
 
+    this.hide();
+
     switch (action) {
       case 'add':
         this.openAddUserModal();
@@ -173,5 +175,10 @@ export class UsersPopup extends Block<UsersPopupProps> {
       this.modalInstance.destroy();
       this.modalInstance = null;
     }
+  }
+
+  public override hide(): void {
+    super.hide();
+    this.closeModal();
   }
 }
