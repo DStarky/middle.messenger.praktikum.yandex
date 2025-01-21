@@ -11,6 +11,7 @@ import type {
 import { SidebarConnected } from '../../components/common/Sidebar/Sidebar';
 import type { Chat } from '../../types/Chat';
 import { InnerChat } from './partials/InnerChat';
+import { WS_HOST } from '../../consts/URLs';
 
 const template = `
   <main class="chats-page">
@@ -22,8 +23,6 @@ const template = `
     </section>
   </main>
 `;
-
-const WS_HOST = 'wss://ya-praktikum.tech/ws/chats';
 
 interface ParsedMessage {
   id: number;
