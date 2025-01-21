@@ -102,7 +102,6 @@ class ProfileController {
       const response = await this.api.updatePassword(data);
 
       if (typeof response === 'string') {
-        // Сервер может вернуть 'OK'
         if (response.toUpperCase() === 'OK') {
           onSuccess();
         } else {

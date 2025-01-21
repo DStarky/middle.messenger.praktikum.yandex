@@ -10,9 +10,6 @@ class ChatController {
     this.api = new ChatAPI();
   }
 
-  /**
-   * Получить список чатов
-   */
   public async fetchChats(
     onLoading: (loading: boolean) => void,
     onError: (error: string | null) => void,
@@ -42,18 +39,13 @@ class ChatController {
     }
   }
 
-  /**
-   * Получить токен для чата (для подключения к WebSocket)
-   * POST /chats/token/:id
-   * Возвращает { token: string }
-   */
   public async getChatToken(chatId: number): Promise<string> {
     try {
       const response = await fetch(
         `https://ya-praktikum.tech/api/v2/chats/token/${chatId}`,
         {
           method: 'POST',
-          credentials: 'include', // чтобы передавать cookie
+          credentials: 'include',
         },
       );
 
@@ -63,7 +55,6 @@ class ChatController {
       }
 
       const data = await response.json();
-      // data должен содержать { token: string }
       if (!data.token) {
         throw new Error('В ответе не найден token');
       }
@@ -75,9 +66,6 @@ class ChatController {
     }
   }
 
-  /**
-   * Создать чат
-   */
   public async createChat(
     title: string,
     onLoading: (loading: boolean) => void,
@@ -110,9 +98,6 @@ class ChatController {
     }
   }
 
-  /**
-   * Удалить чат
-   */
   public async deleteChat(
     chatId: number,
     onLoading: (loading: boolean) => void,
@@ -139,9 +124,6 @@ class ChatController {
     }
   }
 
-  /**
-   * Получить пользователей чата
-   */
   public async getChatUsers(
     chatId: number,
     onLoading: (loading: boolean) => void,
@@ -168,9 +150,6 @@ class ChatController {
     }
   }
 
-  /**
-   * Получить количество новых сообщений в чате
-   */
   public async getNewMessagesCount(
     chatId: number,
     onLoading: (loading: boolean) => void,
@@ -197,9 +176,6 @@ class ChatController {
     }
   }
 
-  /**
-   * Добавить пользователей в чат
-   */
   public async addUsersToChat(
     chatId: number,
     userIds: number[],
@@ -239,9 +215,6 @@ class ChatController {
     }
   }
 
-  /**
-   * Удалить пользователей из чата
-   */
   public async removeUsersFromChat(
     chatId: number,
     userIds: number[],

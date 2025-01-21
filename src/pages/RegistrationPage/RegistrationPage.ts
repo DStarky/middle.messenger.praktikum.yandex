@@ -59,8 +59,6 @@ interface RegistrationPageProps extends Props {
   loginLink?: Link;
   loader?: Loader;
   events?: Events;
-
-  // Локальное состояние
   isLoading?: boolean;
   error?: string | null;
 }

@@ -91,7 +91,6 @@ export class RemoveUserModal extends Block<RemoveUserModalProps> {
       return;
     }
 
-    // Разделение ID по запятой и преобразование в числа
     const userIds = userIdsRaw
       .split(',')
       .map(id => parseInt(id.trim(), 10))

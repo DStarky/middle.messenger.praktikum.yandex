@@ -116,7 +116,6 @@ export class LoginPage extends Block<LoginPageProps> {
 
     const isValid = this.validateAllFields();
     if (!isValid) {
-      // Можем выставить локальную ошибку: this.setProps({ error: 'Исправьте ошибки' });
       return;
     }
 
@@ -136,7 +135,6 @@ export class LoginPage extends Block<LoginPageProps> {
       return;
     }
 
-    // Вызываем AuthController и передаём колбэки
     await AuthController.signIn(
       login,
       password,
