@@ -47,7 +47,7 @@ class ProfileController {
       const response = await this.api.updateProfile(data);
 
       if ('reason' in response) {
-        onError(response.reason);
+        onError(response.reason as string);
         return;
       }
 
@@ -75,7 +75,7 @@ class ProfileController {
       const response = await this.api.updateAvatar(file);
 
       if ('reason' in response) {
-        onError(response.reason);
+        onError(response.reason as string);
         return;
       }
 

@@ -9,151 +9,103 @@ import type {
 } from '../types/Chat';
 import type { ErrorResponse } from '../types/common';
 import { API_URL } from '../consts/URLs';
+import { HTTPTransport } from '../app/HTTPTransport';
+
+function convertToQuery(data: Record<string, string>): string {
+  const keys = Object.keys(data);
+  if (keys.length === 0) {
+    return '';
+  }
+
+  return keys.reduce((acc, key, idx) => {
+    return `${acc}${key}=${encodeURIComponent(data[key])}${
+      idx < keys.length - 1 ? '&' : ''
+    }`;
+  }, '?');
+}
 
 export class ChatAPI extends BaseAPI {
   private host = API_URL;
-
-  private async handleResponse<T>(response: Response): Promise<T> {
-    const contentType = response.headers.get('Content-Type');
-    if (contentType && contentType.includes('application/json')) {
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error((data as ErrorResponse).reason || 'Unknown error');
-      }
-
-      return data as T;
-    } else {
-      const text = await response.text();
-      if (!response.ok) {
-        throw new Error(text || 'Unknown error');
-      }
-
-      return text as unknown as T;
-    }
-  }
-
-  public async fetchChats(
+  private http = new HTTPTransport();
+  public fetchChats(
     offset?: number,
     limit?: number,
     title?: string,
   ): Promise<Chat[] | ErrorResponse> {
-    const url = new URL(`${this.host}/chats`);
-
+    const params: Record<string, string> = {};
     if (offset !== undefined) {
-      url.searchParams.append('offset', offset.toString());
+      params.offset = offset.toString();
     }
 
     if (limit !== undefined) {
-      url.searchParams.append('limit', limit.toString());
+      params.limit = limit.toString();
     }
 
     if (title) {
-      url.searchParams.append('title', title);
+      params.title = title;
     }
 
-    const response = await fetch(url.toString(), {
-      method: 'GET',
-      credentials: 'include',
-    });
-
-    return this.handleResponse<Chat[] | ErrorResponse>(response);
+    return this.http.get(`${this.host}chats${convertToQuery(params)}`);
   }
-
-  public async createChat(
+  public createChat(
     title: string,
   ): Promise<CreateChatResponse | ErrorResponse> {
-    const response = await fetch(`${this.host}/chats`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title }),
+    return this.http.post(`${this.host}chats`, {
+      data: { title },
     });
-
-    return this.handleResponse<CreateChatResponse | ErrorResponse>(response);
   }
-
-  public async deleteChat(
+  public deleteChat(
     chatId: number,
   ): Promise<DeleteChatResponse | ErrorResponse> {
-    const response = await fetch(`${this.host}/chats`, {
-      method: 'DELETE',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chatId }),
+    return this.http.delete(`${this.host}chats`, {
+      data: { chatId },
     });
-
-    return this.handleResponse<DeleteChatResponse | ErrorResponse>(response);
   }
-
-  public async getChatUsers(
+  public getChatUsers(
     chatId: number,
     offset?: number,
     limit?: number,
     name?: string,
     email?: string,
   ): Promise<GetChatUsersResponse | ErrorResponse> {
-    const url = new URL(`${this.host}/chats/${chatId}/users`);
-
+    const params: Record<string, string> = {};
     if (offset !== undefined) {
-      url.searchParams.append('offset', offset.toString());
+      params.offset = offset.toString();
     }
 
     if (limit !== undefined) {
-      url.searchParams.append('limit', limit.toString());
+      params.limit = limit.toString();
     }
 
     if (name) {
-      url.searchParams.append('name', name);
+      params.name = name;
     }
 
     if (email) {
-      url.searchParams.append('email', email);
+      params.email = email;
     }
 
-    const response = await fetch(url.toString(), {
-      method: 'GET',
-      credentials: 'include',
-    });
-
-    return this.handleResponse<GetChatUsersResponse | ErrorResponse>(response);
-  }
-
-  public async getNewMessagesCount(
-    chatId: number,
-  ): Promise<NewMessagesCountResponse | ErrorResponse> {
-    const response = await fetch(`${this.host}/chats/new/${chatId}`, {
-      method: 'GET',
-      credentials: 'include',
-    });
-
-    return this.handleResponse<NewMessagesCountResponse | ErrorResponse>(
-      response,
+    return this.http.get(
+      `${this.host}chats/${chatId}/users${convertToQuery(params)}`,
     );
   }
-
-  public async addUsersToChat(
-    data: AddRemoveUsersRequest,
-  ): Promise<string | ErrorResponse> {
-    const response = await fetch(`${this.host}chats/users`, {
-      method: 'PUT',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-
-    return this.handleResponse<string | ErrorResponse>(response);
+  public getNewMessagesCount(
+    chatId: number,
+  ): Promise<NewMessagesCountResponse | ErrorResponse> {
+    return this.http.get(`${this.host}chats/new/${chatId}`);
   }
-
-  public async removeUsersFromChat(
+  public addUsersToChat(
     data: AddRemoveUsersRequest,
   ): Promise<string | ErrorResponse> {
-    const response = await fetch(`${this.host}/chats/users`, {
-      method: 'DELETE',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
+    return this.http.put(`${this.host}chats/users`, {
+      data,
     });
-
-    return this.handleResponse<string | ErrorResponse>(response);
+  }
+  public removeUsersFromChat(
+    data: AddRemoveUsersRequest,
+  ): Promise<string | ErrorResponse> {
+    return this.http.delete(`${this.host}chats/users`, {
+      data,
+    });
   }
 }

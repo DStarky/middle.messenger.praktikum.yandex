@@ -1,16 +1,14 @@
-import { AuthAPI } from '../api/AuthAPI';
 import store from '../app/Store';
 import { router } from '../app/Router';
 import { ROUTES } from '../app/routes';
+import { AuthAPI } from '../api/AuthAPI';
 import type { UserData } from '../types/AuthResponses';
 
 class AuthController {
   private api: AuthAPI;
-
   constructor() {
     this.api = new AuthAPI();
   }
-
   public async signIn(
     login: string,
     password: string,
@@ -21,9 +19,7 @@ class AuthController {
     try {
       onError(null);
       onLoading(true);
-
       const loginRes = await this.api.signIn({ login, password });
-
       if (typeof loginRes === 'string') {
         if (loginRes.toUpperCase() === 'OK') {
           const user = await this.api.getUser();
@@ -55,13 +51,11 @@ class AuthController {
         onError('Неизвестный ответ от сервера');
       }
     } catch (error: unknown) {
-      console.error('Sign In Error:', error);
       onError((error as Error).message);
     } finally {
       onLoading(false);
     }
   }
-
   public async signUp(
     first_name: string,
     second_name: string,
@@ -76,7 +70,6 @@ class AuthController {
     try {
       onError(null);
       onLoading(true);
-
       const signUpRes = await this.api.signUp({
         first_name,
         second_name,
@@ -85,7 +78,6 @@ class AuthController {
         password,
         phone,
       });
-
       if (typeof signUpRes === 'string') {
         if (signUpRes.toUpperCase() === 'OK') {
           const user = await this.api.getUser();
@@ -112,13 +104,11 @@ class AuthController {
         onError('Неизвестный ответ от сервера');
       }
     } catch (error: unknown) {
-      console.error('Sign Up Error:', error);
       onError((error as Error).message);
     } finally {
       onLoading(false);
     }
   }
-
   public async getUserInfo(): Promise<UserData | null> {
     try {
       store.set('isLoading', true);
@@ -126,21 +116,17 @@ class AuthController {
       store.set('user', user);
       return user;
     } catch (error: unknown) {
-      console.error('getUserInfo error:', error);
       store.set('user', null);
       throw error;
     } finally {
       store.set('isLoading', false);
     }
   }
-
   public async logout(): Promise<void> {
     try {
       store.set('error', null);
       store.set('isLoading', true);
-
       const logoutRes = await this.api.logout();
-
       if (typeof logoutRes === 'string') {
         if (logoutRes.toUpperCase() === 'OK') {
           store.set('user', null);
@@ -159,12 +145,10 @@ class AuthController {
 
       store.set('error', 'Неизвестный ответ от сервера');
     } catch (error: unknown) {
-      console.error('Logout error:', error);
       store.set('error', (error as Error).message);
     } finally {
       store.set('isLoading', false);
     }
   }
 }
-
 export default new AuthController();

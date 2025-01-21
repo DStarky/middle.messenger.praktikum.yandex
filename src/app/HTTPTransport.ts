@@ -10,7 +10,7 @@ type Method = (typeof METHODS)[keyof typeof METHODS];
 type RequestOptions = {
   method?: Method;
   headers?: Record<string, string>;
-  data?: Record<string, unknown> | string;
+  data?: Record<string, unknown> | string | FormData;
   timeout?: number;
 };
 
@@ -20,15 +20,11 @@ type HTTPMethod = <R = unknown>(
 ) => Promise<R>;
 
 function queryStringify(data: Record<string, unknown>): string {
-  if (typeof data !== 'object') {
-    throw new Error('Data must be object');
-  }
-
   const keys = Object.keys(data);
   return keys.reduce((result, key, index) => {
-    return `${result}${key}=${encodeURIComponent(
-      String(data[key]),
-    )}${index < keys.length - 1 ? '&' : ''}`;
+    return `${result}${key}=${encodeURIComponent(String(data[key]))}${
+      index < keys.length - 1 ? '&' : ''
+    }`;
   }, '?');
 }
 
@@ -51,7 +47,6 @@ export class HTTPTransport {
     timeout: number = 5000,
   ): Promise<R> => {
     const { headers = {}, method, data } = options;
-
     return new Promise<R>((resolve, reject) => {
       if (!method) {
         reject(new Error('No method'));
@@ -59,24 +54,22 @@ export class HTTPTransport {
       }
 
       const xhr = new XMLHttpRequest();
+      xhr.withCredentials = true;
       const isGet = method === METHODS.GET;
-
       xhr.open(
         method,
-        isGet && !!data
+        isGet && data
           ? `${url}${queryStringify(data as Record<string, unknown>)}`
           : url,
       );
-
       Object.keys(headers).forEach(key => {
         xhr.setRequestHeader(key, headers[key]);
       });
-
       xhr.onload = function () {
         try {
           const responseData = JSON.parse(xhr.responseText) as R;
           resolve(responseData);
-        } catch (e) {
+        } catch (e: Error | unknown) {
           console.error(e);
           resolve(xhr.responseText as unknown as R);
         }
@@ -86,11 +79,12 @@ export class HTTPTransport {
       xhr.onerror = () => reject(new Error('Network error'));
       xhr.timeout = timeout;
       xhr.ontimeout = () => reject(new Error('Request timed out'));
-
       if (isGet || !data) {
         xhr.send();
       } else {
         if (typeof data === 'string') {
+          xhr.send(data);
+        } else if (data instanceof FormData) {
           xhr.send(data);
         } else {
           xhr.setRequestHeader('Content-Type', 'application/json');

@@ -1,4 +1,4 @@
-export interface ProfileData {
+export interface ProfileData extends Record<string, unknown> {
   email: string;
   login: string;
   first_name: string;
@@ -8,7 +8,7 @@ export interface ProfileData {
   avatar: string;
 }
 
-export interface UpdateProfileData {
+export interface UpdateProfileData extends Record<string, unknown> {
   email?: string;
   login?: string;
   first_name?: string;
@@ -19,7 +19,7 @@ export interface UpdateProfileData {
   oldPassword?: string;
 }
 
-export interface UpdatePasswordData {
+export interface UpdatePasswordData extends Record<string, unknown> {
   oldPassword: string;
   newPassword: string;
 }

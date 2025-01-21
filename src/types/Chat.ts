@@ -40,7 +40,7 @@ export interface DeleteChatResponse {
   };
 }
 
-export interface AddRemoveUsersRequest {
+export interface AddRemoveUsersRequest extends Record<string, unknown> {
   users: number[];
   chatId: number;
 }

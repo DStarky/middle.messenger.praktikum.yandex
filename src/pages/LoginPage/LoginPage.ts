@@ -129,6 +129,8 @@ export class LoginPage extends Block<LoginPageProps> {
     const login = formData.get('login') as string;
     const password = formData.get('password') as string;
 
+    console.log('Логин:', login, 'Пароль:', password);
+
     if (!login || !password) {
       this.setProps({ error: 'Введите логин и пароль' });
       return;
