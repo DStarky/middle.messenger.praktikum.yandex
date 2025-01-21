@@ -4,7 +4,6 @@ import MenuIcon from '../../../assets/icons/menu.svg';
 import AttachmentIcon from '../../../assets/icons/attachment.svg';
 import ArrowRightIcon from '../../../assets/icons/arrow-right.svg';
 import type { MessageData } from '../../../components/common/Message/Message';
-import type { Avatar } from '../../../components/common/Avatar/Avatar';
 import { Message } from '../../../components/common/Message/Message';
 import { SimpleInput } from '../../../components/common/SimpleInput/SimpleInput';
 import { Button } from '../../../components/common/Button/Button';
@@ -14,6 +13,7 @@ import { UsersPopup } from './UsersPopup/UsersPopup';
 import { Toaster } from '../../../components/common/Toaster/Toaster';
 import ChatController from '../../../controllers/ChatController';
 import { ChatAvatar } from './ChatAvatar/ChatAvatar';
+import { RESOURCE_URL } from '../../../consts/URLs';
 
 interface ChatProps {
   id: number;
@@ -155,7 +155,9 @@ export class InnerChat extends Block<InnerChatProps> {
       this.children.usersPopup.hide();
 
       const avatar = new ChatAvatar({
-        src: props.selectedChat.avatar,
+        src: props.selectedChat.avatar
+          ? `${RESOURCE_URL}${props.selectedChat.avatar}`
+          : '',
         alt: props.selectedChat.title,
         size: 'small',
         events: {
@@ -228,9 +230,11 @@ export class InnerChat extends Block<InnerChatProps> {
           updatedChat => {
             this.showSuccessToast('Аватар чата обновлен!');
             if (this.children.avatar) {
-              (this.children.avatar as Avatar).setProps({
-                src: updatedChat.avatar,
-              });
+              (this.children.avatar as ChatAvatar)
+                .getChildren()
+                .avatar.setProps({
+                  src: `${RESOURCE_URL}${updatedChat.avatar}`,
+                });
             }
           },
         );

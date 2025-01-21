@@ -14,6 +14,7 @@ import { SearchInput } from '../SearchInput/SearchInput';
 import { Modal } from '../Modal/Modal';
 import { CreateChatModal } from '../Modal/CreateChatModal/CreateChatModal';
 import { connect } from '../../../app/HOC';
+import { RESOURCE_URL } from '../../../consts/URLs';
 
 const sidebarCompactTemplate = `
   <aside class="sidebar sidebar_small {{className}}">
@@ -144,7 +145,7 @@ export class Sidebar extends Block<SidebarProps> {
         isOwn,
         className: chat.id === this.props?.selectedChat?.id ? 'active' : '',
         avatar: new Avatar({
-          src: chat.avatar,
+          src: chat.avatar ? `${RESOURCE_URL}${chat.avatar}` : undefined,
           alt: chat.title,
           className: 'avatar_size-medium',
         }),

@@ -15,7 +15,6 @@ interface ChatAvatarProps extends Props {
   src: string;
   alt: string;
   text?: string;
-  onClick?: (e: Event) => void;
 }
 
 export class ChatAvatar extends Block<ChatAvatarProps> {
@@ -30,7 +29,7 @@ export class ChatAvatar extends Block<ChatAvatarProps> {
       ...props,
       avatar,
       text: props.text || 'Изменить аватар',
-      events: props.onClick ? { click: props.onClick } : undefined,
+      events: props.events,
     });
   }
 
