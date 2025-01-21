@@ -1,9 +1,9 @@
 export const ROUTES = {
   MAIN: '/',
-  LOGIN: '/login',
-  REGISTRATION: '/registration',
-  CHATS: '/chats',
-  PROFILE: '/profile',
+  LOGIN: '/sign-in',
+  REGISTRATION: '/sign-up',
+  CHATS: '/messenger',
+  PROFILE: '/settings',
   NOT_FOUND: '/404',
   ERROR_500: '/500',
 } as const;
