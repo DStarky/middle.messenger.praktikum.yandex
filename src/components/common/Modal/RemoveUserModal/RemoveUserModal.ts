@@ -5,6 +5,7 @@ import type { Events } from '../../../../types/Events';
 import { Button } from '../../Button/Button';
 import { SimpleInput } from '../../SimpleInput/SimpleInput';
 import { Loader } from '../../Loader/Loader';
+import { Toaster } from '../../Toaster/Toaster';
 
 const template = `
   <form class="create-chat-form" id="remove-user-form">
@@ -34,6 +35,8 @@ interface RemoveUserModalProps extends Props {
 }
 
 export class RemoveUserModal extends Block<RemoveUserModalProps> {
+  private toaster: Toaster | null = null;
+
   constructor(props: RemoveUserModalProps) {
     const userIdsInput = new SimpleInput({
       type: 'text',
@@ -68,6 +71,41 @@ export class RemoveUserModal extends Block<RemoveUserModalProps> {
         submit: (e: Event) => this.handleSubmit(e),
       },
     });
+
+    this.initToaster();
+  }
+
+  private initToaster(): void {
+    this.toaster = new Toaster({
+      type: 'success',
+      message: '',
+      show: false,
+      timeout: 3000,
+    });
+
+    document.body.appendChild(this.toaster.getContent()!);
+  }
+
+  private showSuccessToast(): void {
+    if (this.toaster) {
+      this.toaster.setProps({
+        type: 'success',
+        message: 'Пользователи успешно удалены!',
+        show: true,
+      });
+      this.toaster.show();
+    }
+  }
+
+  private showErrorToast(message: string): void {
+    if (this.toaster) {
+      this.toaster.setProps({
+        type: 'error',
+        message: message || 'Ошибка при удалении пользователей',
+        show: true,
+      });
+      this.toaster.show();
+    }
   }
 
   override render(): string {
@@ -118,18 +156,22 @@ export class RemoveUserModal extends Block<RemoveUserModalProps> {
               error = 'Ошибка сервера';
             }
 
+            this.showErrorToast(error);
             this.setProps({ errorMessage: error });
           }
         },
         () => {
+          this.showSuccessToast();
           if (this.props.events?.close) {
             this.props.events.close(new Event('close'));
           }
-          // TODO добавить сообщение об успешном удалении пользователя
         },
       );
     } catch (error) {
       console.error('Ошибка при удалении пользователя:', error);
+      this.showErrorToast(
+        error instanceof Error ? error.message : String(error),
+      );
       this.setProps({
         errorMessage: 'Произошла ошибка при удалении пользователя.',
       });

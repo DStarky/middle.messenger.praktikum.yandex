@@ -5,6 +5,7 @@ import type { Events } from '../../../../types/Events';
 import { Button } from '../../Button/Button';
 import { SimpleInput } from '../../SimpleInput/SimpleInput';
 import { Loader } from '../../Loader/Loader';
+import { Toaster } from '../../Toaster/Toaster';
 
 const template = `
   <form class="create-chat-form" id="add-user-form">
@@ -31,9 +32,12 @@ interface AddUserModalProps extends Props {
   events?: Events;
   errorMessage?: string | null;
   loading?: boolean;
+  toaster?: Toaster;
 }
 
 export class AddUserModal extends Block<AddUserModalProps> {
+  private toaster: Toaster | null = null;
+
   constructor(props: AddUserModalProps) {
     const userIdsInput = new SimpleInput({
       type: 'text',
@@ -68,6 +72,41 @@ export class AddUserModal extends Block<AddUserModalProps> {
         submit: (e: Event) => this.handleSubmit(e),
       },
     });
+
+    this.initToaster();
+  }
+
+  private initToaster(): void {
+    this.toaster = new Toaster({
+      type: 'success',
+      message: '',
+      show: false,
+      timeout: 3000,
+    });
+
+    document.body.appendChild(this.toaster.getContent()!);
+  }
+
+  private showSuccessToast(): void {
+    if (this.toaster) {
+      this.toaster.setProps({
+        type: 'success',
+        message: 'Пользователи успешно добавлены!',
+        show: true,
+      });
+      this.toaster.show();
+    }
+  }
+
+  private showErrorToast(message: string): void {
+    if (this.toaster) {
+      this.toaster.setProps({
+        type: 'error',
+        message: message || 'Ошибка при добавлении пользователей',
+        show: true,
+      });
+      this.toaster.show();
+    }
   }
 
   override render(): string {
@@ -122,10 +161,10 @@ export class AddUserModal extends Block<AddUserModalProps> {
           }
         },
         () => {
+          this.showSuccessToast();
           if (this.props.events?.close) {
             this.props.events.close(new Event('close'));
           }
-          // TODO добавить сообщение об успешном добавлении пользователя
         },
       );
     } catch (error) {
@@ -133,6 +172,9 @@ export class AddUserModal extends Block<AddUserModalProps> {
       this.setProps({
         errorMessage: 'Произошла ошибка при добавлении пользователя.',
       });
+      this.showErrorToast(
+        error instanceof Error ? error.message : String(error),
+      );
     } finally {
       this.setProps({ loading: false });
       if (addButton) {

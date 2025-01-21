@@ -5,6 +5,7 @@ import type { Events } from '../../../../types/Events';
 import { Button } from '../../Button/Button';
 import { SimpleInput } from '../../SimpleInput/SimpleInput';
 import { Loader } from '../../Loader/Loader';
+import { Toaster } from '../../Toaster/Toaster';
 
 const template = `
   <form class="create-chat-form" id="create-chat-form">
@@ -33,6 +34,8 @@ interface CreateChatModalProps extends Props {
 }
 
 export class CreateChatModal extends Block<CreateChatModalProps> {
+  private toaster: Toaster | null = null;
+
   constructor(props: CreateChatModalProps) {
     const chatNameInput = new SimpleInput({
       type: 'text',
@@ -69,6 +72,41 @@ export class CreateChatModal extends Block<CreateChatModalProps> {
         submit: (e: Event) => this.handleSubmit(e),
       },
     });
+
+    this.initToaster();
+  }
+
+  private initToaster(): void {
+    this.toaster = new Toaster({
+      type: 'success',
+      message: '',
+      show: false,
+      timeout: 3000,
+    });
+
+    document.body.appendChild(this.toaster.getContent()!);
+  }
+
+  private showSuccessToast(): void {
+    if (this.toaster) {
+      this.toaster.setProps({
+        type: 'success',
+        message: 'Чат успешно создан!',
+        show: true,
+      });
+      this.toaster.show();
+    }
+  }
+
+  private showErrorToast(message: string): void {
+    if (this.toaster) {
+      this.toaster.setProps({
+        type: 'error',
+        message: message || 'Ошибка при создании чата',
+        show: true,
+      });
+      this.toaster.show();
+    }
   }
 
   override render(): string {
@@ -102,18 +140,20 @@ export class CreateChatModal extends Block<CreateChatModalProps> {
         () => {},
         (error: string | null) => {
           if (error) {
+            this.showErrorToast(error);
             this.setProps({ errorMessage: error });
           }
         },
         () => {
+          this.showSuccessToast();
           if (this.props.events?.close) {
             this.props.events.close(new Event('close'));
           }
-          // TODO добавить сообщение об успешном создании чата
         },
       );
     } catch (error) {
       console.error('Ошибка при создании чата:', error);
+      this.showErrorToast('Произошла ошибка при создании чата.');
       this.setProps({ errorMessage: 'Произошла ошибка при создании чата.' });
     } finally {
       this.setProps({ loading: false });
