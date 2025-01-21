@@ -3,6 +3,7 @@ import type { Events } from '../../../../types/Events';
 import Block from '../../../../app/Block';
 import PlusIcon from '../../../../assets/icons/plus.svg';
 import DeleteIcon from '../../../../assets/icons/delete.svg';
+import UsersIcon from '../../../../assets/icons/users.svg';
 import { AddUserModal } from '../../../../components/common/Modal/AddUserModal/AddUserModal';
 import { Modal } from '../../../../components/common/Modal/Modal';
 import { RemoveUserModal } from '../../../../components/common/Modal/RemoveUserModal/RemoveUserModal';
@@ -17,6 +18,10 @@ const template = `
       <div class="users-popup__item" data-action="remove">
         <img src="${DeleteIcon}" alt="delete icon" />
         <p>Удалить пользователя</p>
+      </div>
+      <div class="users-popup__item" data-action="remove">
+        <img src="${UsersIcon}" alt="delete icon" />
+        <p>Список пользователей</p>
       </div>
     </div>
   </div>
