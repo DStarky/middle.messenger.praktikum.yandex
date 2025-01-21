@@ -108,4 +108,18 @@ export class ChatAPI extends BaseAPI {
       data,
     });
   }
+
+  public updateChatAvatar(
+    chatId: number,
+    file: File,
+  ): Promise<Chat | ErrorResponse> {
+    const formData = new FormData();
+    formData.append('chatId', chatId.toString());
+    formData.append('avatar', file);
+
+    return this.http.put(`${this.host}chats/avatar`, {
+      data: formData,
+      headers: {},
+    });
+  }
 }

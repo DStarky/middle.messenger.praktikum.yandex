@@ -254,6 +254,51 @@ class ChatController {
       onLoading(false);
     }
   }
+
+  public async updateChatAvatar(
+    chatId: number,
+    file: File,
+    onLoading: (loading: boolean) => void,
+    onError: (error: string | null) => void,
+    onSuccess: (updatedChat: Chat) => void,
+  ): Promise<void> {
+    try {
+      onLoading(true);
+      onError(null);
+
+      const response = await this.api.updateChatAvatar(chatId, file);
+
+      if ('reason' in response) {
+        onError(response.reason);
+        return;
+      }
+
+      const chats = store
+        .getState()
+        .chats?.map(chat =>
+          chat.id === chatId ? { ...chat, avatar: response.avatar } : chat,
+        );
+      store.set('chats', chats);
+
+      const selectedChat = store.getState().selectedChat as Chat | null;
+      if (selectedChat?.id === chatId) {
+        store.set('selectedChat', { ...selectedChat, avatar: response.avatar });
+      }
+
+      onSuccess(response);
+
+      this.fetchChats(
+        () => {},
+        () => {},
+        () => {},
+      );
+    } catch (error) {
+      console.error('updateChatAvatar error:', error);
+      onError((error as Error).message);
+    } finally {
+      onLoading(false);
+    }
+  }
 }
 
 export default new ChatController();
