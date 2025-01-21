@@ -13,7 +13,7 @@ import { validationRules } from '../../../helpers/validationRules';
 import { UsersPopup } from './UsersPopup/UsersPopup';
 import { Toaster } from '../../../components/common/Toaster/Toaster';
 import ChatController from '../../../controllers/ChatController';
-import { ProfileAvatar } from '../../ProfilePage/components/ProfileAvatar/ProfileAvatar';
+import { ChatAvatar } from './ChatAvatar/ChatAvatar';
 
 interface ChatProps {
   id: number;
@@ -154,7 +154,7 @@ export class InnerChat extends Block<InnerChatProps> {
       });
       this.children.usersPopup.hide();
 
-      const avatar = new ProfileAvatar({
+      const avatar = new ChatAvatar({
         src: props.selectedChat.avatar,
         alt: props.selectedChat.title,
         size: 'small',
