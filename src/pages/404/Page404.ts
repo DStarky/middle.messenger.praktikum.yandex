@@ -43,9 +43,7 @@ export class Page404 extends Block<Page404Props> {
       size: 'small',
       children: createChatModalContent,
       events: {
-        close: () => {
-          console.log('Modal закрыт');
-        },
+        close: () => {},
       },
     });
 

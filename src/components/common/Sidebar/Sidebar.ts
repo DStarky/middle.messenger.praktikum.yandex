@@ -165,7 +165,6 @@ export class Sidebar extends Block<SidebarProps> {
     const createChatModalContent = new CreateChatModal({
       events: {
         close: () => {
-          console.log('Modal закрыт');
           modal.destroy();
           this.modalInstance = null;
         },

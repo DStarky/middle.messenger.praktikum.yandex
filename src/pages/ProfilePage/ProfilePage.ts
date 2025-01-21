@@ -214,7 +214,6 @@ class _ProfilePage extends Block<ProfilePageProps> {
   }
 
   private resetToDefaultMode(): void {
-    console.log('Тут логика возвращения в дефолтный режим');
     this.setProps({
       isEditingPersonal: false,
       isEditingPassword: false,
