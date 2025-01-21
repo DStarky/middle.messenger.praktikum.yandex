@@ -10,8 +10,8 @@ import type {
 } from '../../components/common/Sidebar/Sidebar';
 import { SidebarConnected } from '../../components/common/Sidebar/Sidebar';
 import type { Chat } from '../../types/Chat';
-import { InnerChat } from './partials/InnerChat';
 import { WS_HOST } from '../../consts/URLs';
+import { InnerChat } from './components/InnerChat';
 
 const template = `
   <main class="chats-page">

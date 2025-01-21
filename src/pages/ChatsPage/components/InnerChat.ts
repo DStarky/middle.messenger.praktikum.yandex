@@ -4,13 +4,16 @@ import MenuIcon from '../../../assets/icons/menu.svg';
 import AttachmentIcon from '../../../assets/icons/attachment.svg';
 import ArrowRightIcon from '../../../assets/icons/arrow-right.svg';
 import type { MessageData } from '../../../components/common/Message/Message';
-import { Avatar } from '../../../components/common/Avatar/Avatar';
+import type { Avatar } from '../../../components/common/Avatar/Avatar';
 import { Message } from '../../../components/common/Message/Message';
 import { SimpleInput } from '../../../components/common/SimpleInput/SimpleInput';
 import { Button } from '../../../components/common/Button/Button';
 import type { Events } from '../../../types/Events';
 import { validationRules } from '../../../helpers/validationRules';
 import { UsersPopup } from './UsersPopup/UsersPopup';
+import { Toaster } from '../../../components/common/Toaster/Toaster';
+import ChatController from '../../../controllers/ChatController';
+import { ProfileAvatar } from '../../ProfilePage/components/ProfileAvatar/ProfileAvatar';
 
 interface ChatProps {
   id: number;
@@ -71,6 +74,7 @@ const template = `
 `;
 
 export class InnerChat extends Block<InnerChatProps> {
+  private toaster: Toaster | null = null;
   constructor(props: InnerChatProps) {
     super(props);
   }
@@ -113,6 +117,34 @@ export class InnerChat extends Block<InnerChatProps> {
     return false;
   }
 
+  private initToaster(): void {
+    this.toaster = new Toaster({
+      type: 'success',
+      message: '',
+      show: false,
+      timeout: 3000,
+    });
+    document.body.appendChild(this.toaster.getContent()!);
+  }
+
+  private showSuccessToast(message: string): void {
+    this.toaster?.setProps({
+      type: 'success',
+      message: message,
+      show: true,
+    });
+    this.toaster?.show();
+  }
+
+  private showErrorToast(message: string): void {
+    this.toaster?.setProps({
+      type: 'error',
+      message: message,
+      show: true,
+    });
+    this.toaster?.show();
+  }
+
   private createChildren(props: InnerChatProps): void {
     this.children = {};
 
@@ -122,10 +154,13 @@ export class InnerChat extends Block<InnerChatProps> {
       });
       this.children.usersPopup.hide();
 
-      const avatar = new Avatar({
+      const avatar = new ProfileAvatar({
         src: props.selectedChat.avatar,
         alt: props.selectedChat.title,
-        className: 'avatar_size-small',
+        size: 'small',
+        events: {
+          click: () => this.handleChangeAvatar(),
+        },
       });
 
       const input = new SimpleInput({
@@ -162,6 +197,50 @@ export class InnerChat extends Block<InnerChatProps> {
       this.children.input = input;
       this.children.sendButton = sendButton;
     }
+  }
+
+  private handleChangeAvatar(): void {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*';
+
+    fileInput.onchange = async () => {
+      if (!fileInput.files?.[0]) {
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const chatId = this.props.selectedChat?.id;
+
+      if (!chatId) {
+        this.showErrorToast('Чат не выбран');
+        return;
+      }
+
+      try {
+        await ChatController.updateChatAvatar(
+          chatId,
+          file,
+          loading => this.setProps({ isLoading: loading }),
+          error => {
+            this.showErrorToast(error || 'Ошибка загрузки аватара');
+          },
+          updatedChat => {
+            this.showSuccessToast('Аватар чата обновлен!');
+            if (this.children.avatar) {
+              (this.children.avatar as Avatar).setProps({
+                src: updatedChat.avatar,
+              });
+            }
+          },
+        );
+      } catch (error: unknown) {
+        console.error(error);
+        this.showErrorToast('Неизвестная ошибка при загрузке аватара');
+      }
+    };
+
+    fileInput.click();
   }
 
   private toggleUsersPopup(): void {
