@@ -3,11 +3,13 @@ import type { Events } from '../../../../types/Events';
 import Block from '../../../../app/Block';
 import PlusIcon from '../../../../assets/icons/plus.svg';
 import DeleteIcon from '../../../../assets/icons/delete.svg';
+import TrashIcon from '../../../../assets/icons/trash.svg';
 import UsersIcon from '../../../../assets/icons/users.svg';
 import { AddUserModal } from '../../../../components/common/Modal/AddUserModal/AddUserModal';
 import { Modal } from '../../../../components/common/Modal/Modal';
 import { RemoveUserModal } from '../../../../components/common/Modal/RemoveUserModal/RemoveUserModal';
 import { UsersListModal } from '../../../../components/common/Modal/UsersListModal/UsersListModal';
+import { DeleteChatModal } from '../../../../components/common/Modal/DeleteChatModal/DeleteChatModal';
 
 const template = `
   <div class="users-popup">
@@ -23,6 +25,10 @@ const template = `
       <div class="users-popup__item" data-action="list">
         <img src="${UsersIcon}" alt="delete icon" />
         <p>Список пользователей</p>
+      </div>
+      <div class="users-popup__item " data-action="delete">
+        <img src="${TrashIcon}" alt="delete icon" />
+        <p>Удалить чат</p>
       </div>
     </div>
   </div>
@@ -74,6 +80,9 @@ export class UsersPopup extends Block<UsersPopupProps> {
         break;
       case 'list':
         this.openUsersListModal();
+        break;
+      case 'delete':
+        this.openDeleteChatModal();
         break;
       default:
         break;
@@ -168,6 +177,30 @@ export class UsersPopup extends Block<UsersPopupProps> {
 
     const appRoot = document.getElementById('app');
     appRoot?.appendChild(modal.getContent()!);
+  }
+
+  private openDeleteChatModal(): void {
+    if (this.modalInstance) {
+      return;
+    }
+
+    const deleteChatModalContent = new DeleteChatModal({
+      chatId: this.props.chatId,
+      events: {
+        close: () => this.closeModal(),
+      },
+    });
+
+    const modal = new Modal({
+      size: 'small',
+      children: deleteChatModalContent,
+      events: {
+        close: () => this.closeModal(),
+      },
+    });
+
+    this.modalInstance = modal;
+    document.getElementById('app')?.appendChild(modal.getContent()!);
   }
 
   private closeModal(): void {

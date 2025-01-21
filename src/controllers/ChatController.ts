@@ -115,6 +115,7 @@ class ChatController {
         return;
       }
 
+      store.set('selectedChat', null);
       onSuccess();
     } catch (error) {
       console.error('deleteChat error:', error);
