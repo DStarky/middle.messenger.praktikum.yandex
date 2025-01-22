@@ -144,7 +144,7 @@ export class RegistrationPage extends Block<RegistrationPageProps> {
     });
 
     const loginLink = new Link({
-      href: ROUTES.LOGIN,
+      href: ROUTES.MAIN,
       text: 'Войти',
       className: 'form-container__login-link',
     });

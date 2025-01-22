@@ -1,5 +1,7 @@
+import AuthController from '../controllers/AuthController';
 import type { Route } from './routes';
-import { isValidRoute, ROUTES } from './routes';
+import { isValidRoute, protectedRoutes, ROUTES } from './routes';
+import store from './Store';
 
 export class Router {
   private routes: Record<Route, () => void> = {} as Record<Route, () => void>;
@@ -18,16 +20,38 @@ export class Router {
     this.routes[path] = renderFunction;
   }
 
-  navigate(path: Route): void {
-    window.history.pushState({}, '', path);
-
-    const routeFunc = this.routes[path];
-    if (!routeFunc) {
-      this.handle404();
-      return;
+  public async navigate(path: Route): Promise<void> {
+    if (protectedRoutes.includes(path)) {
+      try {
+        const user = await AuthController.getUserInfo();
+        console.log(user);
+        if (!user) {
+          this.handleUnauthorized();
+          return;
+        }
+      } catch (error) {
+        console.error(error);
+        this.handleUnauthorized();
+        return;
+      }
     }
 
-    routeFunc();
+    window.history.pushState({}, '', path);
+    this.executeRoute(path);
+  }
+
+  private handleUnauthorized(): void {
+    store.set('user', null);
+    this.navigate(ROUTES.MAIN);
+  }
+
+  private executeRoute(path: Route): void {
+    const routeFunc = this.routes[path];
+    if (routeFunc) {
+      routeFunc();
+    } else {
+      this.handle404();
+    }
   }
 
   public init(): void {

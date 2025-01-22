@@ -116,8 +116,9 @@ class AuthController {
       store.set('user', user);
       return user;
     } catch (error: unknown) {
+      console.log((error as Error).message);
       store.set('user', null);
-      throw error;
+      return null;
     } finally {
       store.set('isLoading', false);
     }
@@ -130,7 +131,7 @@ class AuthController {
       if (typeof logoutRes === 'string') {
         if (logoutRes.toUpperCase() === 'OK') {
           store.set('user', null);
-          router.navigate(ROUTES.LOGIN);
+          router.navigate(ROUTES.MAIN);
         } else {
           store.set('error', logoutRes);
         }
@@ -148,6 +149,7 @@ class AuthController {
       store.set('error', (error as Error).message);
     } finally {
       store.set('isLoading', false);
+      router.navigate(ROUTES.MAIN);
     }
   }
 }

@@ -1,6 +1,5 @@
 export const ROUTES = {
   MAIN: '/',
-  LOGIN: '/sign-in',
   REGISTRATION: '/sign-up',
   CHATS: '/messenger',
   PROFILE: '/settings',
@@ -13,3 +12,7 @@ export type Route = (typeof ROUTES)[keyof typeof ROUTES];
 export function isValidRoute(path: string): path is Route {
   return Object.values(ROUTES).includes(path as Route);
 }
+
+export const protectedRoutes: Route[] = [ROUTES.CHATS, ROUTES.PROFILE];
+
+export const publicRoutes: Route[] = [ROUTES.MAIN, ROUTES.REGISTRATION];

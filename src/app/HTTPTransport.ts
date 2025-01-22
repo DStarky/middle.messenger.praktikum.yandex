@@ -1,3 +1,8 @@
+import { router } from './Router';
+import type { Route } from './routes';
+import { publicRoutes, ROUTES } from './routes';
+import store from './Store';
+
 const METHODS = {
   GET: 'GET',
   POST: 'POST',
@@ -66,6 +71,17 @@ export class HTTPTransport {
         xhr.setRequestHeader(key, headers[key]);
       });
       xhr.onload = function () {
+        if (xhr.status === 401) {
+          store.set('user', null);
+          const currentPath = window.location.pathname as Route;
+          if (!publicRoutes.includes(currentPath)) {
+            router.navigate(ROUTES.MAIN);
+          }
+
+          reject(new Error('Unauthorized'));
+          return;
+        }
+
         try {
           const responseData = JSON.parse(xhr.responseText) as R;
           resolve(responseData);
