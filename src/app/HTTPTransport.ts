@@ -27,7 +27,9 @@ type HTTPMethod = <R = unknown>(
 function queryStringify(data: Record<string, unknown>): string {
   const keys = Object.keys(data);
   return keys.reduce((result, key, index) => {
-    return `${result}${key}=${encodeURIComponent(String(data[key]))}${
+    const encodedKey = encodeURIComponent(key);
+    const encodedValue = encodeURIComponent(String(data[key]));
+    return `${result}${encodedKey}=${encodedValue}${
       index < keys.length - 1 ? '&' : ''
     }`;
   }, '?');
