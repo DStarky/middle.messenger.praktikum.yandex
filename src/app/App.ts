@@ -1,55 +1,91 @@
-import { ROUTES } from './routes';
-import { Router } from './Router';
-
+import AuthController from '../controllers/AuthController';
 import { Page404 } from '../pages/404/Page404';
 import { Page500 } from '../pages/500/Page500';
-import { LoginPage } from '../pages/LoginPage/LoginPage';
-import { RegistrationPage } from '../pages/RegistrationPage/RegistrationPage';
 import { ChatsPage } from '../pages/ChatsPage/ChatsPage';
+import { LoginPage } from '../pages/LoginPage/LoginPage';
 import { ProfilePage } from '../pages/ProfilePage/ProfilePage';
+import { RegistrationPage } from '../pages/RegistrationPage/RegistrationPage';
+import type Block from './Block';
+import { router } from './Router';
+import type { Route } from './routes';
+import { protectedRoutes, publicRoutes, ROUTES } from './routes';
+import store from './Store';
 
 export class App {
-  private router: Router;
-
   constructor() {
-    this.router = new Router('#app');
+    this.initProtectedRoutes();
+    this.initPublicRoutes();
+    this.initErrorRoutes();
 
-    this.router.addRoute(ROUTES.NOT_FOUND, () => {
-      const page = new Page404();
-      this.router.render(page.getContent()!);
+    AuthController.getUserInfo().finally(() => {
+      router.init();
+      this.checkInitialRoute();
     });
+  }
 
-    this.router.addRoute(ROUTES.ERROR_500, () => {
-      const page = new Page500();
-      this.router.render(page.getContent()!);
+  private initProtectedRoutes() {
+    protectedRoutes.forEach(path => {
+      router.addRoute(path, async () => {
+        try {
+          if (path === ROUTES.CHATS) {
+            renderPage(new ChatsPage());
+          } else {
+            renderPage(new ProfilePage({}));
+          }
+        } catch (error) {
+          console.error(error);
+          store.set('user', null);
+          router.navigate(ROUTES.MAIN);
+        }
+      });
     });
+  }
 
-    this.router.addRoute(ROUTES.LOGIN, () => {
-      const page = new LoginPage(this.router);
-      this.router.render(page.getContent()!);
+  private initPublicRoutes() {
+    publicRoutes.forEach(path => {
+      router.addRoute(path, async () => {
+        try {
+          const user = await AuthController.getUserInfo();
+          if (user) {
+            router.navigate(ROUTES.CHATS);
+            return;
+          }
+
+          if (path === ROUTES.REGISTRATION) {
+            renderPage(new RegistrationPage());
+          } else {
+            renderPage(new LoginPage());
+          }
+        } catch (error) {
+          console.error(error);
+          if (path === ROUTES.REGISTRATION) {
+            renderPage(new RegistrationPage());
+          } else {
+            renderPage(new LoginPage());
+          }
+        }
+      });
     });
+  }
 
-    this.router.addRoute(ROUTES.REGISTRATION, () => {
-      const page = new RegistrationPage(this.router);
-      this.router.render(page.getContent()!);
-    });
+  private initErrorRoutes() {
+    router.addRoute(ROUTES.NOT_FOUND, () => renderPage(new Page404()));
+    router.addRoute(ROUTES.ERROR_500, () => renderPage(new Page500()));
+  }
 
-    this.router.addRoute(ROUTES.CHATS, () => {
-      const page = new ChatsPage();
-      this.router.render(page.getContent()!);
-    });
-
-    this.router.addRoute(ROUTES.PROFILE, () => {
-      const page = new ProfilePage();
-      this.router.render(page.getContent()!);
-    });
-
-    this.router.addRoute('/', () => {
-      this.router.navigate(ROUTES.LOGIN);
-    });
-
-    this.router.init();
+  private checkInitialRoute() {
+    const currentPath = window.location.pathname as Route;
+    if (!Object.values(ROUTES).includes(currentPath)) {
+      router.navigate(ROUTES.NOT_FOUND);
+    }
   }
 
   render(): void {}
+}
+
+function renderPage(page: Block) {
+  const content = page.getContent();
+  if (content) {
+    router.render(content);
+  }
 }

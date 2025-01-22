@@ -1,13 +1,15 @@
-import type { Props } from '../../app/Block';
+import type { Props, PropsWithChildren } from '../../app/Block';
 import Block from '../../app/Block';
-import type { Router } from '../../app/Router';
 import { ROUTES } from '../../app/routes';
 import { Button } from '../../components/common/Button/Button';
 import { CardTitle } from '../../components/common/CardTitle/CardTitle';
 import { FloatingLabelInput } from '../../components/common/FloatingLabelInput/FloatingLabelInput';
 import { Link } from '../../components/common/Link/Link';
+import { Loader } from '../../components/common/Loader/Loader';
 import { validationRules } from '../../helpers/validationRules';
+import AuthController from '../../controllers/AuthController';
 import type { Events } from '../../types/Events';
+import { router } from '../../app/Router';
 
 const template = `
   <main class="screen-center registration-page">
@@ -15,6 +17,7 @@ const template = `
       <div class="form-container__title">
         {{{ cardTitle }}}
       </div>
+
       <div class="form-container__inputs">
         {{{ emailInput }}}
         {{{ loginInput }}}
@@ -24,6 +27,17 @@ const template = `
         {{{ passwordInput }}}
         {{{ repeatPasswordInput }}}
       </div>
+
+      {{#if isLoading}}
+        <div class="loader__wrapper">
+          {{{ loader }}}
+        </div>
+      {{/if}}
+
+      {{#if error}}
+        <div class="error-message-red text-center">{{error}}</div>
+      {{/if}}
+
       <div class="form-container__links">
         {{{ submitButton }}}
         {{{ loginLink }}}
@@ -33,23 +47,24 @@ const template = `
 `;
 
 interface RegistrationPageProps extends Props {
-  cardTitle: CardTitle;
-  emailInput: FloatingLabelInput;
-  loginInput: FloatingLabelInput;
-  firstNameInput: FloatingLabelInput;
-  secondNameInput: FloatingLabelInput;
-  phoneInput: FloatingLabelInput;
-  passwordInput: FloatingLabelInput;
-  repeatPasswordInput: FloatingLabelInput;
-  submitButton: Button;
-  loginLink: Link;
+  cardTitle?: CardTitle;
+  emailInput?: FloatingLabelInput;
+  loginInput?: FloatingLabelInput;
+  firstNameInput?: FloatingLabelInput;
+  secondNameInput?: FloatingLabelInput;
+  phoneInput?: FloatingLabelInput;
+  passwordInput?: FloatingLabelInput;
+  repeatPasswordInput?: FloatingLabelInput;
+  submitButton?: Button;
+  loginLink?: Link;
+  loader?: Loader;
   events?: Events;
+  isLoading?: boolean;
+  error?: string | null;
 }
 
 export class RegistrationPage extends Block<RegistrationPageProps> {
-  private router: Router;
-
-  constructor(router: Router) {
+  constructor(props: PropsWithChildren<RegistrationPageProps> = {}) {
     const cardTitle = new CardTitle({ text: 'Регистрация' });
 
     const emailInput = new FloatingLabelInput({
@@ -129,12 +144,15 @@ export class RegistrationPage extends Block<RegistrationPageProps> {
     });
 
     const loginLink = new Link({
-      href: ROUTES.LOGIN,
+      href: ROUTES.MAIN,
       text: 'Войти',
       className: 'form-container__login-link',
     });
 
+    const loader = new Loader();
+
     super({
+      ...props,
       cardTitle,
       emailInput,
       loginInput,
@@ -145,19 +163,20 @@ export class RegistrationPage extends Block<RegistrationPageProps> {
       repeatPasswordInput,
       submitButton,
       loginLink,
+      loader,
+      isLoading: false,
+      error: null,
       events: {
         submit: (e: Event) => this.handleSubmit(e),
       },
     });
-
-    this.router = router;
   }
 
   override render(): string {
     return template;
   }
 
-  private handleSubmit(event: Event) {
+  private async handleSubmit(event: Event) {
     event.preventDefault();
 
     const form = event.target as HTMLFormElement;
@@ -167,10 +186,10 @@ export class RegistrationPage extends Block<RegistrationPageProps> {
 
     const isValid = this.validateAllFields();
     if (!isValid) {
+      this.setProps({ error: 'Исправьте ошибки в полях' });
       return;
     }
 
-    // Затем проверяем, совпадают ли пароли
     const password = (
       this.children.passwordInput as FloatingLabelInput
     ).getValue();
@@ -196,7 +215,6 @@ export class RegistrationPage extends Block<RegistrationPageProps> {
     const secondName = formData.get('second_name') as string;
     const phone = formData.get('phone') as string;
     const passwordValue = formData.get('password') as string;
-    const repeatPasswordValue = formData.get('repeatPassword') as string;
 
     if (
       !email ||
@@ -204,24 +222,30 @@ export class RegistrationPage extends Block<RegistrationPageProps> {
       !firstName ||
       !secondName ||
       !phone ||
-      !passwordValue ||
-      !repeatPasswordValue
+      !passwordValue
     ) {
       alert('Пожалуйста, заполните все поля.');
       return;
     }
 
-    console.log('Регистрация:', {
-      email,
-      login,
+    await AuthController.signUp(
       firstName,
       secondName,
+      login,
+      email,
+      passwordValue,
       phone,
-      password: passwordValue,
-    });
-
-    // Здесь можно добавить логику авторизации
-    this.router.navigate(ROUTES.CHATS);
+      (loading: boolean) => {
+        this.setProps({ isLoading: loading });
+      },
+      (error: string | null) => {
+        this.setProps({ error });
+      },
+      user => {
+        console.log('Регистрация прошла успешно, пользователь:', user);
+        router.navigate(ROUTES.CHATS);
+      },
+    );
   }
 
   public validateAllFields(): boolean {

@@ -1,42 +1,46 @@
-import { DEFAULT_PROFILE } from '../consts/ProfileData';
-import type { ProfileData, UpdateProfileData } from '../types/Profile';
+import { BaseAPI } from './BaseAPI';
+import type {
+  ProfileData,
+  UpdatePasswordData,
+  UpdateProfileData,
+} from '../types/Profile';
+import type { ErrorResponse } from '../types/common';
+import { API_URL } from '../consts/URLs';
+import { HTTPTransport } from '../app/HTTPTransport';
 
-let mockProfileData: ProfileData = { ...DEFAULT_PROFILE };
-
-export class ProfileAPI {
-  public static fetchProfile(): Promise<ProfileData> {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve({ ...mockProfileData });
-      }, 500);
+export class ProfileAPI extends BaseAPI {
+  private host = API_URL;
+  private http = new HTTPTransport();
+  public fetchProfile(): Promise<ProfileData> {
+    return this.http.get(`${this.host}auth/user`);
+  }
+  public updateProfile(
+    data: UpdateProfileData,
+  ): Promise<ProfileData | ErrorResponse> {
+    return this.http.put(`${this.host}user/profile`, {
+      data,
     });
   }
-
-  public static updateProfile(data: UpdateProfileData): Promise<ProfileData> {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (!data.email || !data.login) {
-          reject(new Error('Некорректные данные профиля.'));
-          return;
-        }
-
-        mockProfileData = { ...mockProfileData, ...data };
-        resolve({ ...mockProfileData });
-      }, 500);
+  public updateAvatar(file: File): Promise<ProfileData | ErrorResponse> {
+    const formData = new FormData();
+    formData.append('avatar', file);
+    return this.http.put(`${this.host}user/profile/avatar`, {
+      data: formData,
     });
   }
-
-  public static updateAvatar(avatarUrl: string): Promise<ProfileData> {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (!avatarUrl) {
-          reject(new Error('Некорректный URL аватара.'));
-          return;
-        }
-
-        mockProfileData.avatar = avatarUrl;
-        resolve({ ...mockProfileData });
-      }, 500);
+  public updatePassword(
+    data: UpdatePasswordData,
+  ): Promise<string | ErrorResponse> {
+    return this.http.put(`${this.host}user/password`, {
+      data,
+    });
+  }
+  public getUserById(userId: number): Promise<ProfileData | ErrorResponse> {
+    return this.http.get(`${this.host}user/${userId}`);
+  }
+  public searchUsers(login: string): Promise<ProfileData[] | ErrorResponse> {
+    return this.http.post(`${this.host}user/search`, {
+      data: { login },
     });
   }
 }

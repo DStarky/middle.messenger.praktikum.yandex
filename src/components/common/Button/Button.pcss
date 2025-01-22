@@ -12,7 +12,7 @@
 }
 
 .button:hover {
-  background-color: #0056b3;
+  background-color: var(--primaty-hover);
 }
 
 .button_round {
@@ -24,6 +24,25 @@
   padding: 0;
   border-radius: 50%;
   background-color: var(--primary-color);
+}
+
+.button_secondary {
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  background-color: transparent;
+}
+
+.button_secondary:hover {
+  background-color: var(--secondary-hover);
+}
+
+.button_danger {
+  color: white;
+  background-color: red;
+}
+
+.button_danger:hover {
+  background-color: var(--danger-hover);
 }
 
 /* 

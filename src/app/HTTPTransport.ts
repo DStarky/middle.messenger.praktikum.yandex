@@ -1,3 +1,8 @@
+import { router } from './Router';
+import type { Route } from './routes';
+import { publicRoutes, ROUTES } from './routes';
+import store from './Store';
+
 const METHODS = {
   GET: 'GET',
   POST: 'POST',
@@ -10,109 +15,94 @@ type Method = (typeof METHODS)[keyof typeof METHODS];
 type RequestOptions = {
   method?: Method;
   headers?: Record<string, string>;
-  data?: Record<string, unknown> | string;
+  data?: Record<string, unknown> | string | FormData;
   timeout?: number;
 };
 
-function queryStringify(data: Record<string, unknown>): string {
-  if (typeof data !== 'object') {
-    throw new Error('Data must be object');
-  }
+type HTTPMethod = <R = unknown>(
+  url: string,
+  options?: RequestOptions,
+) => Promise<R>;
 
+function queryStringify(data: Record<string, unknown>): string {
   const keys = Object.keys(data);
   return keys.reduce((result, key, index) => {
-    return `${result}${key}=${encodeURIComponent(
-      String(data[key]),
-    )}${index < keys.length - 1 ? '&' : ''}`;
+    const encodedKey = encodeURIComponent(key);
+    const encodedValue = encodeURIComponent(String(data[key]));
+    return `${result}${encodedKey}=${encodedValue}${
+      index < keys.length - 1 ? '&' : ''
+    }`;
   }, '?');
 }
 
 export class HTTPTransport {
-  get = (
-    url: string,
-    options: RequestOptions = {},
-  ): Promise<XMLHttpRequest> => {
-    return this.request(
-      url,
-      { ...options, method: METHODS.GET },
-      options.timeout,
-    );
-  };
+  get: HTTPMethod = (url, options = {}) =>
+    this.request(url, { ...options, method: METHODS.GET }, options.timeout);
 
-  post = (
-    url: string,
-    options: RequestOptions = {},
-  ): Promise<XMLHttpRequest> => {
-    return this.request(
-      url,
-      { ...options, method: METHODS.POST },
-      options.timeout,
-    );
-  };
+  put: HTTPMethod = (url, options = {}) =>
+    this.request(url, { ...options, method: METHODS.PUT }, options.timeout);
 
-  put = (
-    url: string,
-    options: RequestOptions = {},
-  ): Promise<XMLHttpRequest> => {
-    return this.request(
-      url,
-      { ...options, method: METHODS.PUT },
-      options.timeout,
-    );
-  };
+  post: HTTPMethod = (url, options = {}) =>
+    this.request(url, { ...options, method: METHODS.POST }, options.timeout);
 
-  delete = (
-    url: string,
-    options: RequestOptions = {},
-  ): Promise<XMLHttpRequest> => {
-    return this.request(
-      url,
-      { ...options, method: METHODS.DELETE },
-      options.timeout,
-    );
-  };
+  delete: HTTPMethod = (url, options = {}) =>
+    this.request(url, { ...options, method: METHODS.DELETE }, options.timeout);
 
-  request = (
+  request = <R = unknown>(
     url: string,
     options: RequestOptions = {},
     timeout: number = 5000,
-  ): Promise<XMLHttpRequest> => {
+  ): Promise<R> => {
     const { headers = {}, method, data } = options;
-
-    return new Promise<XMLHttpRequest>(function (resolve, reject) {
+    return new Promise<R>((resolve, reject) => {
       if (!method) {
         reject(new Error('No method'));
         return;
       }
 
       const xhr = new XMLHttpRequest();
+      xhr.withCredentials = true;
       const isGet = method === METHODS.GET;
-
       xhr.open(
         method,
-        isGet && !!data
+        isGet && data
           ? `${url}${queryStringify(data as Record<string, unknown>)}`
           : url,
       );
-
       Object.keys(headers).forEach(key => {
         xhr.setRequestHeader(key, headers[key]);
       });
-
       xhr.onload = function () {
-        resolve(xhr);
+        if (xhr.status === 401) {
+          store.set('user', null);
+          const currentPath = window.location.pathname as Route;
+          if (!publicRoutes.includes(currentPath)) {
+            router.navigate(ROUTES.MAIN);
+          }
+
+          reject(new Error('Unauthorized'));
+          return;
+        }
+
+        try {
+          const responseData = JSON.parse(xhr.responseText) as R;
+          resolve(responseData);
+        } catch (e: Error | unknown) {
+          console.error(e);
+          resolve(xhr.responseText as unknown as R);
+        }
       };
 
       xhr.onabort = () => reject(new Error('Request aborted'));
       xhr.onerror = () => reject(new Error('Network error'));
-
       xhr.timeout = timeout;
       xhr.ontimeout = () => reject(new Error('Request timed out'));
-
       if (isGet || !data) {
         xhr.send();
       } else {
         if (typeof data === 'string') {
+          xhr.send(data);
+        } else if (data instanceof FormData) {
           xhr.send(data);
         } else {
           xhr.setRequestHeader('Content-Type', 'application/json');

@@ -19,11 +19,10 @@
 
 Приложение содержит следующие маршруты:
 
-- Главная страница (корневая, перекинет на /login по-умолчанию) - [**/**](https://dstarky-messanger.netlify.app/)
-- Авторизация - [**/login**](https://dstarky-messanger.netlify.app/login)
-- Регистрация - [**/registration**](https://dstarky-messanger.netlify.app/registration)
-- Список чатов - [**/chats**](https://dstarky-messanger.netlify.app/chats)
-- Профиль пользователя - [**/profile**](https://dstarky-messanger.netlify.app/profile)
+- Главная страница (авторизация) - [**/**](https://dstarky-messanger.netlify.app/)
+- Регистрация - [**/sign-up**](https://dstarky-messanger.netlify.app/sign-up)
+- Список чатов - [**/messenger**](https://dstarky-messanger.netlify.app/messenger)
+- Профиль пользователя - [**/settings**](https://dstarky-messanger.netlify.app/settings)
 - Страница 404 (страница не найдена) - [**/404**](https://dstarky-messanger.netlify.app/404)
 - Страница 500 (ошибка сервера) - [**/500**](https://dstarky-messanger.netlify.app/500)
 
