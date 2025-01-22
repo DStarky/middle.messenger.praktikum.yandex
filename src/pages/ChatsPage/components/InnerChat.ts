@@ -1,7 +1,6 @@
 import type { Props } from '../../../app/Block';
 import Block from '../../../app/Block';
 import MenuIcon from '../../../assets/icons/menu.svg';
-import AttachmentIcon from '../../../assets/icons/attachment.svg';
 import ArrowRightIcon from '../../../assets/icons/arrow-right.svg';
 import type { MessageData } from '../../../components/common/Message/Message';
 import { Message } from '../../../components/common/Message/Message';
@@ -57,9 +56,6 @@ const template = `
         {{/if}}
       </div>
       <div class="chat-input">
-        <button class="chat-input__attach">
-          <img src="${AttachmentIcon}" alt="attach" />
-        </button>
         <div class="chat-input__message">
           {{{input}}}
         </div>
