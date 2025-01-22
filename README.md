@@ -19,8 +19,7 @@
 
 Приложение содержит следующие маршруты:
 
-- Главная страница (корневая, перекинет на /sign-in по-умолчанию) - [**/**](https://dstarky-messanger.netlify.app/)
-- Авторизация - [**/sign-in**](https://dstarky-messanger.netlify.app/sign-in)
+- Главная страница (авторизация) - [**/**](https://dstarky-messanger.netlify.app/)
 - Регистрация - [**/sign-up**](https://dstarky-messanger.netlify.app/sign-up)
 - Список чатов - [**/messenger**](https://dstarky-messanger.netlify.app/messenger)
 - Профиль пользователя - [**/settings**](https://dstarky-messanger.netlify.app/settings)
