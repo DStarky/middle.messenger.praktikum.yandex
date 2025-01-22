@@ -278,11 +278,15 @@ export class ChatsPage extends Block<ChatsPageProps> {
       return;
     }
 
-    const { chats } = store.getState();
+    const { chats, user } = store.getState();
+    const currentUserLogin = user?.login || '';
+
     const updatedChats = chats.map(chat => {
       if (chat.id === chatId) {
         const last_message = {
-          user: { login: newMsg.isOwn ? 'currentUserLogin' : 'anotherUser' },
+          user: {
+            login: newMsg.isOwn ? currentUserLogin : 'anotherUser',
+          },
           time: new Date().toISOString(),
           content: newMsg.text,
         };
