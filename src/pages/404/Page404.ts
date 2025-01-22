@@ -2,8 +2,6 @@ import type { Props } from '../../app/Block';
 import Block from '../../app/Block';
 import { ROUTES } from '../../app/routes';
 import { Link } from '../../components/common/Link/Link';
-import { CreateChatModal } from '../../components/common/Modal/CreateChatModal/CreateChatModal';
-import { Modal } from '../../components/common/Modal/Modal';
 
 const template = `
 <main class="screen-center">
@@ -12,9 +10,6 @@ const template = `
     <p class="error-page__text">Не туда попали</p>
     <div class="error-page__link">
       {{{ link }}}
-    </div>
-    <div>
-      {{{modal}}}
     </div>
   </div>
 </main>
@@ -37,17 +32,7 @@ export class Page404 extends Block<Page404Props> {
       },
     });
 
-    const createChatModalContent = new CreateChatModal({});
-
-    const modal = new Modal({
-      size: 'small',
-      children: createChatModalContent,
-      events: {
-        close: () => {},
-      },
-    });
-
-    super({ link, modal });
+    super({ link });
   }
 
   protected render(): string {

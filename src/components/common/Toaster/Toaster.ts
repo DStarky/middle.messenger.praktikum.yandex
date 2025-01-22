@@ -54,6 +54,11 @@ export class Toaster extends Block<ToasterProps> {
   }
 
   public hide(): void {
+    if (this.hideTimeout !== null) {
+      clearTimeout(this.hideTimeout);
+      this.hideTimeout = null;
+    }
+
     this.toasterElement?.classList.remove('toaster-visible');
 
     this.toasterElement?.addEventListener(

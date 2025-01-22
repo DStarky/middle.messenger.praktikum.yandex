@@ -76,6 +76,7 @@ export class InnerChat extends Block<InnerChatProps> {
   }
 
   override init(): void {
+    this.initToaster();
     this.createChildren(this.props);
 
     this.setProps({
