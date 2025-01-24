@@ -1,5 +1,12 @@
 {
+  "type": "module",
   "compilerOptions": {
+    "esModuleInterop": true,
+    "types": [
+      "mocha",
+      "chai",
+      "sinon",
+    ],
     "target": "ES2020",
     "useDefineForClassFields": true,
     "module": "ESNext",
@@ -24,5 +31,9 @@
   },
   "include": [
     "src"
-  ]
+, "src/api/testsSetup.ts"  ],
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
+  }
 }

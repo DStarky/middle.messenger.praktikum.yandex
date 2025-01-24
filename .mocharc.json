@@ -1,0 +1,12 @@
+{
+  "extension": [
+    "ts"
+  ],
+  "spec": "./src/**/*.test.ts",
+  "require": [
+    "ts-node/register",
+    "./src/api/testsSetup.ts"
+  ],
+  "timeout": 20000,
+  "loader": "ts-node/esm"
+}

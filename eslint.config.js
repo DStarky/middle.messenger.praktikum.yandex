@@ -42,7 +42,7 @@ export default tseslint.config(
       eqeqeq: 'error',
       curly: 'error',
       'no-mixed-spaces-and-tabs': 'error',
-      'no-var': 'error',
+      'no-var': 'off',
       'prefer-const': 'error',
       'arrow-spacing': ['error', { before: true, after: true }],
       'no-magic-numbers': ['warn', { ignore: [0, 1, -1] }],
@@ -55,6 +55,7 @@ export default tseslint.config(
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/no-shadow': 'error',
       '@typescript-eslint/no-this-alias': 'off',
+      '@typescript-eslint/no-unused-expressions': 'off',
 
       'prefer-template': 'error',
       'default-case': 'error',
