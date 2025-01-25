@@ -1,6 +1,3 @@
-import { router } from './Router';
-import type { Route } from './routes';
-import { publicRoutes, ROUTES } from './routes';
 import store from './Store';
 
 const METHODS = {
@@ -75,11 +72,6 @@ export class HTTPTransport {
       xhr.onload = function () {
         if (xhr.status === 401) {
           store.set('user', null);
-          const currentPath = window.location.pathname as Route;
-          if (!publicRoutes.includes(currentPath)) {
-            router.navigate(ROUTES.MAIN);
-          }
-
           reject(new Error('Unauthorized'));
           return;
         }

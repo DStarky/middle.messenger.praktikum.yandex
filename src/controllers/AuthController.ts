@@ -1,6 +1,4 @@
 import store from '../app/Store';
-import { router } from '../app/Router';
-import { ROUTES } from '../app/routes';
 import { AuthAPI } from '../api/AuthAPI';
 import type { UserData } from '../types/AuthResponses';
 
@@ -45,7 +43,6 @@ class AuthController {
       if ('message' in loginRes && loginRes.message.toUpperCase() === 'OK') {
         const user = await this.api.getUser();
         store.set('user', user);
-        router.navigate(ROUTES.CHATS);
         onSuccess(user);
       } else {
         onError('Неизвестный ответ от сервера');
@@ -98,7 +95,6 @@ class AuthController {
       if ('id' in signUpRes) {
         const user = await this.api.getUser();
         store.set('user', user);
-        router.navigate(ROUTES.CHATS);
         onSuccess(user);
       } else {
         onError('Неизвестный ответ от сервера');
@@ -116,8 +112,10 @@ class AuthController {
       store.set('user', user);
       return user;
     } catch (error: unknown) {
-      console.log((error as Error).message);
-      store.set('user', null);
+      if ((error as Error).message === 'Unauthorized') {
+        store.set('user', null);
+      }
+
       return null;
     } finally {
       store.set('isLoading', false);
@@ -131,7 +129,6 @@ class AuthController {
       if (typeof logoutRes === 'string') {
         if (logoutRes.toUpperCase() === 'OK') {
           store.set('user', null);
-          router.navigate(ROUTES.MAIN);
         } else {
           store.set('error', logoutRes);
         }
@@ -149,7 +146,6 @@ class AuthController {
       store.set('error', (error as Error).message);
     } finally {
       store.set('isLoading', false);
-      router.navigate(ROUTES.MAIN);
     }
   }
 }
