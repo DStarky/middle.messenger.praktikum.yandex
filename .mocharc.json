@@ -8,5 +8,9 @@
     "./src/api/testsSetup.ts"
   ],
   "timeout": 20000,
-  "loader": "ts-node/esm"
+  "loader": [
+    "ts-node/esm",
+    "./loader-css.js",
+    "./loader-svg.js"
+  ]
 }
