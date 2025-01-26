@@ -61,4 +61,53 @@ describe('Block', () => {
     block.setProps({ text: 'New' });
     expect(block.getProps().text).to.equal('New');
   });
+
+  it('должен вызывать componentDidMount при монтировании', () => {
+    class TestComponent extends TestBlock {
+      public componentDidMount() {
+        super.componentDidMount();
+      }
+    }
+
+    const spy = sinon.spy(TestComponent.prototype, 'componentDidMount');
+    const instance = new TestComponent();
+    instance.dispatchComponentDidMount();
+
+    expect(spy.calledOnce).to.be.true;
+  });
+
+  it('должен обновлять DOM при изменении пропсов', () => {
+    class RenderTrackerBlock extends TestBlock {
+      private renderCount = 0;
+
+      render() {
+        this.renderCount++;
+        return super.render();
+      }
+
+      getRenderCount() {
+        return this.renderCount;
+      }
+    }
+
+    const block = new RenderTrackerBlock({ text: 'Old' });
+    const initialRenders = block.getRenderCount();
+
+    block.setProps({ text: 'New' });
+
+    expect(block.getRenderCount()).to.be.greaterThan(initialRenders);
+  });
+
+  it('должен показывать и скрывать элемент', () => {
+    const block = new TestBlock();
+    const initialDisplay = block.getContent()?.style.display;
+
+    block.show();
+    expect(block.getContent()?.style.display).to.equal('block');
+
+    block.hide();
+    expect(block.getContent()?.style.display).to.equal('none');
+
+    block.getContent()!.style.display = initialDisplay || '';
+  });
 });
