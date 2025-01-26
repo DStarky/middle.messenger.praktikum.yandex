@@ -105,6 +105,10 @@ export class Router {
   forward(): void {
     window.history.forward();
   }
+
+  public _resetRoutesForTesting(): void {
+    this.routes = {} as Record<Route, () => void>;
+  }
 }
 
 export const router = new Router('#app');
