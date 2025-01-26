@@ -13,7 +13,6 @@ describe('Тестируем роутер...', () => {
   beforeEach(() => {
     sandbox = sinon.createSandbox();
     testRouter = new Router('#app');
-    dom.window.history.replaceState({}, '', '/');
 
     sandbox.stub(AuthController, 'getUserInfo').resolves({
       id: 1,
@@ -25,12 +24,15 @@ describe('Тестируем роутер...', () => {
       avatar: '',
       email: 'test@example.com',
     });
+
+    testRouter.addRoute(ROUTES.NOT_FOUND, () => {});
   });
 
   afterEach(() => {
     sandbox.restore();
     testRouter._resetRoutesForTesting();
-    dom.window.history.pushState({}, '', '/');
+    testRouter.removeListeners();
+    dom.window.history.replaceState({}, '', '/');
   });
 
   it('должен менять историю и выполнять обработчик', async () => {
@@ -79,12 +81,36 @@ describe('Тестируем роутер...', () => {
     });
 
     dom.window.history.back();
-
     await popStatePromise;
-
-    await new Promise(setImmediate);
 
     expect(window.location.pathname).to.equal(ROUTES.REGISTRATION);
     expect(handlerRegistration.callCount).to.equal(2);
+  });
+
+  it('должен обрабатывать переход вперед по истории', async () => {
+    const handlerMain = sandbox.spy();
+    const handlerRegistration = sandbox.spy();
+
+    testRouter.addRoute(ROUTES.MAIN, handlerMain);
+    testRouter.addRoute(ROUTES.REGISTRATION, handlerRegistration);
+    testRouter.init();
+
+    await testRouter.navigate(ROUTES.REGISTRATION);
+    await testRouter.navigate(ROUTES.MAIN);
+
+    const backPromise = new Promise(resolve => {
+      dom.window.addEventListener('popstate', resolve, { once: true });
+    });
+    dom.window.history.back();
+    await backPromise;
+
+    const forwardPromise = new Promise(resolve => {
+      dom.window.addEventListener('popstate', resolve, { once: true });
+    });
+    dom.window.history.forward();
+    await forwardPromise;
+
+    expect(window.location.pathname).to.equal(ROUTES.MAIN);
+    expect(handlerMain.callCount).to.equal(3);
   });
 });
