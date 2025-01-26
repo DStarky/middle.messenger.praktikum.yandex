@@ -5,6 +5,7 @@ import type {
 } from 'sinon';
 import sinon from 'sinon';
 import { HTTPTransport, METHODS } from './HTTPTransport';
+import store from './Store';
 
 describe('HTTPTransport', () => {
   let requests: SinonFakeXMLHttpRequest[] = [];
@@ -79,5 +80,32 @@ describe('HTTPTransport', () => {
     );
     const response = await promise;
     expect(response).to.deep.equal({ status: 'ok' });
+  });
+
+  it('должен обрабатывать 401 ошибку', async () => {
+    const http = new HTTPTransport();
+    const url = '/protected';
+    const storeMock = sinon.mock(store);
+
+    storeMock.expects('set').once().withArgs('user', null);
+
+    const promise = http.get(url);
+
+    expect(requests).to.have.lengthOf(1);
+    const request = requests[0];
+
+    request.respond(401, {}, 'Unauthorized');
+
+    try {
+      await promise;
+      throw new Error('Ожидалась ошибка 401');
+    } catch (error) {
+      expect(error).to.be.instanceOf(Error);
+
+      expect((error as Error).message).to.equal('Unauthorized');
+    }
+
+    storeMock.verify();
+    storeMock.restore();
   });
 });
