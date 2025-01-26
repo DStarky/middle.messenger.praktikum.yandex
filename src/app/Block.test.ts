@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import type { Props } from './Block';
 import Block from './Block';
 import { sinon } from '../api/testsSetup';
 
@@ -6,6 +7,10 @@ describe('Block', () => {
   class TestBlock extends Block {
     render() {
       return '<div>Test Content</div>';
+    }
+
+    public getProps(): Props {
+      return this.props;
     }
   }
 
@@ -49,5 +54,11 @@ describe('Block', () => {
 
     element!.dispatchEvent(event);
     expect(clickSpy.calledOnce).to.be.true;
+  });
+
+  it('должен обновлять пропсы через setProps', () => {
+    const block = new TestBlock({ text: 'Old' });
+    block.setProps({ text: 'New' });
+    expect(block.getProps().text).to.equal('New');
   });
 });
