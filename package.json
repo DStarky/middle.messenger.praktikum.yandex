@@ -15,7 +15,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
-    "test": "mocha --config .mocharc.json --project tsconfig.json",
+    "test": "mocha",
     "test:watch": "mocha --watch"
   },
   "devDependencies": {

@@ -30,9 +30,7 @@
     "strictNullChecks": true
   },
   "include": [
-    "src",
-    "src/api/testsSetup.ts",
-    "src/types/svg.d.ts"
+    "src", "src/api/setup.test.ts",
   ],
   "files": [
     "src/types/svg.d.ts"
