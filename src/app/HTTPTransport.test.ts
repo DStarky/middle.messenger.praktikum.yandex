@@ -6,6 +6,7 @@ import type {
 import sinon from 'sinon';
 import { HTTPTransport, METHODS } from './HTTPTransport';
 import store from './Store';
+import { API_URL } from '../consts/URLs';
 
 describe('HTTPTransport', () => {
   let requests: SinonFakeXMLHttpRequest[] = [];
@@ -130,5 +131,34 @@ describe('HTTPTransport', () => {
     );
     const response = await promise;
     expect(response).to.deep.equal({ message: 'OK' });
+  });
+
+  it('Должен получить "Cookie is not valid" при попытке получить данные о пользователе будучи неавторизованным', async () => {
+    const http = new HTTPTransport();
+    const url = '/auth/user';
+
+    const fullUrl = new URL(url, API_URL).href;
+
+    const promise = http.get(fullUrl, {});
+
+    expect(requests).to.have.lengthOf(1);
+
+    const request = requests[0];
+
+    expect(request.method).to.equal(METHODS.GET);
+    expect(request.url).to.equal(fullUrl);
+
+    request.respond(
+      403,
+      { 'Content-Type': 'application/json' },
+      JSON.stringify({ message: 'Cookie is not valid' }),
+    );
+
+    try {
+      await promise;
+    } catch (error) {
+      expect(error).to.be.instanceOf(Error);
+      expect((error as Error).message).to.equal('Cookie is not valid');
+    }
   });
 });
