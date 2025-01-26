@@ -1,21 +1,37 @@
-import 'jsdom-global/register';
+import { JSDOM } from 'jsdom';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-const appElement = document.createElement('div');
-appElement.id = 'app';
-document.body.appendChild(appElement);
+const dom = new JSDOM(
+  '<!DOCTYPE html><html><body><div id="app"></div></body></html>',
+  {
+    url: 'http://localhost/',
+    pretendToBeVisual: true,
+  },
+);
 
-declare global {
-  interface Window {
-    __TEST_ENV__: {
-      expect: typeof expect;
-      sinon: typeof sinon;
-    };
-  }
+Object.defineProperties(global, {
+  window: {
+    value: dom.window,
+    configurable: true,
+    writable: true,
+  },
+  document: {
+    value: dom.window.document,
+    configurable: true,
+    writable: true,
+  },
+  HTMLElement: {
+    value: dom.window.HTMLElement,
+    configurable: true,
+    writable: true,
+  },
+});
+
+dom.window.HTMLElement.prototype.scrollIntoView = function () {};
+
+if (!dom.window.document.getElementById('app')) {
+  throw new Error('Root element #app не найден');
 }
 
-window.__TEST_ENV__ = {
-  expect,
-  sinon,
-};
+export { dom, expect, sinon };
