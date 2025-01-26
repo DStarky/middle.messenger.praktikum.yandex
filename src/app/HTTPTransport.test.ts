@@ -48,4 +48,36 @@ describe('HTTPTransport', () => {
 
     await promise;
   });
+
+  it('должен выполнять POST-запрос с JSON данными', async () => {
+    const http = new HTTPTransport();
+    const url = '/post';
+    const data = { title: 'Test', content: 'Hello World' };
+
+    const promise = http.post(url, {
+      data: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    expect(requests).to.have.lengthOf(1);
+    const request = requests[0];
+
+    expect(request.method).to.equal(METHODS.POST);
+
+    expect(request.requestHeaders['Content-Type']).to.match(
+      /^application\/json(;charset=utf-8)?$/,
+    );
+
+    expect(request.requestBody).to.equal(JSON.stringify(data));
+
+    request.respond(
+      200,
+      { 'Content-Type': 'application/json' },
+      '{"status":"ok"}',
+    );
+    const response = await promise;
+    expect(response).to.deep.equal({ status: 'ok' });
+  });
 });
