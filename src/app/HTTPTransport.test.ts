@@ -108,4 +108,27 @@ describe('HTTPTransport', () => {
     storeMock.verify();
     storeMock.restore();
   });
+
+  it('должен отправлять FormData', async () => {
+    const http = new HTTPTransport();
+    const url = '/upload';
+    const formData = new FormData();
+    formData.append('file', new Blob(['test']), 'test.txt');
+
+    const promise = http.post(url, { data: formData });
+
+    expect(requests).to.have.lengthOf(1);
+    const request = requests[0];
+
+    expect(request.method).to.equal(METHODS.POST);
+    expect(request.requestBody).to.be.instanceOf(FormData);
+
+    request.respond(
+      200,
+      { 'Content-Type': 'application/json' },
+      '{"message":"OK"}',
+    );
+    const response = await promise;
+    expect(response).to.deep.equal({ message: 'OK' });
+  });
 });
