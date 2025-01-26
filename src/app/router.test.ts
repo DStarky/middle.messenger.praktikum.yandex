@@ -113,4 +113,20 @@ describe('Тестируем роутер...', () => {
     expect(window.location.pathname).to.equal(ROUTES.MAIN);
     expect(handlerMain.callCount).to.equal(3);
   });
+
+  it('должен корректно изменять длину истории при навигации', async () => {
+    const initialHistoryLength = dom.window.history.length;
+
+    testRouter.addRoute(ROUTES.MAIN, () => {});
+    testRouter.addRoute(ROUTES.REGISTRATION, () => {});
+    testRouter.init();
+
+    expect(dom.window.history.length).to.equal(initialHistoryLength);
+
+    await testRouter.navigate(ROUTES.REGISTRATION);
+    expect(dom.window.history.length).to.equal(initialHistoryLength + 1);
+
+    await testRouter.navigate(ROUTES.MAIN);
+    expect(dom.window.history.length).to.equal(initialHistoryLength + 2);
+  });
 });
