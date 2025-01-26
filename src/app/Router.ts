@@ -42,7 +42,9 @@ export class Router {
 
   private handleUnauthorized(): void {
     store.set('user', null);
-    this.navigate(ROUTES.MAIN);
+    if (window.location.pathname !== ROUTES.MAIN) {
+      this.navigate(ROUTES.MAIN);
+    }
   }
 
   private executeRoute(path: Route): void {

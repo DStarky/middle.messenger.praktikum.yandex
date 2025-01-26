@@ -4,7 +4,6 @@ import sinon from 'sinon';
 import { Router } from './Router';
 import { ROUTES } from './routes';
 import AuthController from '../controllers/AuthController';
-import type { UserData } from '../types/AuthResponses';
 import { dom } from '../api/testsSetup';
 
 describe('Тестируем роутер...', () => {
@@ -15,11 +14,23 @@ describe('Тестируем роутер...', () => {
     sandbox = sinon.createSandbox();
     testRouter = new Router('#app');
     dom.window.history.replaceState({}, '', '/');
+
+    sandbox.stub(AuthController, 'getUserInfo').resolves({
+      id: 1,
+      first_name: 'Test',
+      second_name: 'User',
+      display_name: 'TestUser',
+      phone: '+79000000000',
+      login: 'testuser',
+      avatar: '',
+      email: 'test@example.com',
+    });
   });
 
   afterEach(() => {
     sandbox.restore();
     testRouter._resetRoutesForTesting();
+    dom.window.history.pushState({}, '', '/');
   });
 
   it('должен менять историю и выполнять обработчик', async () => {
@@ -34,18 +45,6 @@ describe('Тестируем роутер...', () => {
   });
 
   it('должен обрабатывать последовательные переходы', async () => {
-    const mockUser: UserData = {
-      id: 1,
-      first_name: 'Test',
-      second_name: 'User',
-      display_name: 'TestUser',
-      phone: '+79000000000',
-      login: 'testuser',
-      avatar: '',
-      email: 'test@example.com',
-    };
-
-    sandbox.stub(AuthController, 'getUserInfo').resolves(mockUser);
     const historySpy = sandbox.spy(dom.window.history, 'pushState');
 
     const handlers = {
@@ -62,5 +61,30 @@ describe('Тестируем роутер...', () => {
     expect(historySpy.callCount).to.equal(2);
     expect(handlers.reg.calledOnce).to.be.true;
     expect(handlers.main.calledOnce).to.be.true;
+  });
+
+  it('должен обрабатывать переход назад по истории', async () => {
+    const handlerMain = sandbox.spy();
+    const handlerRegistration = sandbox.spy();
+
+    testRouter.addRoute(ROUTES.MAIN, handlerMain);
+    testRouter.addRoute(ROUTES.REGISTRATION, handlerRegistration);
+    testRouter.init();
+
+    await testRouter.navigate(ROUTES.REGISTRATION);
+    await testRouter.navigate(ROUTES.MAIN);
+
+    const popStatePromise = new Promise(resolve => {
+      dom.window.addEventListener('popstate', resolve, { once: true });
+    });
+
+    dom.window.history.back();
+
+    await popStatePromise;
+
+    await new Promise(setImmediate);
+
+    expect(window.location.pathname).to.equal(ROUTES.REGISTRATION);
+    expect(handlerRegistration.callCount).to.equal(2);
   });
 });
