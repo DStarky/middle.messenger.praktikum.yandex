@@ -15,6 +15,8 @@ import store from '../../app/Store';
 import AuthController from '../../controllers/AuthController';
 import ProfileController from '../../controllers/ProfileController';
 import { RESOURCE_URL } from '../../consts/URLs';
+import { router } from '../../app/Router';
+import { ROUTES } from '../../app/routes';
 
 const template = `
   <main class="profile-page">
@@ -223,6 +225,7 @@ class _ProfilePage extends Block<ProfilePageProps> {
   private async handleLogout(): Promise<void> {
     try {
       await AuthController.logout();
+      router.navigate(ROUTES.MAIN);
     } catch (error) {
       console.error('Ошибка при выходе:', error);
       store.set('error', 'Не удалось выйти из системы');
