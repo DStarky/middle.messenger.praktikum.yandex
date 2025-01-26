@@ -161,4 +161,33 @@ describe('HTTPTransport', () => {
       expect((error as Error).message).to.equal('Cookie is not valid');
     }
   });
+
+  it('Должен получить "Login is empty, but required" при авторизации из-за неверных данных', async () => {
+    const http = new HTTPTransport();
+
+    const url = '/auth/signin';
+
+    const fullUrl = new URL(url, API_URL).href;
+
+    const promise = http.post(fullUrl, {});
+
+    expect(requests).to.have.lengthOf(1);
+
+    const request = requests[0];
+    expect(request.method).to.equal(METHODS.POST);
+    expect(request.url).to.equal(fullUrl);
+
+    request.respond(
+      400,
+      { 'Content-Type': 'application/json' },
+      JSON.stringify({ message: 'login is empty, but required' }),
+    );
+
+    try {
+      await promise;
+    } catch (error) {
+      expect(error).to.be.instanceOf(Error);
+      expect((error as Error).message).to.equal('login is empty, but required');
+    }
+  });
 });
