@@ -1,6 +1,6 @@
 import store from './Store';
 
-const METHODS = {
+export const METHODS = {
   GET: 'GET',
   POST: 'POST',
   PUT: 'PUT',

@@ -26,6 +26,11 @@ Object.defineProperties(global, {
     configurable: true,
     writable: true,
   },
+  XMLHttpRequest: {
+    value: dom.window.XMLHttpRequest,
+    configurable: true,
+    writable: true,
+  },
 });
 
 dom.window.HTMLElement.prototype.scrollIntoView = function () {};
