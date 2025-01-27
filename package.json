@@ -18,7 +18,7 @@
     "lint:fix": "eslint src/**/*.ts --fix",
     "test": "mocha",
     "test:watch": "mocha --watch",
-    "prepare": "husky install",
+    "prepare": "husky",
     "pre-commit": "npm test && npm run lint && npm run lint"
   },
   "devDependencies": {
