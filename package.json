@@ -19,7 +19,7 @@
     "test": "mocha",
     "test:watch": "mocha --watch",
     "prepare": "husky",
-    "pre-commit": "npm test && npm run lint && npm run lint"
+    "pre-commit": "npm test && npm run lint && npm run stylelint"
   },
   "devDependencies": {
     "@types/chai": "^5.0.1",
