@@ -11,12 +11,15 @@
     "build": "tsc && vite build",
     "start": "vite build && node server.cjs",
     "preview": "vite preview",
+    "stylelint": "stylelint src/**/*.pcss",
     "stylelint:fix": "stylelint src/**/*.pcss --fix",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
     "test": "mocha",
-    "test:watch": "mocha --watch"
+    "test:watch": "mocha --watch",
+    "prepare": "husky install",
+    "pre-commit": "npm test && npm run lint && npm run lint"
   },
   "devDependencies": {
     "@types/chai": "^5.0.1",
