@@ -1,5 +1,12 @@
 {
+  "type": "module",
   "compilerOptions": {
+    "esModuleInterop": true,
+    "types": [
+      "mocha",
+      "chai",
+      "sinon"
+    ],
     "target": "ES2020",
     "useDefineForClassFields": true,
     "module": "ESNext",
@@ -9,7 +16,7 @@
       "DOM.Iterable"
     ],
     "skipLibCheck": true,
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "moduleDetection": "force",
@@ -23,6 +30,14 @@
     "strictNullChecks": true
   },
   "include": [
-    "src"
-  ]
+    "src", "src/api/setup.test.ts"
+  ],
+  "files": [
+    "src/types/svg.d.ts"
+  ],
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node",
+    "files": true
+  }
 }

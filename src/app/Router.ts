@@ -6,6 +6,7 @@ import store from './Store';
 export class Router {
   private routes: Record<Route, () => void> = {} as Record<Route, () => void>;
   private rootElement: HTMLElement;
+  private handlePopStateBound: () => void;
 
   constructor(rootSelector: string) {
     const root = document.querySelector(rootSelector);
@@ -14,6 +15,7 @@ export class Router {
     }
 
     this.rootElement = root;
+    this.handlePopStateBound = this.handlePopState.bind(this);
   }
 
   addRoute(path: Route, renderFunction: () => void): void {
@@ -21,6 +23,10 @@ export class Router {
   }
 
   public async navigate(path: Route): Promise<void> {
+    if (path === window.location.pathname) {
+      return;
+    }
+
     if (protectedRoutes.includes(path)) {
       try {
         const user = await AuthController.getUserInfo();
@@ -42,7 +48,9 @@ export class Router {
 
   private handleUnauthorized(): void {
     store.set('user', null);
-    this.navigate(ROUTES.MAIN);
+    if (window.location.pathname !== ROUTES.MAIN) {
+      this.navigate(ROUTES.MAIN);
+    }
   }
 
   private executeRoute(path: Route): void {
@@ -55,15 +63,7 @@ export class Router {
   }
 
   public init(): void {
-    window.addEventListener('popstate', () => {
-      const path = window.location.pathname as Route;
-      const routeFunc = this.routes[path];
-      if (routeFunc) {
-        routeFunc();
-      } else {
-        this.handle404();
-      }
-    });
+    window.addEventListener('popstate', this.handlePopStateBound);
 
     const currentPath = window.location.pathname as Route;
     const routeFunc = this.routes[currentPath];
@@ -89,8 +89,20 @@ export class Router {
     });
   }
 
+  private handlePopState(): void {
+    const path = window.location.pathname as Route;
+    const routeFunc = this.routes[path];
+    if (routeFunc) {
+      routeFunc();
+    } else {
+      this.handle404();
+    }
+  }
+
   private handle404(): void {
-    this.navigate(ROUTES.NOT_FOUND);
+    if (window.location.pathname !== ROUTES.NOT_FOUND) {
+      this.navigate(ROUTES.NOT_FOUND);
+    }
   }
 
   public render(content: HTMLElement): void {
@@ -104,6 +116,14 @@ export class Router {
 
   forward(): void {
     window.history.forward();
+  }
+
+  public _resetRoutesForTesting(): void {
+    this.routes = {} as Record<Route, () => void>;
+  }
+
+  public removeListeners(): void {
+    window.removeEventListener('popstate', this.handlePopStateBound);
   }
 }
 
