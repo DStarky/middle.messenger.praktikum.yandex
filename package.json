@@ -18,7 +18,7 @@
     "lint:fix": "eslint src/**/*.ts --fix",
     "test": "mocha",
     "test:watch": "mocha --watch",
-    "prepare": "husky",
+    "prepare": "husky install .husky && rm -f $(git rev-parse --git-path hooks)/*.sample && find $(git rev-parse --git-path hooks) -type f ! -name 'pre-commit' -delete && chmod +x $(git rev-parse --git-path hooks)/pre-commit",
     "pre-commit": "npm test && npm run lint && npm run stylelint"
   },
   "devDependencies": {
