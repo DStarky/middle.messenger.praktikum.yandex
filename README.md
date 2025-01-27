@@ -18,7 +18,7 @@
 
 Приложение включает следующие маршруты:
 
-- **Главная страница (Авторизация)** — [/\*\*](https://dstarky-messanger.netlify.app/)
+- **Главная страница (Авторизация)** — [/](https://dstarky-messanger.netlify.app/)
 - **Регистрация** — [/sign-up](https://dstarky-messanger.netlify.app/sign-up)
 - **Список чатов** — [/messenger](https://dstarky-messanger.netlify.app/messenger)
 - **Профиль пользователя** — [/settings](https://dstarky-messanger.netlify.app/settings)
@@ -31,7 +31,7 @@
 
 ### Системные требования
 
-- **Node.js** версии **16** или выше
+- **Node.js** версии **18** или выше
 - Установленный менеджер пакетов **npm**
 
 ### Шаги по установке и запуску
