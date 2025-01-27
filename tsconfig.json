@@ -5,7 +5,7 @@
     "types": [
       "mocha",
       "chai",
-      "sinon",
+      "sinon"
     ],
     "target": "ES2020",
     "useDefineForClassFields": true,
@@ -30,7 +30,7 @@
     "strictNullChecks": true
   },
   "include": [
-    "src", "src/api/setup.test.ts",
+    "src", "src/api/setup.test.ts"
   ],
   "files": [
     "src/types/svg.d.ts"
